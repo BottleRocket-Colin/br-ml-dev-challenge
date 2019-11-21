@@ -14,21 +14,22 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 
 class MainViewModel : ViewModel() {
 
-    val imageAnalysisConfig = ImageAnalysisConfig.Builder()
+    private val imageAnalysisConfig = ImageAnalysisConfig.Builder()
         .setTargetResolution(Size(1280, 720))
         .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         .build()
     val imageAnalysis = ImageAnalysis(imageAnalysisConfig)
+
     // Live detection and tracking
     private val options = FirebaseVisionObjectDetectorOptions.Builder()
         .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
-//            .enableMultipleObjects()
+        .enableMultipleObjects()
         .build()
 
     val objectDetector = FirebaseVision.getInstance().getOnDeviceObjectDetector(options)
 
-    val moStuff = YourImageAnalyzer()
-    inner class YourImageAnalyzer : ImageAnalysis.Analyzer {
+    private val analyzer = BRImageAnalyzer()
+    inner class BRImageAnalyzer : ImageAnalysis.Analyzer {
         private fun degreesToFirebaseRotation(degrees: Int): Int = when(degrees) {
             0 -> FirebaseVisionImageMetadata.ROTATION_0
             90 -> FirebaseVisionImageMetadata.ROTATION_90
@@ -58,7 +59,7 @@ class MainViewModel : ViewModel() {
 
 
     init {
-        imageAnalysis.setAnalyzer(AsyncTask.THREAD_POOL_EXECUTOR, moStuff)
+        imageAnalysis.setAnalyzer(AsyncTask.THREAD_POOL_EXECUTOR, analyzer)
     }
 
 
