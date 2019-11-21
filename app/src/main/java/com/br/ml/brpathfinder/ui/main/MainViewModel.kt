@@ -47,6 +47,8 @@ class MainViewModel : ViewModel() {
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
                         Log.d("CCS", "objects: ${detectedObjects.size}")
+                        // haptic
+//                        detectedObjects[0].boundingBox.
                         // TODO - MOAR!!!!!
                     }
                     .addOnFailureListener { e ->
