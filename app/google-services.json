@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "5378704266",
+    "firebase_url": "https://brpathfinder-358d6.firebaseio.com",
+    "project_id": "brpathfinder-358d6",
+    "storage_bucket": "brpathfinder-358d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:5378704266:android:b21e832ce048fabba03e73",
+        "android_client_info": {
+          "package_name": "com.br.ml.brpathfinder"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "5378704266-4pv336aob50ghq0h7ae6q3rpan75b3tn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.br.ml.brpathfinder",
+            "certificate_hash": "c05fd235d2f8b3e990ed5dcc2093560406e07d5b"
+          }
+        },
+        {
+          "client_id": "5378704266-oeodb6rrj26bnd717hlv0tj3c09olcjg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCerERA43YA-H2fKmr4YUmTZnEx6ain9C8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "5378704266-oeodb6rrj26bnd717hlv0tj3c09olcjg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
