@@ -1,11 +1,13 @@
 package com.br.ml.brpathfinder.ui.main
 
+import android.graphics.Rect
 import android.os.AsyncTask
 import android.util.Log
 import android.util.Size
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysisConfig
 import androidx.camera.core.ImageProxy
+import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.ViewModel
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
@@ -14,6 +16,12 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 
 class MainViewModel : ViewModel() {
 
+    // UI
+    val boundingBoxes: ObservableArrayList<Rect> = ObservableArrayList()
+
+
+    // Image analysis setup
+    // fixme - this pattern is broken in alpha-08
     private val imageAnalysisConfig = ImageAnalysisConfig.Builder()
         .setTargetResolution(Size(1280, 720))
         .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
@@ -46,10 +54,15 @@ class MainViewModel : ViewModel() {
                 // Pass image to an ML Kit Vision API
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
+                        boundingBoxes.clear()
                         Log.d("CCS", "objects: ${detectedObjects.size}")
+                        detectedObjects.forEach { detected ->
+//                            Log.d("CCS", "ID: \t${detected.trackingId} \t box: ${detected.boundingBox}")
+//                            Log.d("CCS", "Cat: ${detected.classificationCategory}")
+                            boundingBoxes.add(detected.boundingBox)
+                        }
+
                         // haptic
-//                        detectedObjects[0].boundingBox.
-                        // TODO - MOAR!!!!!
                     }
                     .addOnFailureListener { e ->
                         Log.e("CCS", "FAIL!!!")
