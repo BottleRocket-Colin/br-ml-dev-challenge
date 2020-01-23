@@ -57,12 +57,14 @@ class MainViewModel : ViewModel() {
                         boundingBoxes.clear()
                         Log.d("CCS", "objects: ${detectedObjects.size}")
                         detectedObjects.forEach { detected ->
-//                            Log.d("CCS", "ID: \t${detected.trackingId} \t box: ${detected.boundingBox}")
-//                            Log.d("CCS", "Cat: ${detected.classificationCategory}")
                             boundingBoxes.add(detected.boundingBox)
                         }
 
-                        // haptic
+                        // TODO - Notify AR core implementation - Sam
+
+                        // TODO - Call algo with bounding boxes - Colin
+
+                        // TODO - Call feedback with results from algo  - Eric
                     }
                     .addOnFailureListener { e ->
                         Log.e("CCS", "FAIL!!!")
