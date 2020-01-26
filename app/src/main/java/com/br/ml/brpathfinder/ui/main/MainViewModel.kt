@@ -19,7 +19,6 @@ class MainViewModel : ViewModel() {
     // UI
     val boundingBoxes: ObservableArrayList<Rect> = ObservableArrayList()
 
-
     // Image analysis setup
     // fixme - this pattern is broken in alpha-08
     private val imageAnalysisConfig = ImageAnalysisConfig.Builder()
@@ -55,7 +54,6 @@ class MainViewModel : ViewModel() {
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
                         boundingBoxes.clear()
-                        Log.d("CCS", "objects: ${detectedObjects.size}")
                         detectedObjects.forEach { detected ->
                             boundingBoxes.add(detected.boundingBox)
                         }
@@ -73,12 +71,8 @@ class MainViewModel : ViewModel() {
         }
     }
 
-
-
     init {
         imageAnalysis.setAnalyzer(AsyncTask.THREAD_POOL_EXECUTOR, analyzer)
     }
-
-
 
 }
