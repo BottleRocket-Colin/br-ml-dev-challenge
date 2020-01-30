@@ -39,12 +39,15 @@ class BoundingBoxOverlayView : SurfaceView {
     private val imageWidth = 1280
 
     // FIXME - Scaling still isn't perfect, need better center-crop, also confirm preview is using center crop
+    // FIXME - This involves picking smallest side to determine what to scale to maintain aspect ration
     private val imageCenter = Pair(imageWidth/2, imageHeight/2)
     private val heightScale get () = workHeight.toFloat() / imageHeight
     private val widthScale get () = workWidth.toFloat() / imageWidth
     private val widthOffset get() = (imageCenter.first - center.first)
     private val heightOffset get() = (imageCenter.second - center.second)
+    // TODO - Optimize this once it's final so that we don't run computations during draw cycle.
 
+    // TODO -Drive this via binding or attributes
     var stroke = 6f
     var radius = 60f
     var workHeight = 0
@@ -91,7 +94,7 @@ class BoundingBoxOverlayView : SurfaceView {
 //            canvas?.drawRect(it.offsetBy(widthOffset, heightOffset), blue)
 //            canvas?.drawRect(it.scaleBy(widthScale, heightScale), green)
         }
-        // TODO - Add labels
+        // TODO - Add labels ?? ID number from ML kit?  Perhaps classifcation?
     }
 }
 

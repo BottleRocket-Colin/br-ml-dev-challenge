@@ -1,7 +1,10 @@
 package com.br.ml.brpathfinder.ui.main
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -25,9 +28,16 @@ class MainFragment : Fragment() {
         fun newInstance() = MainFragment()
     }
 
+    // CameraX
     private val cameraPermissionCode = 12
     private val previewConfig = PreviewConfig.Builder().build()
     private val preview = Preview(previewConfig)
+
+    // Gravity Sensor
+    private val sensorManager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
+
+    // VM - TODO Inject w/ koin??
     private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =

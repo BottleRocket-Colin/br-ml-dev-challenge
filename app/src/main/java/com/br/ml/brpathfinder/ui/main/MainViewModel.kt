@@ -19,7 +19,13 @@ class MainViewModel : ViewModel() {
     // UI
     val boundingBoxes: ObservableArrayList<Rect> = ObservableArrayList()
 
+    ///////////////////////////////////////////////////////////////////////////
+    // Gravity sensor setup
+    ///////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////////
     // Image analysis setup
+    ///////////////////////////////////////////////////////////////////////////
     // fixme - this pattern is broken in alpha-08
     private val imageAnalysisConfig = ImageAnalysisConfig.Builder()
         .setTargetResolution(Size(1280, 720))
@@ -45,6 +51,7 @@ class MainViewModel : ViewModel() {
             else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
         }
 
+        // Connect main analysis loop
         override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
@@ -58,7 +65,11 @@ class MainViewModel : ViewModel() {
                             boundingBoxes.add(detected.boundingBox)
                         }
 
+
+
                         // TODO - Notify AR core implementation - Sam
+
+
 
                         // TODO - Call algo with bounding boxes - Colin
 
