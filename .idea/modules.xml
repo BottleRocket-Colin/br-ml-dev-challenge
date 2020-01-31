@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/BrMlDevChallenge-BrPathFinder.iml" filepath="$PROJECT_DIR$/BrMlDevChallenge-BrPathFinder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/BrMlDevChallenge-app.iml" filepath="$PROJECT_DIR$/app/BrMlDevChallenge-app.iml" />
       <module fileurl="file://$PROJECT_DIR$/BrPathFinder.iml" filepath="$PROJECT_DIR$/BrPathFinder.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

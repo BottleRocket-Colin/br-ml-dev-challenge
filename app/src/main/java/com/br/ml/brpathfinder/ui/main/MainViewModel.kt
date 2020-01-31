@@ -66,7 +66,6 @@ class MainViewModel : ViewModel() {
                         }
 
 
-
                         // TODO - Notify AR core implementation - Sam
 
 

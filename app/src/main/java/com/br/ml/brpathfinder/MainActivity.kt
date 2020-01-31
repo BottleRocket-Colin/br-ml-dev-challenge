@@ -1,7 +1,7 @@
 package com.br.ml.brpathfinder
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.br.ml.brpathfinder.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
