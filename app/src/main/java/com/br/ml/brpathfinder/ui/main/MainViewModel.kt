@@ -9,6 +9,8 @@ import androidx.camera.core.ImageAnalysisConfig
 import androidx.camera.core.ImageProxy
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.ViewModel
+import com.br.ml.brpathfinder.collision.CollisionDetector
+import com.br.ml.brpathfinder.collision.DetectedObject
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
@@ -53,6 +55,7 @@ class MainViewModel : ViewModel() {
 
         // Connect main analysis loop
         override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
+
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
@@ -60,20 +63,22 @@ class MainViewModel : ViewModel() {
                 // Pass image to an ML Kit Vision API
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
+                        // TODO - Go async??
+
+                        // Update UI overlay
                         boundingBoxes.clear()
                         detectedObjects.forEach { detected ->
                             boundingBoxes.add(detected.boundingBox)
                         }
 
+                        // Add frame to detector
+                        CollisionDetector.createNewFrame(detectedObjects.map {
+                                DetectedObject(it.trackingId ?: 0, it.boundingBox) })
 
-
-                        // TODO - Notify AR core implementation - Sam
-
-
-
-                        // TODO - Call algo with bounding boxes - Colin
-
-                        // TODO - Call feedback with results from algo  - Eric
+                        // Run detection and pass results to feedback engine
+                        CollisionDetector.runDetection {
+                            // TODO - Connect to Feedback engine
+                        }
                     }
                     .addOnFailureListener { e ->
                         Log.e("CCS", "FAIL!!!")

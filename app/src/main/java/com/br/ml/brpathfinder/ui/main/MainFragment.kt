@@ -34,8 +34,8 @@ class MainFragment : Fragment() {
     private val preview = Preview(previewConfig)
 
     // Gravity Sensor
-    private val sensorManager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
+//    private val sensorManager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+//    val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
 
     // VM - TODO Inject w/ koin??
     private lateinit var viewModel: MainViewModel
@@ -61,6 +61,8 @@ class MainFragment : Fragment() {
     }
 
     private fun startCamera() {
+        // TODO - PreviewView
+
         preview.setOnPreviewOutputUpdateListener { previewOutput ->
             textureView.surfaceTexture = previewOutput.surfaceTexture
         }
