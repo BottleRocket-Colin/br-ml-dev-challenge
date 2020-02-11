@@ -55,6 +55,7 @@ class MainViewModel : ViewModel() {
 
         // Connect main analysis loop
         override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
+
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {

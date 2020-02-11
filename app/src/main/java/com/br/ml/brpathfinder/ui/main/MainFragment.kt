@@ -61,6 +61,8 @@ class MainFragment : Fragment() {
     }
 
     private fun startCamera() {
+        // TODO - PreviewView
+
         preview.setOnPreviewOutputUpdateListener { previewOutput ->
             textureView.surfaceTexture = previewOutput.surfaceTexture
         }
