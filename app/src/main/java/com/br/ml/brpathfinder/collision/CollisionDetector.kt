@@ -2,7 +2,10 @@ package com.br.ml.brpathfinder.collision
 
 import android.graphics.Rect
 import android.util.Log
-import androidx.annotation.FloatRange
+import com.br.ml.brpathfinder.models.DetectedObject
+import com.br.ml.brpathfinder.models.Direction
+import com.br.ml.brpathfinder.models.Frame
+import com.br.ml.brpathfinder.models.Risk
 
 // TODO - Move this to DI so we can replace methodology
 object CollisionDetector {
@@ -103,15 +106,5 @@ object CollisionDetector {
 
 }
 
-data class Frame(val timestamp: Long,
-                 val objects: List<DetectedObject>)
 
-data class DetectedObject(val id: Int,
-                          val box: Rect,
-                          val distance: Double = 0.0)
 
-enum class Direction { LEFT, RIGHT }
-
-data class Risk(val direction: Direction,
-                @FloatRange(from=0.0,to=1.0)
-                val severity: Float)

@@ -10,7 +10,7 @@ import androidx.camera.core.ImageProxy
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.ViewModel
 import com.br.ml.brpathfinder.collision.CollisionDetector
-import com.br.ml.brpathfinder.collision.DetectedObject
+import com.br.ml.brpathfinder.models.DetectedObject
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
