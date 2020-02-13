@@ -9,6 +9,7 @@ import androidx.camera.core.ImageAnalysisConfig
 import androidx.camera.core.ImageProxy
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.ViewModel
+import com.br.ml.brpathfinder.collision.AlgorithmicDetector
 import com.br.ml.brpathfinder.collision.CollisionDetector
 import com.br.ml.brpathfinder.models.DetectedObject
 import com.google.firebase.ml.vision.FirebaseVision
@@ -17,6 +18,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 
 class MainViewModel : ViewModel() {
+    val detector by lazy { AlgorithmicDetector() }
 
     // UI
     val boundingBoxes: ObservableArrayList<Rect> = ObservableArrayList()
@@ -59,6 +61,7 @@ class MainViewModel : ViewModel() {
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
+                // TODO - relay actual processed image dimension to detector.  This is not always what was requested.
                 val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
                 // Pass image to an ML Kit Vision API
                 objectDetector.processImage(image)
@@ -72,11 +75,11 @@ class MainViewModel : ViewModel() {
                         }
 
                         // Add frame to detector
-                        CollisionDetector.createNewFrame(detectedObjects.map {
+                        detector.createNewFrame(detectedObjects.map {
                                 DetectedObject(it.trackingId ?: 0, it.boundingBox) })
 
                         // Run detection and pass results to feedback engine
-                        CollisionDetector.runDetection {
+                        detector.runDetection {
                             // TODO - Connect to Feedback engine
                         }
                     }
