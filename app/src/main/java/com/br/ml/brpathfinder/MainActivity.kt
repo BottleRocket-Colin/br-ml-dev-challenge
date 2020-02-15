@@ -17,8 +17,8 @@ import com.br.ml.brpathfinder.ui.main.MainFragment
     - ML Kit - no depth
     - Dual Camera solution - bokeh example from io (need link)
     - Face detection - human faces are roughly equal in size
-    - Accelerometer - Use accel to determine device moevement and trig to compute distance
-    - Camera TOF sensor -
+    - Accelerometer - Use accel to determine device movement and trig to compute distance
+    - Camera TOF sensor - depends on vendor APIs
     - dual images, single sensor - needs research
 
    Priority:
@@ -36,7 +36,8 @@ import com.br.ml.brpathfinder.ui.main.MainFragment
 
    Techniques for evaluating frame data
      - Algorithmic
-     - ML model custom trained
+     - ML model custom trained (we have hammer, is there a nail ??? )
+        - Prepare training data, model, prediction
      - ????
 
    Priority:
@@ -70,6 +71,8 @@ import com.br.ml.brpathfinder.ui.main.MainFragment
 
    Timeline:
      - Early march: ML Kit (no depth) -> algo -> haptic
+     - Mid March: Styled settings
+     - Late March/Early April - on boarding and fully accessible UI
      - Start of April checkpoint: moar!, ML model, new depth techniques
 
 
@@ -77,7 +80,7 @@ import com.br.ml.brpathfinder.ui.main.MainFragment
      - Email to Christopher about AR Core depth library
 
 
-   Stretch goals:
+   Mid-term goals:
      - on-boarding
      - accessible UI
      - ???
@@ -86,6 +89,8 @@ import com.br.ml.brpathfinder.ui.main.MainFragment
      - Colin: Arch, Algo
      - Sam: AR Core (hold for depth), Face detection
      - Eric: Feedback, settings
+     - Jing: on boarding ??
+     - Luke: Gary!
 
  */
 
