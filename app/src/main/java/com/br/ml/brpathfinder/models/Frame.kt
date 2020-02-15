@@ -3,8 +3,8 @@ package com.br.ml.brpathfinder.models
 import android.graphics.Rect
 import java.util.*
 
-data class Frame(val timestamp: Long,
-                 val objects: List<DetectedObject>,
+data class Frame(val objects: List<DetectedObject>,
+                 val timestamp: Long = System.currentTimeMillis(),
                  val gyroSensor: Vector<Double>? = null,
                  val compassSensor: Vector<Double>? = null,
                  val accelerometerSensor: Vector<Double>? = null
