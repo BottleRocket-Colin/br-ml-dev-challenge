@@ -7,6 +7,8 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.databinding.BindingAdapter
 import android.util.Log
+import com.br.ml.brpathfinder.models.DetectedObject
+import com.br.ml.brpathfinder.models.Risk
 
 
 class BoundingBoxOverlayView : SurfaceView {
@@ -33,6 +35,8 @@ class BoundingBoxOverlayView : SurfaceView {
         setWillNotDraw(false)
     }
 
+    // Create this from DPI
+    private val textFontSize: Float = 60f
     //  Drive these from XML
     // TODO - Drive this from real values....
     private val imageHeight = 960
@@ -57,7 +61,8 @@ class BoundingBoxOverlayView : SurfaceView {
     var center = Pair(0,0)
 
     // Dynamic Elements
-    var boundingBoxes: List<Rect> = emptyList()
+    var boundingBoxes: List<DetectedObject> = emptyList()
+    var risks: List<Risk> = emptyList()
 
     // Working holders
     private val white = Paint().apply {
@@ -69,12 +74,41 @@ class BoundingBoxOverlayView : SurfaceView {
         style = Paint.Style.STROKE
         strokeWidth = stroke
         color = Color.BLUE
+        textSize = textFontSize
     }
     private val green = Paint().apply {
         style = Paint.Style.STROKE
         strokeWidth = stroke
         color = Color.GREEN
+        textSize = textFontSize
     }
+    private val yellow = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        color = Color.YELLOW
+        textSize = textFontSize
+    }
+    private val orange = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        color = Color.MAGENTA
+        textSize = textFontSize
+    }
+    private val red = Paint().apply {
+        style = Paint.Style.STROKE
+        strokeWidth = stroke
+        color = Color.RED
+        textSize = textFontSize
+    }
+
+    private fun colorPicker(id: Int) =
+        when (risks.find { it.id == id }?.severity ?: 0f) {
+            in .8f .. 1.0f -> red
+            in .6f .. .8f -> orange
+            in .4f .. .6f -> yellow
+            in .2f .. .4f -> green
+            else -> blue
+        }
 
 
     fun drawWrapper(holder: SurfaceHolder?) {
@@ -88,9 +122,12 @@ class BoundingBoxOverlayView : SurfaceView {
         canvas?.drawARGB(0,0,0, 0)
         canvas?.drawCircle( center.first.toFloat(), center.second.toFloat(), radius , white)
         boundingBoxes.forEach {
-            canvas?.drawRect(it.scaleBy(widthScale, heightScale)
-                .offsetBy(widthOffset,heightOffset)
-                , white)
+            val paint = colorPicker(it.id)
+            val scaled = it.box.scaleBy(widthScale, heightScale)
+                .offsetBy(widthOffset, heightOffset)
+            canvas?.drawRect(scaled, paint);
+            canvas?.drawText("ID: ${it.id}\n Risk:", scaled.left.toFloat(), scaled.top.toFloat(), paint)
+
 //            canvas?.drawRect(it.offsetBy(widthOffset, heightOffset), blue)
 //            canvas?.drawRect(it.scaleBy(widthScale, heightScale), green)
         }
@@ -99,8 +136,14 @@ class BoundingBoxOverlayView : SurfaceView {
 }
 
 @BindingAdapter("boundingBoxes")
-fun BoundingBoxOverlayView.setBoxes(boxes: List<Rect>) {
+fun BoundingBoxOverlayView.setBoxes(boxes: List<DetectedObject>) {
     boundingBoxes = boxes
+    invalidate()
+}
+
+@BindingAdapter("risks")
+fun BoundingBoxOverlayView.setRiskList(riskList: List<Risk>) {
+    risks = riskList
     invalidate()
 }
 

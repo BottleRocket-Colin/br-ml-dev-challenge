@@ -2,10 +2,19 @@ package com.br.ml.brpathfinder.collision
 
 import android.util.Log
 import com.br.ml.brpathfinder.models.Direction
+import com.br.ml.brpathfinder.models.Direction.*
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
+import kotlin.math.max
 
 class AlgorithmicDetector : CollisionDetector() {
+    private val timeThreshold = 1000  // One second
+    private val velocityThreshold = .1  // pixel per millisecond
+    private val scale = .5
+    private val centeredRisk = .25
+    private val approachRisk = .25
+    private val minHistorySize = 3
+
     override fun runDetection(callback: (List<Risk>) -> Unit)  {
         val risks: MutableList<Risk> = mutableListOf()
         val latest = history.maxBy { it.timestamp }
@@ -28,21 +37,19 @@ class AlgorithmicDetector : CollisionDetector() {
 
 
     private fun calculateRisk(id: Int): Risk? {
-        val direction: Direction? = null
-        val severity = 0.0
+        var severity = 0.0
 
         val idHistory: MutableList<Frame>  = mutableListOf()
 
         history.forEach { frame ->
-            val newFrame = Frame(frame.timestamp,
+            val newFrame = Frame(timestamp = frame.timestamp,
                 objects = frame.objects.filter { it.id == id })
             if (newFrame.objects.isNotEmpty()) {
                 idHistory.add(newFrame)
             }
         }
 
-        // todo move magic number to const
-        if (idHistory.size < 3) return null
+        if (idHistory.size < minHistorySize) return null
 
         idHistory.sortBy { it.timestamp }
         val finalThree = idHistory.takeLast(3)
@@ -52,36 +59,55 @@ class AlgorithmicDetector : CollisionDetector() {
         val timeDelta = last.timestamp - first.timestamp
         if (timeDelta == 0L) return null
 
-        val firstWidth =  with (first.objects.first().box) { right - left }
-        val lastWidth =  with (last.objects.first().box) { right - left }
+        val firstBox = first.objects.first().box
+        val lastBox = last.objects.first().box
+
+        val firstWidth =  with (firstBox) { right - left }
+        val lastWidth =  with (lastBox) { right - left }
         val widthDelta = lastWidth - firstWidth
 
-        val velocity = widthDelta.toDouble() / timeDelta.toDouble()
-        if (velocity > 0) {
-            Log.d("CCS", "Velocity: $velocity")
+        val approachVelocity = widthDelta.toDouble() / timeDelta.toDouble()
+        if (approachVelocity > 0) {
+            Log.d("CCS", "Velocity: $approachVelocity")
         }
-        val approaching: Boolean = velocity > velocityThreshold
+        val approaching: Boolean = approachVelocity > velocityThreshold
 
         if (approaching) Log.d("CCS", "approaching!")
 
-        // TODO - Detect if box is "centered" = overlapping centerline
+        val direction: Direction = with (lastBox) {
+            when {
+                right < width / 2 -> LEFT
+                left > width / 2 -> RIGHT
+                else -> BOTH
+            }
+        }
 
-        // TODO - detect if box is "centering" = headed towards center
+        val leftVelocity = (lastBox.left - firstBox.left).toDouble() / timeDelta.toDouble()
+        val rightVelocity = (lastBox.right - firstBox.right).toDouble() / timeDelta.toDouble()
 
-        // TODO - detect delta from center.
+        val centeringVelocity = when (direction) {
+            LEFT -> rightVelocity
+            RIGHT -> 0.0 - leftVelocity
+            BOTH -> rightVelocity - leftVelocity
+        }
 
+        //  detect offset from center.
+        val centerOffset = when (direction) {
+            LEFT -> (width / 2) - lastBox.right
+            RIGHT -> lastBox.left - (width / 2)
+            BOTH -> (lastBox.left - lastBox.right)/2
+        }
 
-        //  TODO - sum up all factors to get risk
-        // .25 = approaching
-        // .5 = centered
-        // 0.0 to 0.5 = centering varied by distance from center
-        // 0.0 to -.25 = "un-centering"
-        // FIXME - better rules
-        // TODO - Move to LSTM driven judgement not algo.
-        //  Concerns... not everything is a nail.
+        // compute time to collision = T = D / V
+        val centeringTime = max(centerOffset / centeringVelocity, 0.0)
 
-        return null
+        if (centeringTime > 0 && centeringTime < timeThreshold) {
+            severity += scale * (timeThreshold - centeringTime) / timeThreshold
+        }
+
+        if (approaching) severity += approachRisk
+        if (direction == BOTH) severity += centeredRisk
+
+        return Risk(direction, severity.toFloat())
     }
-
-
 }

@@ -10,8 +10,9 @@ import androidx.camera.core.ImageProxy
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.ViewModel
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
-import com.br.ml.brpathfinder.collision.CollisionDetector
 import com.br.ml.brpathfinder.models.DetectedObject
+import com.br.ml.brpathfinder.models.Frame
+import com.br.ml.brpathfinder.models.Risk
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
@@ -21,7 +22,8 @@ class MainViewModel : ViewModel() {
     val detector by lazy { AlgorithmicDetector() }
 
     // UI
-    val boundingBoxes: ObservableArrayList<Rect> = ObservableArrayList()
+    val boundingBoxes: ObservableArrayList<DetectedObject> = ObservableArrayList()
+    val risks: ObservableArrayList<Risk> = ObservableArrayList()
 
     ///////////////////////////////////////////////////////////////////////////
     // Gravity sensor setup
@@ -57,29 +59,38 @@ class MainViewModel : ViewModel() {
 
         // Connect main analysis loop
         override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
-
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
-                // TODO - relay actual processed image dimension to detector.  This is not always what was requested.
+                // Store values for detector use
+                detector.width = imageProxy.width
+                detector.height = imageProxy.height
+                val timestamp = System.currentTimeMillis()
+
                 val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
                 // Pass image to an ML Kit Vision API
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
-                        // TODO - Go async??
+                        val objects = detectedObjects.map {
+                            DetectedObject(
+                                it.trackingId ?: 0,
+                                it.boundingBox
+                            )
+                        }
 
                         // Update UI overlay
                         boundingBoxes.clear()
-                        detectedObjects.forEach { detected ->
-                            boundingBoxes.add(detected.boundingBox)
-                        }
+                        boundingBoxes.addAll(objects)
 
                         // Add frame to detector
-                        detector.createNewFrame(detectedObjects.map {
-                                DetectedObject(it.trackingId ?: 0, it.boundingBox) })
+                        detector.addFrame(Frame(
+                            objects = objects,
+                            timestamp = timestamp
+                        ))
 
                         // Run detection and pass results to feedback engine
                         detector.runDetection {
+                            risks.addAll(it)
                             // TODO - Connect to Feedback engine
                         }
                     }
