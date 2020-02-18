@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/BrPathFinder.iml" filepath="$PROJECT_DIR$/BrPathFinder.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/br-ml-dev-challenge-BrPathFinder.iml" filepath="$PROJECT_DIR$/br-ml-dev-challenge-BrPathFinder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/br-ml-dev-challenge-app.iml" filepath="$PROJECT_DIR$/app/br-ml-dev-challenge-app.iml" />
     </modules>
   </component>
 </project>
