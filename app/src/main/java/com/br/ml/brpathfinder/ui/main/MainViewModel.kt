@@ -10,6 +10,7 @@ import androidx.camera.core.ImageProxy
 import androidx.databinding.ObservableArrayList
 import androidx.lifecycle.ViewModel
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
+import com.br.ml.brpathfinder.feedback.FeedbackInterface
 import com.br.ml.brpathfinder.models.DetectedObject
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
@@ -20,6 +21,7 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 
 class MainViewModel : ViewModel() {
     val detector by lazy { AlgorithmicDetector() }
+    var feedback: FeedbackInterface? = null
 
     // UI
     val boundingBoxes: ObservableArrayList<DetectedObject> = ObservableArrayList()
@@ -89,9 +91,12 @@ class MainViewModel : ViewModel() {
                         ))
 
                         // Run detection and pass results to feedback engine
-                        detector.runDetection {
-                            risks.addAll(it)
-                            // TODO - Connect to Feedback engine
+                        detector.runDetection { list ->
+                            risks.addAll(list)
+
+                            risks.maxBy { it.severity }?.let { maxRisk ->
+                                feedback?.signalUser(maxRisk)
+                            }
                         }
                     }
                     .addOnFailureListener { e ->
