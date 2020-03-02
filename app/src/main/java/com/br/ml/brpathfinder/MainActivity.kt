@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.br.ml.brpathfinder.common.FragmentName
+import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.ui.main.ArcoreFragment
 import com.br.ml.brpathfinder.ui.main.MainFragment
 
@@ -118,7 +119,7 @@ class MainActivity : AppCompatActivity() {
             }
             FragmentName.SETTINGS -> {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
+                    .replace(R.id.container, SettingsFragment.newInstance())
                     .commitNow()
             }
         }

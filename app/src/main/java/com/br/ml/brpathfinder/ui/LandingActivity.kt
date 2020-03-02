@@ -5,6 +5,7 @@ import android.os.Bundle
 import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.common.FragmentName
+import com.br.ml.brpathfinder.settings.SettingsFragment
 import kotlinx.android.synthetic.main.activity_landing.*
 
 class LandingActivity : AppCompatActivity() {
