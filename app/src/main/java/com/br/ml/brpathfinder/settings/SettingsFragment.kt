@@ -1,207 +1,194 @@
 package com.br.ml.brpathfinder.settings
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
-import android.widget.RadioButton
+import android.widget.Switch
 import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.R
+import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_settings.*
-import java.io.Serializable
+import kotlinx.android.synthetic.main.main_activity.*
 
 class SettingsFragment : Fragment() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
-        val vibrateOption: RadioButton = view.findViewById(R.id.settings_feedback_vibrate_radio_button)
-        val soundOption: RadioButton = view.findViewById(R.id.settings_feedback_sound_radio_button)
-        val soundAndVibrateOption: RadioButton = view.findViewById(R.id.settings_feedback_vibrate_and_sound_radio_button)
-        val noFeedbackOption: RadioButton = view.findViewById(R.id.settings_feedback_no_feedback_radio_button)
+        val vibrateSwitch: Switch = view.findViewById(R.id.settings_feedback_vibrate_switch)
+        val soundSwitch: Switch = view.findViewById(R.id.settings_feedback_sound_switch)
 
+        setUpOptionsFromSharedPrefs(vibrateSwitch, soundSwitch)
 
-        setUpOptionsFromSharedPrefs(vibrateOption, soundOption, soundAndVibrateOption, noFeedbackOption)
-
-        vibrateOption.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                vibrateOptionSelected(buttonView, isChecked)
+        // Switch controlling vibration feedback
+        vibrateSwitch.setOnCheckedChangeListener { _, isChecked ->
+            when {
+                isChecked && !soundSwitch.isChecked -> {
+                    // Only vibrate is selected
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(VIBRATE)
+                }
+                isChecked && soundSwitch.isChecked -> {
+                    // Both vibrate and sound is selected
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(BOTH)
+                }
+                !isChecked && soundSwitch.isChecked -> {
+                    // No longer vibrate but sound is still active
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(SOUND)
+                }
+                else -> {
+                    // Nothing is selected
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(NONE)
+                }
             }
         }
-        soundOption.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                soundOptionSelected(buttonView, isChecked)
-            }
-        }
-        soundAndVibrateOption.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                vibrateAndSoundOptionSelected(buttonView, isChecked)
-            }
-        }
-        noFeedbackOption.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                noOptionSelected(buttonView, isChecked)
+
+        // Switch controlling sound feedback
+        soundSwitch.setOnCheckedChangeListener { _, isChecked ->
+            when {
+                isChecked && !vibrateSwitch.isChecked -> {
+                    // Only sound is selected
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(SOUND)
+                }
+                isChecked && vibrateSwitch.isChecked -> {
+                    // Both vibrate and sound is selected
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(BOTH)
+                }
+                !isChecked && vibrateSwitch.isChecked -> {
+                    // No longer sound but vibrate is still active
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(VIBRATE)
+                }
+                else -> {
+                    // Nothing is selected
+                    // Save the users setting in SharedPreferences
+                    setInSharedPreferences(NONE)
+                }
             }
         }
 
         return view
     }
 
+    /*
+    *   Set the switches to be checked based on what the saved options are
+    *  */
     private fun setUpOptionsFromSharedPrefs(
-            vibrateOption: RadioButton,
-            soundOption: RadioButton,
-            soundAndVibrateOption: RadioButton,
-            noFeedbackOption: RadioButton
+        vibrateOption: Switch,
+        soundOption: Switch
     ) {
-        when (pullFromSharedPrefs()) {
-            FeedbackOption.VIBRATE -> {
-                // Show correct radio button checked
+        when (pullFeedbackOptionFromSharedPreferences(activity)) {
+            VIBRATE -> {
+                // Only the vibrate option should be selected
                 vibrateOption.isChecked = true
                 soundOption.isChecked = false
-                soundAndVibrateOption.isChecked = false
-                noFeedbackOption.isChecked = false
-
             }
-            FeedbackOption.SOUND -> {
-                // Show correct radio button checked
+            SOUND -> {
+                // Only the sound option should be selected
                 vibrateOption.isChecked = false
                 soundOption.isChecked = true
-                soundAndVibrateOption.isChecked = false
-                noFeedbackOption.isChecked = false
             }
-            FeedbackOption.BOTH -> {
-                // Show correct radio button checked
+            BOTH -> {
+                // Both the vibrate and sound should be selected
+                vibrateOption.isChecked = true
+                soundOption.isChecked = true
+            }
+            NONE -> {
+                // Nothing selected
                 vibrateOption.isChecked = false
                 soundOption.isChecked = false
-                soundAndVibrateOption.isChecked = true
-                noFeedbackOption.isChecked = false
-            }
-            FeedbackOption.NONE -> {
-                // Show correct radio button checked
-                vibrateOption.isChecked = false
-                soundOption.isChecked = false
-                soundAndVibrateOption.isChecked = false
-                noFeedbackOption.isChecked = true
             }
         }
     }
 
-    private fun vibrateOptionSelected(buttonView: CompoundButton?, checked: Boolean) {
-        // Uncheck other radio buttons
-        settings_feedback_vibrate_radio_button.isChecked = checked
-        settings_feedback_sound_radio_button.isChecked = !checked
-        settings_feedback_vibrate_and_sound_radio_button.isChecked = !checked
-        settings_feedback_no_feedback_radio_button.isChecked = !checked
-
-        // Save the users setting in SharedPreferences
-        setInSharedPreferences(buttonView, FeedbackOption.VIBRATE)
-    }
-
-    private fun soundOptionSelected(buttonView: CompoundButton?, checked: Boolean) {
-        // Uncheck other radio buttons
-        settings_feedback_vibrate_radio_button.isChecked = !checked
-        settings_feedback_sound_radio_button.isChecked = checked
-        settings_feedback_vibrate_and_sound_radio_button.isChecked = !checked
-        settings_feedback_no_feedback_radio_button.isChecked = !checked
-
-        // Save the users setting in SharedPreferences
-        setInSharedPreferences(buttonView, FeedbackOption.SOUND)
-    }
-
-    private fun vibrateAndSoundOptionSelected(buttonView: CompoundButton?, checked: Boolean) {
-        // Uncheck other radio buttons
-        settings_feedback_vibrate_radio_button.isChecked = !checked
-        settings_feedback_sound_radio_button.isChecked = !checked
-        settings_feedback_vibrate_and_sound_radio_button.isChecked = checked
-        settings_feedback_no_feedback_radio_button.isChecked = !checked
-
-        // Save the users setting in SharedPreferences
-        setInSharedPreferences(buttonView, FeedbackOption.BOTH)
-    }
-
-    private fun noOptionSelected(buttonView: CompoundButton?, checked: Boolean) {
-        // Uncheck other radio buttons
-        settings_feedback_vibrate_radio_button.isChecked = !checked
-        settings_feedback_sound_radio_button.isChecked = !checked
-        settings_feedback_vibrate_and_sound_radio_button.isChecked = !checked
-        settings_feedback_no_feedback_radio_button.isChecked = checked
-
-        // Save the users setting in SharedPreferences
-        setInSharedPreferences(buttonView, FeedbackOption.NONE)
-    }
-
-    private fun setInSharedPreferences(buttonView: CompoundButton?, feedbackOption: FeedbackOption) {
+    /*
+    *   Save the user selected option in SharedPreferences and shows a confirmation Snackbar, If the
+    *   option that is selected already is saved, do not show the Snackbar
+    * */
+    private fun setInSharedPreferences(feedbackOption: FeedbackOption) {
         val sharedPrefs = activity?.getSharedPreferences(
-                getString(R.string.settings_preference_key),
-                Context.MODE_PRIVATE
+            SHARED_PREF_KEY,
+            Context.MODE_PRIVATE
         ) ?: return
 
         // Get previously saved option, in future we could have this also "undo" the change
-        val previouslySavedOption = pullFromSharedPrefs()
+        val previouslySavedOption = pullFeedbackOptionFromSharedPreferences(activity)
 
         // Save selected option to SharedPreferences
         with(sharedPrefs.edit()) {
-            putString(FEEDBACK_KEY, feedbackOption.preferenceKey)
+            putString(FEEDBACK_KEY, feedbackOption.saveKey)
             commit()
         }
 
         // Snack bar to tell the user that the selected option was saved
-        val rootView = buttonView?.rootView ?: return
-        val snackBarMessage = if (feedbackOption != previouslySavedOption) {
-            "${feedbackOption.name} has been saved"
-        } else {
-            "${feedbackOption.name} is already saved"
+        val snackBar =
+            activity?.container?.let {
+                Snackbar.make(
+                    it,
+                    feedbackOption.snackBarMessage,
+                    Snackbar.LENGTH_SHORT
+                )
+            }
+        snackBar?.setTextColor(Color.WHITE)
+        snackBar?.setBackgroundTint(Color.BLUE)
+        if (previouslySavedOption != feedbackOption) {
+            // Only show the snackBar if a new option has been selected
+            snackBar?.show()
         }
-        val snackBar = Snackbar.make(rootView, snackBarMessage, Snackbar.LENGTH_SHORT)
-        snackBar.setTextColor(Color.WHITE)
-        snackBar.setBackgroundTint(Color.BLUE)
-        snackBar.show()
     }
 
-    private fun pullFromSharedPrefs(): FeedbackOption? {
-        val sharedPrefs = activity?.getSharedPreferences(
-                getString(R.string.settings_preference_key),
-                Context.MODE_PRIVATE
-        ) ?: return null
-        // Currently I have vibrate as default, but we can change it to any options
-        val savedOptionKey = sharedPrefs.getString(FEEDBACK_KEY, "vibrate")
-
-        // Return the feedback option
-        for (option in FeedbackOption.values()) {
-            if (option.preferenceKey == savedOptionKey) {
-                return option
-            }
-        }
-
-        // This should not get hit
-        return null
+    /*
+    *   Possible feedback optionsThese are controlled by the switches for Vibrate and Sound
+    * */
+    enum class FeedbackOption(val saveKey: String, val snackBarMessage: String) {
+        VIBRATE("vibrate", "Only vibrate feedback option has been saved"),
+        SOUND("sound", "Only sound option has been saved"),
+        BOTH("both", "Both vibrate and sound have been saved"),
+        NONE("none", "No feedback has been saved")
     }
 
     companion object {
-        private const val FEEDBACK_KEY: String = "settings.feedback_key"
+        const val SHARED_PREF_KEY: String = "settings.settings_feedback_key"
+        const val FEEDBACK_KEY: String = "settings.feedback_key"
 
         @JvmStatic
         fun newInstance() =
-                SettingsFragment()
-    }
+            SettingsFragment()
 
-    enum class FeedbackOption(val preferenceKey: String) : Serializable {
-        VIBRATE("vibrate"),
-        SOUND("sound"),
-        BOTH("both"),
-        NONE("none")
+        /*
+        *   This can be used throughout the app to verify what the current selected options are
+        * */
+        fun pullFeedbackOptionFromSharedPreferences(activity: Activity?): FeedbackOption? {
+            val sharedPrefs =
+                activity?.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE)
+                    ?: return null
+
+            // Currently I have vibrate as default, but we can change it to any options
+            val savedOptionKey = sharedPrefs.getString(FEEDBACK_KEY, "vibrate")
+
+            // Return the feedback option
+            for (option in FeedbackOption.values()) {
+                if (option.saveKey == savedOptionKey) {
+                    return option
+                }
+            }
+
+            // This should not get hit since the default value is set when pulling shared prefs
+            return null
+        }
+
     }
 }
