@@ -116,6 +116,11 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.container, MainFragment.newInstance())
                     .commitNow()
             }
+            FragmentName.SETTINGS -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, MainFragment.newInstance())
+                    .commitNow()
+            }
         }
     }
 
