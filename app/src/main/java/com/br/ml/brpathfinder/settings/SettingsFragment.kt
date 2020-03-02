@@ -1,16 +1,21 @@
 package com.br.ml.brpathfinder.settings
 
 import android.app.Activity
+import android.app.LauncherActivity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Switch
 import androidx.fragment.app.Fragment
+import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
+import com.br.ml.brpathfinder.ui.LandingActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.main_activity.*
 
@@ -25,6 +30,7 @@ class SettingsFragment : Fragment() {
 
         val vibrateSwitch: Switch = view.findViewById(R.id.settings_feedback_vibrate_switch)
         val soundSwitch: Switch = view.findViewById(R.id.settings_feedback_sound_switch)
+        val backButton: Button = view.findViewById(R.id.settings_back_button)
 
         setUpOptionsFromSharedPrefs(vibrateSwitch, soundSwitch)
 
@@ -78,6 +84,11 @@ class SettingsFragment : Fragment() {
                     setInSharedPreferences(NONE)
                 }
             }
+        }
+
+        // Temporary back button
+        backButton.setOnClickListener {
+            backButtonPressed()
         }
 
         return view
@@ -190,5 +201,11 @@ class SettingsFragment : Fragment() {
             return null
         }
 
+    }
+
+    // Temporary way to get back to the landing page, will change when we have a more concrete flow
+    private fun backButtonPressed() {
+        val intent = Intent(context, LandingActivity::class.java)
+        startActivity(intent)
     }
 }

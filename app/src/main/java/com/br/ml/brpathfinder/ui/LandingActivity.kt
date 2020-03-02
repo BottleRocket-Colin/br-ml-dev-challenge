@@ -1,6 +1,5 @@
 package com.br.ml.brpathfinder.ui
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.br.ml.brpathfinder.MainActivity

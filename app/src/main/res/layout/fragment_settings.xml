@@ -93,6 +93,7 @@
         app:layout_constraintTop_toBottomOf="@id/settings_feedback_sound_switch" />
 
     <View
+        android:id="@+id/settings_divider"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:layout_marginTop="8dp"
@@ -100,4 +101,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sound_description" />
+
+    <Button
+        android:id="@+id/settings_back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/settings_divider" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
