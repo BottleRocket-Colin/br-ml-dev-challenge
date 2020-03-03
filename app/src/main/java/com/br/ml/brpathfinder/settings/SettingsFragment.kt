@@ -1,7 +1,6 @@
 package com.br.ml.brpathfinder.settings
 
 import android.app.Activity
-import android.app.LauncherActivity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -12,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Switch
 import androidx.fragment.app.Fragment
-import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
 import com.br.ml.brpathfinder.ui.LandingActivity
@@ -191,7 +189,7 @@ class SettingsFragment : Fragment() {
             val savedOptionKey = sharedPrefs.getString(FEEDBACK_KEY, "vibrate")
 
             // Return the feedback option
-            for (option in FeedbackOption.values()) {
+            for (option in values()) {
                 if (option.saveKey == savedOptionKey) {
                     return option
                 }
