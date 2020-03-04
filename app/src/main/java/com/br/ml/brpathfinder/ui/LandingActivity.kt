@@ -20,5 +20,9 @@ class LandingActivity : AppCompatActivity() {
         mlfragLoadButton.setOnClickListener {
             startActivity(MainActivity.newIntent(this, FragmentName.ML_FRAGMENT))
         }
+
+        settingsLoadButton.setOnClickListener {
+            startActivity(MainActivity.newIntent(this, FragmentName.SETTINGS))
+        }
     }
 }
