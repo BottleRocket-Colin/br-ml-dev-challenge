@@ -30,6 +30,10 @@ android {
     dataBinding {
         enabled = true
     }
+
+    aaptOptions {
+        noCompress "tflite"  // Your model's file extension: "tflite", "lite", etc.
+    }
 }
 
 dependencies {
@@ -43,6 +47,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.google.firebase:firebase-ml-vision:24.0.1'
     implementation 'com.google.firebase:firebase-ml-vision-object-detection-model:19.0.3'
+    implementation 'com.google.firebase:firebase-ml-model-interpreter:22.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "com.google.ar.sceneform.ux:sceneform-ux:1.15.0"
 
@@ -59,3 +64,4 @@ dependencies {
 //        'default',
 //        '../../../Downloads/andy.sfa',
 //        'src/main/assets/andy')
+
