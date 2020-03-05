@@ -38,18 +38,18 @@ class SettingsFragment : Fragment() {
 
         // Switch controlling vibration feedback
         vibrateSwitch.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
 
+            if (isChecked) {
                 vibrateImage.apply {
                     // Change icon color to accent color to show active
-                    setAsAccentColor()
+                    setAsAccentColor(isChecked)
                     // Shake the icon because why not
                     startAnimation(AnimationUtils.loadAnimation(context, R.anim.shake))
                 }
-
             } else {
-                vibrateImage.setColorFilter(Color.BLACK)
+                vibrateImage.setAsAccentColor(isChecked)
             }
+
             when {
                 isChecked && !soundSwitch.isChecked -> {
                     // Only vibrate is selected
@@ -76,16 +76,18 @@ class SettingsFragment : Fragment() {
 
         // Switch controlling sound feedback
         soundSwitch.setOnCheckedChangeListener { _, isChecked ->
+
             if (isChecked) {
                 soundImage.apply {
                     // Change icon color to accent color to show active
-                    setAsAccentColor()
+                    setAsAccentColor(isChecked)
                     // Shake the icon because why not
                     startAnimation(AnimationUtils.loadAnimation(context, R.anim.shake))
                 }
             } else {
-                soundImage.setColorFilter(Color.BLACK)
+                soundImage.setAsAccentColor(isChecked)
             }
+
             when {
                 isChecked && !vibrateSwitch.isChecked -> {
                     // Only sound is selected
@@ -132,31 +134,27 @@ class SettingsFragment : Fragment() {
                 // Only the vibrate option should be selected
                 vibrateSwitch.isChecked = true
                 soundSwitch.isChecked = false
-                vibrateIcon.setAsAccentColor()
-                soundIcon.setColorFilter(Color.BLACK)
             }
             SOUND -> {
                 // Only the sound option should be selected
                 vibrateSwitch.isChecked = false
                 soundSwitch.isChecked = true
-                vibrateIcon.setColorFilter(Color.BLACK)
-                soundIcon.setAsAccentColor()
             }
             BOTH -> {
                 // Both the vibrate and sound should be selected
                 vibrateSwitch.isChecked = true
                 soundSwitch.isChecked = true
-                vibrateIcon.setAsAccentColor()
-                soundIcon.setAsAccentColor()
             }
             NONE -> {
                 // Nothing selected
                 vibrateSwitch.isChecked = false
                 soundSwitch.isChecked = false
-                vibrateIcon.setColorFilter(Color.BLACK)
-                soundIcon.setColorFilter(Color.BLACK)
             }
         }
+
+        // Set the icon color based on if the switch is on or off
+        vibrateIcon.setAsAccentColor(vibrateSwitch.isChecked)
+        soundIcon.setAsAccentColor(soundSwitch.isChecked)
     }
 
     /*
@@ -210,8 +208,7 @@ class SettingsFragment : Fragment() {
         const val FEEDBACK_KEY: String = "settings.feedback_key"
 
         @JvmStatic
-        fun newInstance() =
-            SettingsFragment()
+        fun newInstance() = SettingsFragment()
 
         /*
         *   This can be used throughout the app to verify what the current selected options are
@@ -246,7 +243,11 @@ class SettingsFragment : Fragment() {
     /*
     *   Extension function to change the color of the icon
     * */
-    private fun ImageView.setAsAccentColor() {
-        this.setColorFilter(resources.getColor(R.color.colorAccent, null))
+    private fun ImageView.setAsAccentColor(active: Boolean) {
+        if (active) {
+            this.setColorFilter(resources.getColor(R.color.colorAccent, null))
+        } else {
+            this.setColorFilter(Color.BLACK)
+        }
     }
 }
