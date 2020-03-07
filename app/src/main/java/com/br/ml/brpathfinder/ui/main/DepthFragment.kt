@@ -15,11 +15,12 @@ import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
 import com.google.firebase.ml.custom.*
 import kotlinx.android.synthetic.main.fragment_depth.*
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 class DepthFragment : Fragment() {
 
     private val intValues = IntArray(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y)
-    private lateinit var imgData: ByteBuffer
+    private var imgData: ByteBuffer = ByteBuffer.allocateDirect(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y * 3 * 4)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -32,7 +33,7 @@ class DepthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test2)
+        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test3)
         val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth.tflite").build()
         //Registering the model loaded above with the ModelManager Singleton
 
@@ -51,8 +52,23 @@ class DepthFragment : Fragment() {
         interpreter?.run(inputs, inputOutputOptions)
             ?.addOnSuccessListener {
                 //img.setImageDrawable()
-                val output = it.getOutput<Array<FloatArray>>(0)
-                val probabilities = output[0]
+                val output = it.getOutput<Array<Array<Array<FloatArray>>>>(0)
+                val probabilities = output[0][0][0]
+
+                val poop = output[0][0][0]
+
+                //val out = Bitmap.createBitmap(240, 320, Bitmap.Config.ARGB_8888)
+                //out.setPixels(output[0][0][0], 0, 240, 0,0, 240, 320)
+                val byteBuf = ByteBuffer.allocate(4 * output[0][0][0].size)
+                val floatBuf = byteBuf.asFloatBuffer()
+                floatBuf.put(poop)
+                val byte_array = byteBuf.array()
+
+                val optionsB = BitmapFactory.Options()
+                optionsB.inMutable = true
+                val bmp = BitmapFactory.decodeByteArray(byte_array, 0, byte_array.size, optionsB)
+
+                img.setImageBitmap(bmp)
                 Log.d("output", probabilities.toString())
             }
             ?.addOnFailureListener {
@@ -60,10 +76,12 @@ class DepthFragment : Fragment() {
             }
     }
 
+
+
     companion object {
         /** Dimensions of inputs.  */
-        const val DIM_IMG_SIZE_X = 224
-        const val DIM_IMG_SIZE_Y = 224
+        const val DIM_IMG_SIZE_X = 480
+        const val DIM_IMG_SIZE_Y = 640
         const val DIM_BATCH_SIZE = 1
         const val DIM_PIXEL_SIZE = 3
         const val IMAGE_MEAN = 128
@@ -73,9 +91,10 @@ class DepthFragment : Fragment() {
     }
 
     //...
-    private fun convertBitmapToByteBuffer(bitmap: Bitmap?) {
+    private fun convertBitmapToByteBuffer(bitmap: Bitmap?): ByteBuffer {
         //Clear the Bytebuffer for a new image
         imgData.rewind()
+        imgData.order(ByteOrder.nativeOrder())
         bitmap?.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
         // Convert the image to floating point.
         var pixel = 0
@@ -87,5 +106,6 @@ class DepthFragment : Fragment() {
                 imgData.putFloat(((currPixel and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
             }
         }
+        return imgData
     }
 }
