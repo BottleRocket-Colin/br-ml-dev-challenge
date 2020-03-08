@@ -1,8 +1,8 @@
 package com.br.ml.brpathfinder.ui.main
 
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -33,8 +33,10 @@ class DepthFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test3)
-        val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth.tflite").build()
+        val optionsB = BitmapFactory.Options()
+        optionsB.inMutable = true
+        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test3, optionsB)
+        val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained.tflite").build()
         //Registering the model loaded above with the ModelManager Singleton
 
         val options = FirebaseModelInterpreterOptions.Builder(fireBaseLocalModelSource).build()
@@ -53,23 +55,23 @@ class DepthFragment : Fragment() {
             ?.addOnSuccessListener {
                 //img.setImageDrawable()
                 val output = it.getOutput<Array<Array<Array<FloatArray>>>>(0)
-                val probabilities = output[0][0][0]
 
-                val poop = output[0][0][0]
+                val rectPaint = Paint()
 
-                //val out = Bitmap.createBitmap(240, 320, Bitmap.Config.ARGB_8888)
-                //out.setPixels(output[0][0][0], 0, 240, 0,0, 240, 320)
-                val byteBuf = ByteBuffer.allocate(4 * output[0][0][0].size)
-                val floatBuf = byteBuf.asFloatBuffer()
-                floatBuf.put(poop)
-                val byte_array = byteBuf.array()
+                val canvas = Canvas(bitmap)
 
-                val optionsB = BitmapFactory.Options()
-                optionsB.inMutable = true
-                val bmp = BitmapFactory.decodeByteArray(byte_array, 0, byte_array.size, optionsB)
+                output[0].forEachIndexed { x, row ->
+                    row.forEachIndexed { y, pixel ->
+                        rectPaint.color = Color.rgb(pixel[0] * 255, pixel[0] * 205, pixel[0] * 168)
+                        rectPaint.strokeWidth = 10.0f
+                        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2, rectPaint)
+                        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2 + 1, rectPaint)
+                        canvas.drawPoint(y.toFloat()* 2 + 1, x.toFloat() * 2, rectPaint)
+                        canvas.drawPoint(y.toFloat()* 2 + 1, x.toFloat() * 2 + 1, rectPaint)
+                    }
+                }
 
-                img.setImageBitmap(bmp)
-                Log.d("output", probabilities.toString())
+                img.setImageDrawable(BitmapDrawable(resources, bitmap))
             }
             ?.addOnFailureListener {
                 //The interpreter failed to identify a Pokemon
