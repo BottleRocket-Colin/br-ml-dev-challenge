@@ -35,8 +35,8 @@ class DepthFragment : Fragment() {
 
         val optionsB = BitmapFactory.Options()
         optionsB.inMutable = true
-        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test3, optionsB)
-        val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained.tflite").build()
+        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test5, optionsB)
+        val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained15.tflite").build()
         //Registering the model loaded above with the ModelManager Singleton
 
         val options = FirebaseModelInterpreterOptions.Builder(fireBaseLocalModelSource).build()
@@ -62,8 +62,8 @@ class DepthFragment : Fragment() {
 
                 output[0].forEachIndexed { x, row ->
                     row.forEachIndexed { y, pixel ->
-                        rectPaint.color = Color.rgb(pixel[0] * 255, pixel[0] * 205, pixel[0] * 168)
-                        rectPaint.strokeWidth = 10.0f
+                        rectPaint.color = Color.rgb(pixel[0] * 255, 255f, pixel[0] * 255)
+                        rectPaint.strokeWidth = 5.0f
                         canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2, rectPaint)
                         canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2 + 1, rectPaint)
                         canvas.drawPoint(y.toFloat()* 2 + 1, x.toFloat() * 2, rectPaint)
