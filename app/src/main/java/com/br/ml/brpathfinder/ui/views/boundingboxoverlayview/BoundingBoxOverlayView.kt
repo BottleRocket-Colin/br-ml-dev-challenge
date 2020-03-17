@@ -9,6 +9,7 @@ import androidx.databinding.BindingAdapter
 import android.util.Log
 import com.br.ml.brpathfinder.models.DetectedObject
 import com.br.ml.brpathfinder.models.Risk
+import kotlin.math.roundToInt
 
 
 class BoundingBoxOverlayView : SurfaceView {
@@ -36,19 +37,26 @@ class BoundingBoxOverlayView : SurfaceView {
     }
 
     // Create this from DPI
-    private val textFontSize: Float = 60f
     //  Drive these from XML
-    // TODO - Drive this from real values....
-    private val imageHeight = 960
-    private val imageWidth = 1280
+    private val textFontSize: Float = 60f
+
+    var imageWidth = 1280
+    var imageHeight = 960
+    private val imageCenter = Pair(imageWidth/2, imageHeight/2)
 
     // FIXME - Scaling still isn't perfect, need better center-crop, also confirm preview is using center crop
     // FIXME - This involves picking smallest side to determine what to scale to maintain aspect ration
-    private val imageCenter = Pair(imageWidth/2, imageHeight/2)
+
     private val heightScale get () = workHeight.toFloat() / imageHeight
-    private val widthScale get () = workWidth.toFloat() / imageWidth
-    private val widthOffset get() = (imageCenter.first - center.first)
-    private val heightOffset get() = (imageCenter.second - center.second)
+//    private val heightScale get () = 1.0f
+//    private val heightScale get () = widthScale
+    private val widthScale get () = heightScale
+//    private val widthScale get () = workWidth.toFloat() / imageWidth
+    private val widthOffset get() = 0
+//    private val widthOffset get() = ((center.first - imageCenter.first) * widthScale).roundToInt()
+//    private val widthOffset get() = ((imageCenter.first - center.first) * widthScale).roundToInt()
+    private val heightOffset get() = 0
+//    private val heightOffset get() = ((imageCenter.second - center.second) * heightScale).roundToInt()
     // TODO - Optimize this once it's final so that we don't run computations during draw cycle.
 
     // TODO -Drive this via binding or attributes
@@ -125,8 +133,9 @@ class BoundingBoxOverlayView : SurfaceView {
             val paint = colorPicker(it.id)
             val scaled = it.box.scaleBy(widthScale, heightScale)
                 .offsetBy(widthOffset, heightOffset)
-            canvas?.drawRect(scaled, paint);
-            canvas?.drawText("ID: ${it.id}\n Risk:", scaled.left.toFloat(), scaled.top.toFloat(), paint)
+            canvas?.drawRect(scaled, paint)
+            val risk = risks.find { risk -> risk.id == it.id }
+            canvas?.drawText("ID: ${it.id}\n Risk: ${risk?.severity}", scaled.left.toFloat(), scaled.top.toFloat(), paint)
 
 //            canvas?.drawRect(it.offsetBy(widthOffset, heightOffset), blue)
 //            canvas?.drawRect(it.scaleBy(widthScale, heightScale), green)

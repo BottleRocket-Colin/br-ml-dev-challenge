@@ -1,6 +1,5 @@
 package com.br.ml.brpathfinder.ui.main
 
-import android.graphics.Rect
 import android.os.AsyncTask
 import android.util.Log
 import android.util.Size
@@ -8,6 +7,7 @@ import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysisConfig
 import androidx.camera.core.ImageProxy
 import androidx.databinding.ObservableArrayList
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
 import com.br.ml.brpathfinder.feedback.FeedbackInterface
@@ -19,6 +19,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 
+
 class MainViewModel : ViewModel() {
     val detector by lazy { AlgorithmicDetector() }
     var feedback: FeedbackInterface? = null
@@ -26,6 +27,9 @@ class MainViewModel : ViewModel() {
     // UI
     val boundingBoxes: ObservableArrayList<DetectedObject> = ObservableArrayList()
     val risks: ObservableArrayList<Risk> = ObservableArrayList()
+
+    // Fragment comms
+    val analyzedDimens = MutableLiveData<Pair<Int, Int>>()
 
     ///////////////////////////////////////////////////////////////////////////
     // Gravity sensor setup
@@ -36,7 +40,7 @@ class MainViewModel : ViewModel() {
     ///////////////////////////////////////////////////////////////////////////
     // fixme - this pattern is broken in alpha-08
     private val imageAnalysisConfig = ImageAnalysisConfig.Builder()
-        .setTargetResolution(Size(1280, 720))
+        .setTargetResolution(Size(1280, 960))
         .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
         .build()
     val imageAnalysis = ImageAnalysis(imageAnalysisConfig)
@@ -64,6 +68,10 @@ class MainViewModel : ViewModel() {
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
+                // Notify fragment
+                analyzedDimens.postValue(Pair(imageProxy.width , imageProxy.width))
+
+
                 // Store values for detector use
                 detector.width = imageProxy.width
                 detector.height = imageProxy.height

@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.br.ml.brpathfinder.common.FragmentName
+import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.ui.main.ArcoreFragment
 import com.br.ml.brpathfinder.ui.main.DepthFragment
 import com.br.ml.brpathfinder.ui.main.MainFragment
@@ -123,6 +124,11 @@ class MainActivity : AppCompatActivity() {
                     .replace(R.id.container, DepthFragment.newInstance())
                     .commitNow()
             }
+            FragmentName.SETTINGS -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, SettingsFragment.newInstance())
+                    .commitNow()
+            }
         }
     }
 
@@ -131,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         private val INTENT_FRAGMENT_NAME = "frag_name"
 
         fun newIntent(context: Context, fragName: FragmentName?): Intent {
-            val intent: Intent = Intent(context, MainActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java)
             intent.putExtra(INTENT_FRAGMENT_NAME, fragName)
             return intent
         }
