@@ -14,6 +14,8 @@ import com.br.ml.brpathfinder.R
 import com.google.firebase.ml.common.modeldownload.FirebaseModelManager
 import com.google.firebase.ml.custom.*
 import kotlinx.android.synthetic.main.fragment_depth.*
+import java.lang.Float.max
+import java.lang.Float.min
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -35,7 +37,7 @@ class DepthFragment : Fragment() {
 
         val optionsB = BitmapFactory.Options()
         optionsB.inMutable = true
-        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test5, optionsB)
+        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test4, optionsB)
         val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained15.tflite").build()
         //Registering the model loaded above with the ModelManager Singleton
 
@@ -60,9 +62,21 @@ class DepthFragment : Fragment() {
 
                 val canvas = Canvas(bitmap)
 
+                var minPixel = 999f
+                var maxPixel = -999f
                 output[0].forEachIndexed { x, row ->
                     row.forEachIndexed { y, pixel ->
-                        rectPaint.color = Color.rgb(pixel[0] * 255, 255f, pixel[0] * 255)
+                        minPixel = min(minPixel, pixel[0])
+                        maxPixel = max(maxPixel, pixel[0])
+                    }
+                }
+
+
+                output[0].forEachIndexed { x, row ->
+                    row.forEachIndexed { y, pixel ->
+
+                        val pixelVal = (pixel[0] - minPixel ) / maxPixel
+                        rectPaint.color = Color.rgb(pixelVal, 0f , 1f - pixelVal)
                         rectPaint.strokeWidth = 5.0f
                         canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2, rectPaint)
                         canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2 + 1, rectPaint)
