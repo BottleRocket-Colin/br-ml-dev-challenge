@@ -21,6 +21,10 @@ class LandingActivity : AppCompatActivity() {
             startActivity(MainActivity.newIntent(this, FragmentName.ML_FRAGMENT))
         }
 
+        depthButton.setOnClickListener {
+            startActivity(MainActivity.newIntent(this, FragmentName.DEPTH_FRAGMENT))
+        }
+
         settingsLoadButton.setOnClickListener {
             startActivity(MainActivity.newIntent(this, FragmentName.SETTINGS))
         }

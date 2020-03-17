@@ -7,6 +7,7 @@ import android.os.Bundle
 import com.br.ml.brpathfinder.common.FragmentName
 import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.ui.main.ArcoreFragment
+import com.br.ml.brpathfinder.ui.main.DepthFragment
 import com.br.ml.brpathfinder.ui.main.MainFragment
 
 /*
@@ -115,6 +116,12 @@ class MainActivity : AppCompatActivity() {
             FragmentName.ML_FRAGMENT -> {
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.container, MainFragment.newInstance())
+                    .commitNow()
+            }
+
+            FragmentName.DEPTH_FRAGMENT -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, DepthFragment.newInstance())
                     .commitNow()
             }
             FragmentName.SETTINGS -> {
