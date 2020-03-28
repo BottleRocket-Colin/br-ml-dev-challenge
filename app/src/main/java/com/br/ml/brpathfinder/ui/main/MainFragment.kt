@@ -52,9 +52,13 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 //        viewModel.feedback = context?.let { HapticImplementation(it) }
 
-        viewModel.analyzedDimens.observe(this, Observer { dimens ->
-            overlay.imageWidth = dimens.first
-            overlay.imageHeight = dimens.second
+//        viewModel.analyzedDimens.observe(this, Observer { dimens ->
+//            overlay.imageWidth = dimens.first
+//            overlay.imageHeight = dimens.second
+//        })
+
+        viewModel.mlDrawable.observe(this, Observer {
+            mlkit_image.setImageDrawable(it)
         })
 
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -70,11 +74,9 @@ class MainFragment : Fragment() {
 
     private fun startCamera() {
         preview.setOnPreviewOutputUpdateListener { previewOutput ->
-            textureView.surfaceTexture = previewOutput.surfaceTexture
+            cameraTextureView.surfaceTexture = previewOutput.surfaceTexture
         }
 
-
-//        preview.useCaseConfig.
         CameraX.bindToLifecycle(this as LifecycleOwner, viewModel.imageAnalysis, preview)
     }
 
