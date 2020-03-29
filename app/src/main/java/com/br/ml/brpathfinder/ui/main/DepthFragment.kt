@@ -37,8 +37,8 @@ class DepthFragment : Fragment() {
 
         val optionsB = BitmapFactory.Options()
         optionsB.inMutable = true
-        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test4, optionsB)
-        val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained15.tflite").build()
+        var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test8, optionsB)
+        val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained25.tflite").build()
         //Registering the model loaded above with the ModelManager Singleton
 
         val options = FirebaseModelInterpreterOptions.Builder(fireBaseLocalModelSource).build()
