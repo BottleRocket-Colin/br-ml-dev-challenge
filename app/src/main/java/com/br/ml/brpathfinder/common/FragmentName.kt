@@ -4,5 +4,4 @@ package com.br.ml.brpathfinder.common
 
 enum class FragmentName {
     AR_FRAGMENT, ML_FRAGMENT, DEPTH_FRAGMENT, SETTINGS
-
 }
