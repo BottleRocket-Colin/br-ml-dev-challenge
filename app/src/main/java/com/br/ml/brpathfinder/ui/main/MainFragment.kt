@@ -57,8 +57,12 @@ class MainFragment : Fragment() {
             overlay.imageHeight = dimens.second
         })
 
-        viewModel.mlDrawable.observe(this, Observer {
+        viewModel.mlDrawable.observe(viewLifecycleOwner, Observer {
             mlkit_image.setImageDrawable(it)
+        })
+
+        viewModel.tfDrawable.observe(viewLifecycleOwner, Observer {
+            tflite_image.setImageDrawable(it)
         })
 
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

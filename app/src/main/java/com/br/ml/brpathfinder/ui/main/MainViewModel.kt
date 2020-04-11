@@ -10,6 +10,7 @@ import android.util.Size
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysisConfig
 import androidx.camera.core.ImageProxy
+import androidx.core.graphics.scale
 import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
@@ -30,6 +31,7 @@ import java.lang.Float
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.IntBuffer
+import java.time.LocalDateTime
 
 
 class MainViewModel : ViewModel() {
@@ -47,6 +49,7 @@ class MainViewModel : ViewModel() {
     // Fragment comms
     val analyzedDimens = MutableLiveData<Pair<Int, Int>>()
     val mlDrawable = MutableLiveData<Drawable>()
+    val tfDrawable = MutableLiveData<Drawable>()
 
     ///////////////////////////////////////////////////////////////////////////
     // Gravity sensor setup
@@ -207,16 +210,21 @@ class MainViewModel : ViewModel() {
         }
 
         intBuffer.flip()
-        val bitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888)
+        val bitmap = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(intBuffer)
 
-        depthMapConversion(bitmap)
+        val bitmapDrawable = BitmapDrawable(bitmap)
+        mlDrawable.postValue(bitmapDrawable)
 
-        //val bitmapDrawable = BitmapDrawable(bitmap)
-        //mlDrawable.postValue(bitmapDrawable)
+        depthMapConversion(bitmap.scale(640, 480))
     }
 
-    fun depthMapConversion(bitmap: Bitmap) {
+    private var busy = false
+    private fun depthMapConversion(bitmap: Bitmap) {
+        if (busy) return
+        busy = true
+        Log.d("CCS", "Start DMC  ${LocalDateTime.now()}")
+        
         val optionsB = BitmapFactory.Options()
         optionsB.inMutable = true
         //var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test8, optionsB)
@@ -235,13 +243,15 @@ class MainViewModel : ViewModel() {
             .add(convertBitmapToByteBuffer(bitmap)) // add() as many input arrays as your model requires
             .build()
 
+        Log.d("CCS", "Enter Interpreter  ${LocalDateTime.now()}")
+
         interpreter?.run(inputs, inputOutputOptions)
             ?.addOnSuccessListener {
                 //img.setImageDrawable()
                 val output = it.getOutput<Array<Array<Array<FloatArray>>>>(0)
+                Log.d("CCS", "Interpreter Success  ${LocalDateTime.now()}")
 
                 val rectPaint = Paint()
-
                 val canvas = Canvas(bitmap)
 
                 var minPixel = 999f
@@ -252,7 +262,6 @@ class MainViewModel : ViewModel() {
                         maxPixel = Float.max(maxPixel, pixel[0])
                     }
                 }
-
 
                 output[0].forEachIndexed { x, row ->
                     row.forEachIndexed { y, pixel ->
@@ -267,10 +276,14 @@ class MainViewModel : ViewModel() {
                     }
                 }
 
+                Log.d("CCS", "Post Drawable Interpreter  ${LocalDateTime.now()}")
+
                 val bitmapDrawable = BitmapDrawable(bitmap)
-                mlDrawable.postValue(bitmapDrawable)
+                tfDrawable.postValue(bitmapDrawable)
+                busy = false
             }
             ?.addOnFailureListener {
+                busy = false
                 //The interpreter failed to identify a Pokemon
             }
     }
