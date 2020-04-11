@@ -1,6 +1,6 @@
 package com.br.ml.brpathfinder.ui.main
 
-import android.graphics.Bitmap
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.Image
@@ -14,21 +14,30 @@ import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
 import com.br.ml.brpathfinder.feedback.FeedbackInterface
 import com.br.ml.brpathfinder.models.DetectedObject
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
+import com.google.firebase.ml.custom.*
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
+import kotlinx.android.synthetic.main.fragment_depth.*
+import java.lang.Float
+import java.nio.ByteBuffer
+import java.nio.ByteOrder
 import java.nio.IntBuffer
 
 
 class MainViewModel : ViewModel() {
     val detector by lazy { AlgorithmicDetector() }
     var feedback: FeedbackInterface? = null
+
+    private val intValues = IntArray(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y)
+    private var imgData: ByteBuffer = ByteBuffer.allocateDirect(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y * DIM_PIXEL_SIZE * 4)
 
     // UI
     val boundingBoxes: ObservableArrayList<DetectedObject> = ObservableArrayList()
@@ -196,11 +205,100 @@ class MainViewModel : ViewModel() {
         }
 
         intBuffer.flip()
-        val bitmap = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
+        val bitmap = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(intBuffer)
 
-        val bitmapDrawable = BitmapDrawable(bitmap)
-        mlDrawable.postValue(bitmapDrawable)
+        depthMapConversion(bitmap)
+
+        //val bitmapDrawable = BitmapDrawable(bitmap)
+        //mlDrawable.postValue(bitmapDrawable)
+    }
+
+    fun depthMapConversion(bitmap: Bitmap) {
+        val optionsB = BitmapFactory.Options()
+        optionsB.inMutable = true
+        //var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test8, optionsB)
+        val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained25.tflite").build()
+        //Registering the model loaded above with the ModelManager Singleton
+
+        val options = FirebaseModelInterpreterOptions.Builder(fireBaseLocalModelSource).build()
+        val interpreter = FirebaseModelInterpreter.getInstance(options)
+
+        val inputOutputOptions = FirebaseModelInputOutputOptions.Builder()
+            .setInputFormat(0, FirebaseModelDataType.FLOAT32, intArrayOf(1, 480, 640, 3))
+            .setOutputFormat(0, FirebaseModelDataType.FLOAT32, intArrayOf(1, 240, 320, 1))
+            .build()
+
+        val inputs = FirebaseModelInputs.Builder()
+            .add(convertBitmapToByteBuffer(bitmap)) // add() as many input arrays as your model requires
+            .build()
+
+        interpreter?.run(inputs, inputOutputOptions)
+            ?.addOnSuccessListener {
+                //img.setImageDrawable()
+                val output = it.getOutput<Array<Array<Array<FloatArray>>>>(0)
+
+                val rectPaint = Paint()
+
+                val canvas = Canvas(bitmap)
+
+                var minPixel = 999f
+                var maxPixel = -999f
+                output[0].forEachIndexed { x, row ->
+                    row.forEachIndexed { y, pixel ->
+                        minPixel = Float.min(minPixel, pixel[0])
+                        maxPixel = Float.max(maxPixel, pixel[0])
+                    }
+                }
+
+
+                output[0].forEachIndexed { x, row ->
+                    row.forEachIndexed { y, pixel ->
+
+                        val pixelVal = (pixel[0] - minPixel ) / maxPixel
+                        rectPaint.color = Color.rgb(pixelVal, 0f , 1f - pixelVal)
+                        rectPaint.strokeWidth = 5.0f
+                        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2, rectPaint)
+                        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2 + 1, rectPaint)
+                        canvas.drawPoint(y.toFloat()* 2 + 1, x.toFloat() * 2, rectPaint)
+                        canvas.drawPoint(y.toFloat()* 2 + 1, x.toFloat() * 2 + 1, rectPaint)
+                    }
+                }
+
+                val bitmapDrawable = BitmapDrawable(bitmap)
+                mlDrawable.postValue(bitmapDrawable)
+            }
+            ?.addOnFailureListener {
+                //The interpreter failed to identify a Pokemon
+            }
+    }
+
+    private fun convertBitmapToByteBuffer(bitmap: Bitmap?): ByteBuffer {
+        //Clear the Bytebuffer for a new image
+        imgData.rewind()
+        imgData.order(ByteOrder.nativeOrder())
+        bitmap?.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
+        // Convert the image to floating point.
+        var pixel = 0
+        for (i in 0 until DepthFragment.DIM_IMG_SIZE_X) {
+            for (j in 0 until DepthFragment.DIM_IMG_SIZE_Y) {
+                val currPixel = intValues[pixel++]
+                imgData.putFloat(((currPixel shr 16 and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
+                imgData.putFloat(((currPixel shr 8 and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
+                imgData.putFloat(((currPixel and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
+            }
+        }
+        return imgData
+    }
+
+    companion object {
+        /** Dimensions of inputs.  */
+        const val DIM_IMG_SIZE_X = 480
+        const val DIM_IMG_SIZE_Y = 640
+        const val DIM_BATCH_SIZE = 1
+        const val DIM_PIXEL_SIZE = 3
+        const val IMAGE_MEAN = 128
+        private const val IMAGE_STD = 128.0f
     }
 
 }
