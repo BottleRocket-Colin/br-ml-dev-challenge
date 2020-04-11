@@ -52,8 +52,8 @@
 
                 <ImageView
                     android:id="@+id/mlkit_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="640dp"
+                    android:layout_height="480dp"
                     android:src="@{viewModel.mlKitImage}"
                     android:scaleType="centerCrop"
                     />
