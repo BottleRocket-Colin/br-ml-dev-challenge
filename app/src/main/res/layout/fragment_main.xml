@@ -18,7 +18,15 @@
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@android:color/black"
             tools:context=".ui.main.MainFragment">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/center_line"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5"/>
 
             <TextureView
                 android:id="@+id/cameraTextureView"
@@ -28,7 +36,7 @@
                 app:layout_constraintDimensionRatio="H,1:1"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/center_line"
                 />
 
             <FrameLayout
