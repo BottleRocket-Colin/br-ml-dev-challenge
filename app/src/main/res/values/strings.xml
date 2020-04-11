@@ -2,4 +2,11 @@
     <string name="app_name">BrPathFinder</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="feedback_settings_title">Feedback Settings</string>
+    <string name="vibrate_icon_content_description">Vibrate Icon</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="vibrate_option_description">Vibrate device when an upcoming collision is detected</string>
+    <string name="sound_icon_content_description">Sound Icon</string>
+    <string name="sound">Sound</string>
+    <string name="sound_option_description">Produce a sound when an upcoming collision is detected</string>
 </resources>

@@ -1,16 +1,14 @@
 package com.br.ml.brpathfinder.ui.main
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorManager
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraX
 import androidx.camera.core.Preview
 import androidx.camera.core.PreviewConfig
@@ -18,9 +16,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.Observer
 import com.br.ml.brpathfinder.R
-import com.br.ml.brpathfinder.databinding.MainFragmentBinding
-import kotlinx.android.synthetic.main.main_fragment.*
+import com.br.ml.brpathfinder.databinding.FragmentMainBinding
+import com.br.ml.brpathfinder.feedback.HapticImplementation
+import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment() {
 
@@ -30,7 +30,9 @@ class MainFragment : Fragment() {
 
     // CameraX
     private val cameraPermissionCode = 12
-    private val previewConfig = PreviewConfig.Builder().build()
+    private val previewConfig = PreviewConfig.Builder()
+        .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+        .build()
     private val preview = Preview(previewConfig)
 
     // Gravity Sensor
@@ -41,13 +43,23 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
-        DataBindingUtil.inflate<MainFragmentBinding>(inflater, R.layout.main_fragment, container, false).apply {
+        DataBindingUtil.inflate<FragmentMainBinding>(inflater, R.layout.fragment_main, container, false).apply {
             viewModel = ViewModelProviders.of(this@MainFragment).get(MainViewModel::class.java)
         }.root
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
+//        viewModel.feedback = context?.let { HapticImplementation(it) }
+
+//        viewModel.analyzedDimens.observe(this, Observer { dimens ->
+//            overlay.imageWidth = dimens.first
+//            overlay.imageHeight = dimens.second
+//        })
+
+        viewModel.mlDrawable.observe(this, Observer {
+            mlkit_image.setImageDrawable(it)
+        })
 
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
@@ -62,8 +74,9 @@ class MainFragment : Fragment() {
 
     private fun startCamera() {
         preview.setOnPreviewOutputUpdateListener { previewOutput ->
-            textureView.surfaceTexture = previewOutput.surfaceTexture
+            cameraTextureView.surfaceTexture = previewOutput.surfaceTexture
         }
+
         CameraX.bindToLifecycle(this as LifecycleOwner, viewModel.imageAnalysis, preview)
     }
 
