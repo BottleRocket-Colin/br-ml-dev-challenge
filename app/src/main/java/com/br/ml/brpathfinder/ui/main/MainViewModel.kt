@@ -78,7 +78,6 @@ class MainViewModel : ViewModel() {
             if (mediaImage != null) {
                 // Notify fragment
                 analyzedDimens.postValue(Pair(imageProxy.width , imageProxy.width))
-                // FIXME - this is posting before bounding boxes will update
                 postImage(mediaImage)
 
                 // Store values for detector use
@@ -90,6 +89,8 @@ class MainViewModel : ViewModel() {
                 // Pass image to an ML Kit Vision API
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
+                        Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
+
                         val objects = detectedObjects.map {
                             DetectedObject(
                                 it.trackingId ?: 0,
@@ -101,20 +102,21 @@ class MainViewModel : ViewModel() {
                         boundingBoxes.clear()
                         boundingBoxes.addAll(objects)
 
+                        // TODO - Reconnect risk detection when we can get data from distance map into it.
                         // Add frame to detector
-                        detector.addFrame(Frame(
-                            objects = objects,
-                            timestamp = timestamp
-                        ))
+//                        detector.addFrame(Frame(
+//                            objects = objects,
+//                            timestamp = timestamp
+//                        ))
 
                         // Run detection and pass results to feedback engine
-                        detector.runDetection { list ->
-                            risks.addAll(list)
-
-                            risks.maxBy { it.severity }?.let { maxRisk ->
-                                feedback?.signalUser(maxRisk)
-                            }
-                        }
+//                        detector.runDetection { list ->
+//                            risks.addAll(list)
+//
+//                            risks.maxBy { it.severity }?.let { maxRisk ->
+//                                feedback?.signalUser(maxRisk)
+//                            }
+//                        }
                     }
                     .addOnFailureListener { e ->
                         Log.e("CCS", "FAIL!!!")

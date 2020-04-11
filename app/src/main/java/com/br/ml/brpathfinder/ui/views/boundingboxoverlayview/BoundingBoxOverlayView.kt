@@ -129,6 +129,7 @@ class BoundingBoxOverlayView : SurfaceView {
         super.onDraw(canvas)
         canvas?.drawARGB(0,0,0, 0)
         canvas?.drawCircle( center.first.toFloat(), center.second.toFloat(), radius , white)
+        Log.d("CCS", "boxes to draw : ${boundingBoxes.size}")
         boundingBoxes.forEach {
             val paint = colorPicker(it.id)
             val scaled = it.box.scaleBy(widthScale, heightScale)

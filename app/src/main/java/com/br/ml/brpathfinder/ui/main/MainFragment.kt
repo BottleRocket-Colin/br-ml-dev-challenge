@@ -52,10 +52,10 @@ class MainFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
 //        viewModel.feedback = context?.let { HapticImplementation(it) }
 
-//        viewModel.analyzedDimens.observe(this, Observer { dimens ->
-//            overlay.imageWidth = dimens.first
-//            overlay.imageHeight = dimens.second
-//        })
+        viewModel.analyzedDimens.observe(this, Observer { dimens ->
+            overlay.imageWidth = dimens.first
+            overlay.imageHeight = dimens.second
+        })
 
         viewModel.mlDrawable.observe(this, Observer {
             mlkit_image.setImageDrawable(it)
