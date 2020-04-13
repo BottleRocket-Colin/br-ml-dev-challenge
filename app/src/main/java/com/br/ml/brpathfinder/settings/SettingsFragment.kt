@@ -15,7 +15,6 @@ import android.widget.Switch
 import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
-import com.br.ml.brpathfinder.ui.LandingActivity
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.main_activity.*
 
@@ -113,9 +112,6 @@ class SettingsFragment : Fragment() {
         }
 
         // Temporary back button
-        backButton.setOnClickListener {
-            backButtonPressed()
-        }
 
         return view
     }
@@ -235,10 +231,10 @@ class SettingsFragment : Fragment() {
     }
 
     // Temporary way to get back to the landing page, will change when we have a more concrete flow
-    private fun backButtonPressed() {
+    /*private fun backButtonPressed() {
         val intent = Intent(context, LandingActivity::class.java)
         startActivity(intent)
-    }
+    }*/
 
     /*
     *   Extension function to change the color of the icon

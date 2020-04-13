@@ -2,12 +2,9 @@ package com.br.ml.brpathfinder.ui.main
 
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraX
 import androidx.camera.core.Preview
@@ -15,12 +12,15 @@ import androidx.camera.core.PreviewConfig
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.databinding.FragmentMainBinding
-import com.br.ml.brpathfinder.feedback.HapticImplementation
+import com.br.ml.brpathfinder.settings.SettingsFragment
 import kotlinx.android.synthetic.main.fragment_main.*
+
 
 class MainFragment : Fragment() {
 
@@ -41,6 +41,15 @@ class MainFragment : Fragment() {
 
     // VM - TODO Inject w/ koin??
     private lateinit var viewModel: MainViewModel
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        (activity as AppCompatActivity).apply {
+            supportActionBar?.apply {
+                this.title = resources.getString(R.string.app_name)
+            }
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         DataBindingUtil.inflate<FragmentMainBinding>(inflater, R.layout.fragment_main, container, false).apply {
@@ -75,6 +84,7 @@ class MainFragment : Fragment() {
             startCamera()
         }
     }
+
 
     private fun startCamera() {
         preview.setOnPreviewOutputUpdateListener { previewOutput ->
