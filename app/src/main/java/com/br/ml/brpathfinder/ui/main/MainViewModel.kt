@@ -26,7 +26,6 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
-import kotlinx.android.synthetic.main.fragment_depth.*
 import java.lang.Float
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -295,8 +294,8 @@ class MainViewModel : ViewModel() {
         bitmap?.getPixels(intValues, 0, bitmap.width, 0, 0, bitmap.width, bitmap.height)
         // Convert the image to floating point.
         var pixel = 0
-        for (i in 0 until DepthFragment.DIM_IMG_SIZE_X) {
-            for (j in 0 until DepthFragment.DIM_IMG_SIZE_Y) {
+        for (i in 0 until DIM_IMG_SIZE_X) {
+            for (j in 0 until DIM_IMG_SIZE_Y) {
                 val currPixel = intValues[pixel++]
                 imgData.putFloat(((currPixel shr 16 and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
                 imgData.putFloat(((currPixel shr 8 and 0xFF) - IMAGE_MEAN) / IMAGE_STD)
