@@ -2,14 +2,13 @@ package com.br.ml.brpathfinder.settings
 
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.Switch
 import androidx.fragment.app.Fragment
@@ -29,7 +28,6 @@ class SettingsFragment : Fragment() {
 
         val vibrateSwitch: Switch = view.findViewById(R.id.settings_feedback_vibrate_switch)
         val soundSwitch: Switch = view.findViewById(R.id.settings_feedback_sound_switch)
-        val backButton: Button = view.findViewById(R.id.settings_back_button)
         val vibrateImage: ImageView = view.findViewById(R.id.vibrate_icon_image_view)
         val soundImage: ImageView = view.findViewById(R.id.sound_icon_image_view)
 
@@ -82,6 +80,11 @@ class SettingsFragment : Fragment() {
                     setAsAccentColor(isChecked)
                     // Shake the icon because why not
                     startAnimation(AnimationUtils.loadAnimation(context, R.anim.shake))
+
+                    // Create a mediaPlayer to play the beep when the sound is enabled
+                    val mediaPlayer = MediaPlayer.create(context, R.raw.beep_sound)
+                    // Play the beep
+                    mediaPlayer.start()
                 }
             } else {
                 soundImage.setAsAccentColor(isChecked)
@@ -223,18 +226,11 @@ class SettingsFragment : Fragment() {
                     return option
                 }
             }
-
             // This should not get hit since the default value is set when pulling shared prefs
             return null
         }
 
     }
-
-    // Temporary way to get back to the landing page, will change when we have a more concrete flow
-    /*private fun backButtonPressed() {
-        val intent = Intent(context, LandingActivity::class.java)
-        startActivity(intent)
-    }*/
 
     /*
     *   Extension function to change the color of the icon
