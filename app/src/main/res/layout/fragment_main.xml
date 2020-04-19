@@ -46,10 +46,11 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
 
-                app:layout_constraintDimensionRatio="H,4:3"
+                app:layout_constraintDimensionRatio="H,3:4"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="@id/center_line"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:scaleType="fitCenter"
                 />
 
             <FrameLayout
@@ -57,7 +58,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
 
-                app:layout_constraintDimensionRatio="H,4:3"
+                app:layout_constraintDimensionRatio="H,3:4"
                 app:layout_constraintTop_toBottomOf="@id/tflite_image"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +68,7 @@
                     android:id="@+id/mlkit_image"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
+                    android:scaleType="fitCenter"
                     />
 
                 <com.br.ml.brpathfinder.ui.views.boundingboxoverlayview.BoundingBoxOverlayView
