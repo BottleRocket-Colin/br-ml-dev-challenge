@@ -35,11 +35,6 @@ class MainFragment : Fragment() {
         .build()
     private val preview = Preview(previewConfig)
 
-    // Gravity Sensor
-//    private val sensorManager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-//    val sensor: Sensor? = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)
-
-    // VM - TODO Inject w/ koin??
     private lateinit var viewModel: MainViewModel
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -92,6 +87,9 @@ class MainFragment : Fragment() {
         }
 
         CameraX.bindToLifecycle(this as LifecycleOwner, viewModel.imageAnalysis, preview)
+        // TODO - SG - Look at connecting preview to toggle.
+        //  it can be unbound using following:
+        //        CameraX.unbind(preview)
     }
 
 
