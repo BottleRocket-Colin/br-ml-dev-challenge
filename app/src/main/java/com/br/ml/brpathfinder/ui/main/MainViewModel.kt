@@ -88,13 +88,15 @@ class MainViewModel : ViewModel() {
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
                 // Notify fragment
-                analyzedDimens.postValue(Pair(imageProxy.width , imageProxy.width))
+                // TODO - Handle rotation here - this is for fixed portrait
+                analyzedDimens.postValue(Pair(imageProxy.height , imageProxy.width))
                 postImage(mediaImage)
 
-//                return  // FIXME - remove this disconnect for ML kit processing
+//                return  // TODO - connect this to ui
                 // Store values for detector use
-                detector.width = imageProxy.width
-                detector.height = imageProxy.height
+                // TODO - Handle rotation here - this is for fixed portrait
+                detector.width = imageProxy.height
+                detector.height = imageProxy.width
                 val timestamp = System.currentTimeMillis()
 
                 val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
@@ -108,6 +110,7 @@ class MainViewModel : ViewModel() {
                         val objects = detectedObjects.map {
                             DetectedObject(
                                 it.trackingId ?: 0,
+                                // TODO - check to dee if we need to adjust rect based off rotation ???
                                 it.boundingBox
                             )
                         }
@@ -225,7 +228,8 @@ class MainViewModel : ViewModel() {
     }
 
     // Firebase Interpreter setup
-    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained25.tflite").build()
+//    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained25.tflite").build()
+    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained30_quant.tflite").build()
 
     // Registering the model loaded above with the ModelManager Singleton
     private val interpreter = FirebaseModelInterpreter.getInstance(
@@ -297,7 +301,6 @@ class MainViewModel : ViewModel() {
             ?.addOnFailureListener {
                 busy = false
                 Log.d("CCS", "DMC Failure - ${it.localizedMessage}")
-
                 //The interpreter failed to identify a Pokemon
             }
     }

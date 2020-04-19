@@ -25,7 +25,7 @@ class BoundingBoxOverlayView : SurfaceView {
         holder.addCallback(object : SurfaceHolder.Callback {
             override fun surfaceCreated(holder: SurfaceHolder?) = drawWrapper(holder)
             override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
-                Log.v("CCS", "Surface changed = h: $height  |  w: $width")
+                Log.v("CCS", "BB - Surface changed = h: $height  |  w: $width")
                 center = Pair(width/2, height/2)
                 workHeight = height
                 workWidth = width
@@ -36,37 +36,41 @@ class BoundingBoxOverlayView : SurfaceView {
         setWillNotDraw(false)
     }
 
-    // Create this from DPI
-    //  Drive these from XML
-    private val textFontSize: Float = 60f
-
-    var imageWidth = 1280
-    var imageHeight = 960
-    private val imageCenter = Pair(imageWidth/2, imageHeight/2)
-
-    // FIXME - Scaling still isn't perfect, need better center-crop, also confirm preview is using center crop
-    // FIXME - This involves picking smallest side to determine what to scale to maintain aspect ration
-
-    private val heightScale get () = workHeight.toFloat() / imageHeight
-//    private val heightScale get () = 1.0f
-//    private val heightScale get () = widthScale
-    private val widthScale get () = heightScale
-//    private val widthScale get () = workWidth.toFloat() / imageWidth
-    private val widthOffset get() = 0
-//    private val widthOffset get() = ((center.first - imageCenter.first) * widthScale).roundToInt()
-//    private val widthOffset get() = ((imageCenter.first - center.first) * widthScale).roundToInt()
-    private val heightOffset get() = 0
-//    private val heightOffset get() = ((imageCenter.second - center.second) * heightScale).roundToInt()
-    // TODO - Optimize this once it's final so that we don't run computations during draw cycle.
-
-    // TODO -Drive this via binding or attributes
-    var stroke = 6f
-    var radius = 60f
+    // Canvas Info
     var workHeight = 0
     var workWidth = 0
-
-    // Fixed at setup
     var center = Pair(0,0)
+
+    // Image info
+    var imageWidth = 960
+        set(value) {
+            if (value != field) {
+                Log.d("CCS", "BB - imageWidth: $value")
+            }
+            field = value
+        }
+    var imageHeight = 1280
+        set(value) {
+            if (value != field) {
+                Log.d("CCS", "BB - imageHeight: $value")
+            }
+            field = value
+        }
+    private val imageCenter get() = Pair(imageWidth/2, imageHeight/2)
+
+    // UI - Is fixed at portrait 4:3, as long as we get portrait 4:3 from Ml Kit then a single scaling factor is good.
+    // May need lock to portrait until we can handle all rotations??
+    private val heightScale get() = workHeight.toFloat() / imageHeight
+    private val widthScale get() = heightScale
+    private val widthOffset get() = 0
+    private val heightOffset get() = 0
+
+    // TODO - Drive this via binding or attributes
+    //  Create this from DPI
+    //  Drive these from XML
+    private val textFontSize: Float = 60f
+    var stroke = 6f
+    var radius = 60f
 
     // Dynamic Elements
     var boundingBoxes: List<DetectedObject> = emptyList()
@@ -127,19 +131,17 @@ class BoundingBoxOverlayView : SurfaceView {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        Log.d("CCS", "boxes to draw : ${boundingBoxes.size}")
         canvas?.drawARGB(0,0,0, 0)
         canvas?.drawCircle( center.first.toFloat(), center.second.toFloat(), radius , white)
-        Log.d("CCS", "boxes to draw : ${boundingBoxes.size}")
         boundingBoxes.forEach {
             val paint = colorPicker(it.id)
             val scaled = it.box.scaleBy(widthScale, heightScale)
-                .offsetBy(widthOffset, heightOffset)
+//  We know offset is hardcoded to 0 currently.
+//                .offsetBy(widthOffset, heightOffset)
             canvas?.drawRect(scaled, paint)
             val risk = risks.find { risk -> risk.id == it.id }
             canvas?.drawText("ID: ${it.id}\n Risk: ${risk?.severity}", scaled.left.toFloat(), scaled.top.toFloat(), paint)
-
-//            canvas?.drawRect(it.offsetBy(widthOffset, heightOffset), blue)
-//            canvas?.drawRect(it.scaleBy(widthScale, heightScale), green)
         }
         // TODO - Add labels ?? ID number from ML kit?  Perhaps classifcation?
     }
