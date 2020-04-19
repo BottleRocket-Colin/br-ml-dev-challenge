@@ -102,6 +102,8 @@ class MainViewModel : ViewModel() {
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
                         Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
+                        // TODO - SG - Add ML kit frame time to UI below MLkit view.
+                        //    -- Also add the ML Kit detection count to UI below as well
 
                         val objects = detectedObjects.map {
                             DetectedObject(
@@ -142,6 +144,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun postImage(image: Image) {
+        // TODO - SG - if both UI switches are off this step can be skipped.
 
         // TODO  // Convert YUV to RGB, JFIF transform with fixed-point math
         //    // R = Y + 1.402 * (V - 128)
@@ -213,17 +216,18 @@ class MainViewModel : ViewModel() {
         val bitmap = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
         bitmap.copyPixelsFromBuffer(intBuffer)
 
+        // TODO - SG - Connect this to UI switch
         val bitmapDrawable = BitmapDrawable(bitmap)
         mlDrawable.postValue(bitmapDrawable)
 
+        // TODO - SG - Connect to UI Switch
         depthMapConversion(bitmap.scale(640, 480))
     }
 
     // Firebase Interpreter setup
     private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained25.tflite").build()
-//    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained30_quant.tflite").build()
 
-    //Registering the model loaded above with the ModelManager Singleton
+    // Registering the model loaded above with the ModelManager Singleton
     private val interpreter = FirebaseModelInterpreter.getInstance(
         FirebaseModelInterpreterOptions.Builder(fireBaseLocalModelSource).build())
 
@@ -233,10 +237,16 @@ class MainViewModel : ViewModel() {
         .setOutputFormat(0, FirebaseModelDataType.FLOAT32, intArrayOf(1, 240, 320, 1))
         .build()
 
-//    val optionsB = BitmapFactory.Options().apply { inMutable = true }
-//var bitmap =  BitmapFactory.decodeResource(resources, R.drawable.test8, optionsB)
+    // Only alloc paint once
+    private val rectPaint = Paint()
+
+
     private var busy = false
     private fun depthMapConversion(bitmap: Bitmap) {
+        // TODO - look into some kind of throttle to free resources for .25->.5 seconds between runs.
+        //  needs to be enough time for MLKit to do it's thing and get good results.
+        //  Or maybe a mode where it's just MLkit until it see an object then fires off the depth,
+        //  we could reconcile timing differences later.
         if (busy) return
         busy = true
         Log.d("CCS", "DMC - Start  ${LocalDateTime.now()}")
@@ -249,17 +259,17 @@ class MainViewModel : ViewModel() {
 
         interpreter?.run(inputs, inputOutputOptions)
             ?.addOnSuccessListener {
-                //img.setImageDrawable()
-                val output = it.getOutput<Array<Array<Array<FloatArray>>>>(0)
                 Log.d("CCS", "DMC - Interpreter Success  ${LocalDateTime.now()}")
+                // TODO - SG - Add elapsed depth map time to ui below ML kit output image
 
-                val rectPaint = Paint()
+                val output = it.getOutput<Array<Array<Array<FloatArray>>>>(0)
                 val canvas = Canvas(bitmap)
-
                 var minPixel = 999f
                 var maxPixel = -999f
-                output[0].forEachIndexed { x, row ->
-                    row.forEachIndexed { y, pixel ->
+
+                // TODO - Look at faster way of doing this the vs forEach
+                output[0].forEach { row ->
+                    row.forEach { pixel ->
                         minPixel = Float.min(minPixel, pixel[0])
                         maxPixel = Float.max(maxPixel, pixel[0])
                     }
