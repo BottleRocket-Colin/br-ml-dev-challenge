@@ -3,6 +3,7 @@ package com.br.ml.brpathfinder.splash
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
@@ -30,11 +31,13 @@ class SplashActivity : AppCompatActivity() {
         return when (SettingsFragment.pullFeedbackOptionFromSharedPreferences(this)) {
             VIBRATE, SOUND, BOTH, NONE -> {
                 // Go to the Main Activity
+                Toast.makeText(this, "mainActivity", Toast.LENGTH_SHORT).show()
                 Intent(this, MainActivity::class.java)
             }
             else -> {
                 // Go to the onboarding flow
                 // TODO - update this to correct Flow
+                Toast.makeText(this, "onboarding", Toast.LENGTH_SHORT).show()
                 Intent(this, MainActivity::class.java)
             }
         }
