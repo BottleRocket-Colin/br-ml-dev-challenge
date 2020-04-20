@@ -49,6 +49,8 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         DataBindingUtil.inflate<FragmentMainBinding>(inflater, R.layout.fragment_main, container, false).apply {
             viewModel = ViewModelProviders.of(this@MainFragment).get(MainViewModel::class.java)
+//            viewModel?.modelFile = context?.assets?.open("depth_trained30_quant.tflite")?.readBytes()
+            viewModel?.modelFile = context?.assets?.open("depth_trained25.tflite")?.readBytes()
         }.root
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

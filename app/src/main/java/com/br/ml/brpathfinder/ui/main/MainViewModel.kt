@@ -1,6 +1,9 @@
 package com.br.ml.brpathfinder.ui.main
 
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.media.Image
@@ -15,25 +18,30 @@ import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableField
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
 import com.br.ml.brpathfinder.feedback.FeedbackInterface
 import com.br.ml.brpathfinder.models.DetectedObject
-import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
 import com.google.firebase.ml.custom.*
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
+import com.jakewharton.rxrelay2.BehaviorRelay
+import org.tensorflow.lite.Interpreter
+import org.tensorflow.lite.gpu.GpuDelegate
+import java.io.File
+import java.io.InputStream
 import java.lang.Float
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.time.LocalDateTime
 
 
 class MainViewModel : ViewModel() {
+    var modelFile: ByteArray? = null
     val detector by lazy { AlgorithmicDetector() }
     var feedback: FeedbackInterface? = null
 
@@ -49,6 +57,16 @@ class MainViewModel : ViewModel() {
     val analyzedDimens = MutableLiveData<Pair<Int, Int>>()
     val mlDrawable = MutableLiveData<Drawable>()
     val tfDrawable = MutableLiveData<Drawable>()
+
+    // Relays
+    private val tfRelay = BehaviorRelay.create<Bitmap>()
+    private val mlRelay = BehaviorRelay.create<Bitmap>()
+
+    init {
+        // TODO - Connect disposables
+        tfRelay.subscribe { depthMapTFLite(it) }
+        mlRelay.subscribe { depthMapMLKit(it) }
+    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Gravity sensor setup
@@ -224,12 +242,16 @@ class MainViewModel : ViewModel() {
         mlDrawable.postValue(bitmapDrawable)
 
         // TODO - SG - Connect to UI Switch
-        depthMapConversion(bitmap.scale(640, 480))
+//        mlRelay.accept(bitmap.scale(640, 480))
+//        tfRelay.accept(bitmap.scale(640, 480))
     }
+
+    private val modelFilename = "depth_trained30_quant.tflite"
+//    private val modelFilename = "depth_trained25.tflite"
 
     // Firebase Interpreter setup
 //    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained25.tflite").build()
-    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained30_quant.tflite").build()
+    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath(modelFilename).build()
 
     // Registering the model loaded above with the ModelManager Singleton
     private val interpreter = FirebaseModelInterpreter.getInstance(
@@ -244,9 +266,57 @@ class MainViewModel : ViewModel() {
     // Only alloc paint once
     private val rectPaint = Paint()
 
-
+    // Used to avoid submitting while active
     private var busy = false
-    private fun depthMapConversion(bitmap: Bitmap) {
+
+
+    // TF LIte Interpreter Setup
+    private val tfInterpreter  by lazy {
+//        val buffer = ByteBuffer.wrap(modelFile)
+        val buffer = ByteBuffer.allocateDirect(modelFile?.size ?: 0).apply { put(modelFile) }
+        Interpreter(buffer, Interpreter.Options()
+//            .setNumThreads(4)
+            .addDelegate(GpuDelegate())
+        )
+    }
+
+    private fun depthMapTFLite(bitmap: Bitmap) {
+        if (busy) return
+        busy = true
+        Log.d("CCS", "DMTF - Setup  ${LocalDateTime.now()}")
+
+        val input = (convertBitmapToByteBuffer(bitmap).rewind() as? ByteBuffer)?.asFloatBuffer()
+        val inputArray = arrayOf(input)
+
+        Log.d("CCS", "DMTF - Start TF ${LocalDateTime.now()}")
+
+        val output = FloatBuffer.allocate(1 * 240 * 320 * 1)
+        val outputMap = mapOf(0 to output)
+
+        tfInterpreter.runForMultipleInputsOutputs(inputArray, outputMap)
+
+        Log.d("CCS", "DMTF - End TF ${LocalDateTime.now()}")
+
+        val floats = outputMap[0]?.array()
+
+        val minPixel = floats?.min() ?: 0f
+        val maxPixel = floats?.max() ?: 0f
+
+        val canvas = Canvas(bitmap)
+        floats?.forEachIndexed { index, pixel ->
+            val x = index / 320
+            val y= index.rem(320)
+            drawOutputPixel(floatArrayOf(pixel), minPixel, maxPixel, canvas, y, x)
+        }
+        val bitmapDrawable = BitmapDrawable(bitmap)
+        tfDrawable.postValue(bitmapDrawable)
+        // TODO - once we get perf improvement we can connect output to UI.
+        busy = false
+    }
+
+
+    private fun depthMapMLKit(bitmap: Bitmap) {
+        interpreter
         // TODO - look into some kind of throttle to free resources for .25->.5 seconds between runs.
         //  needs to be enough time for MLKit to do it's thing and get good results.
         //  Or maybe a mode where it's just MLkit until it see an object then fires off the depth,
@@ -281,14 +351,7 @@ class MainViewModel : ViewModel() {
 
                 output[0].forEachIndexed { x, row ->
                     row.forEachIndexed { y, pixel ->
-
-                        val pixelVal = (pixel[0] - minPixel ) / maxPixel
-                        rectPaint.color = Color.rgb(pixelVal, 0f , 1f - pixelVal)
-                        rectPaint.strokeWidth = 5.0f
-                        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2, rectPaint)
-                        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2 + 1, rectPaint)
-                        canvas.drawPoint(y.toFloat()* 2 + 1, x.toFloat() * 2, rectPaint)
-                        canvas.drawPoint(y.toFloat()* 2 + 1, x.toFloat() * 2 + 1, rectPaint)
+                        drawOutputPixel(pixel, minPixel, maxPixel, canvas, y, x)
                     }
                 }
 
@@ -303,6 +366,24 @@ class MainViewModel : ViewModel() {
                 Log.d("CCS", "DMC Failure - ${it.localizedMessage}")
                 //The interpreter failed to identify a Pokemon
             }
+    }
+
+    // TODO - Check to see if this needs to scale since drawable will scale to imageView....
+    private fun drawOutputPixel(
+        pixel: FloatArray,
+        minPixel: kotlin.Float,
+        maxPixel: kotlin.Float,
+        canvas: Canvas,
+        y: Int,
+        x: Int
+    ) {
+        val pixelVal = (pixel[0] - minPixel) / maxPixel
+        rectPaint.color = Color.rgb(pixelVal, 0f, 1f - pixelVal)
+        rectPaint.strokeWidth = 5.0f
+        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2, rectPaint)
+        canvas.drawPoint(y.toFloat() * 2, x.toFloat() * 2 + 1, rectPaint)
+        canvas.drawPoint(y.toFloat() * 2 + 1, x.toFloat() * 2, rectPaint)
+        canvas.drawPoint(y.toFloat() * 2 + 1, x.toFloat() * 2 + 1, rectPaint)
     }
 
     private fun convertBitmapToByteBuffer(bitmap: Bitmap?): ByteBuffer {
