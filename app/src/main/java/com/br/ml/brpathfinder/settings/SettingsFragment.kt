@@ -199,7 +199,8 @@ class SettingsFragment : Fragment() {
         VIBRATE("vibrate", "Shhh... only vibration"),
         SOUND("sound", "Only sound option has been saved"),
         BOTH("both", "\uD83D\uDDE3️ &️ \uD83D\uDCF3"),
-        NONE("none", "Feedback inactive")
+        NONE("none", "Feedback inactive"),
+        NEWUSER("newUser", "")
     }
 
     companion object {
@@ -218,7 +219,7 @@ class SettingsFragment : Fragment() {
                     ?: return null
 
             // Currently I have vibrate as default, but we can change it to any options
-            val savedOptionKey = sharedPrefs.getString(FEEDBACK_KEY, "vibrate")
+            val savedOptionKey = sharedPrefs.getString(FEEDBACK_KEY, NEWUSER.saveKey)
 
             // Return the feedback option
             for (option in values()) {
