@@ -30,14 +30,13 @@ import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 import com.jakewharton.rxrelay2.BehaviorRelay
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
-import java.io.File
-import java.io.InputStream
-import java.lang.Float
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.time.LocalDateTime
+import kotlin.math.max
+import kotlin.math.min
 
 
 class MainViewModel : ViewModel() {
@@ -60,12 +59,10 @@ class MainViewModel : ViewModel() {
 
     // Relays
     private val tfRelay = BehaviorRelay.create<Bitmap>()
-    private val mlRelay = BehaviorRelay.create<Bitmap>()
 
     init {
         // TODO - Connect disposables
         tfRelay.subscribe { depthMapTFLite(it) }
-        mlRelay.subscribe { depthMapMLKit(it) }
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -105,23 +102,26 @@ class MainViewModel : ViewModel() {
             val mediaImage = imageProxy?.image
             val imageRotation = degreesToFirebaseRotation(degrees)
             if (mediaImage != null) {
+                if (busy) return  // Don't process ML Kit while TF Lite is running
                 // Notify fragment
                 // TODO - Handle rotation here - this is for fixed portrait
                 analyzedDimens.postValue(Pair(imageProxy.height , imageProxy.width))
-                postImage(mediaImage)
 
 //                return  // TODO - connect this to ui
+
                 // Store values for detector use
                 // TODO - Handle rotation here - this is for fixed portrait
                 detector.width = imageProxy.height
                 detector.height = imageProxy.width
-                val timestamp = System.currentTimeMillis()
 
+                val timestamp = System.currentTimeMillis()
+                parkImage(mediaImage, timestamp) // Must run before FirebaseVisionImage.fromMediaImage
                 val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
-                // Pass image to an ML Kit Vision API
+
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
                         Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
+                        postParkedImage(detectedObjects.size, timestamp)
                         // TODO - SG - Add ML kit frame time to UI below MLkit view.
                         //    -- Also add the ML Kit detection count to UI below as well
 
@@ -164,7 +164,7 @@ class MainViewModel : ViewModel() {
         imageAnalysis.setAnalyzer(AsyncTask.THREAD_POOL_EXECUTOR, analyzer)
     }
 
-    fun postImage(image: Image) {
+    fun parkImage(image: Image, timestamp: Long) {
         // TODO - SG - if both UI switches are off this step can be skipped.
 
         // TODO  // Convert YUV to RGB, JFIF transform with fixed-point math
@@ -234,21 +234,31 @@ class MainViewModel : ViewModel() {
         }
 
         intBuffer.flip()
-        val bitmap = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
-        bitmap.copyPixelsFromBuffer(intBuffer)
-
-        // TODO - SG - Connect this to UI switch
-        val bitmapDrawable = BitmapDrawable(bitmap)
-        mlDrawable.postValue(bitmapDrawable)
-
-        // TODO - SG - Connect to UI Switch
-//        mlRelay.accept(bitmap.scale(640, 480))
-//        tfRelay.accept(bitmap.scale(640, 480))
+        parkedBitmap = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
+        parkedBitmap?.copyPixelsFromBuffer(intBuffer)
+        Log.d("CCS","Bitmap parked for timestamp: $timestamp")
     }
 
-    private val modelFilename = "depth_trained30_quant.tflite"
-//    private val modelFilename = "depth_trained25.tflite"
+    fun postParkedImage(size: Int, timestamp: Long) {
+        Log.d("CCS","Posting bitmap for timestamp: $timestamp")
 
+        // TODO - SG - Connect this to UI switch
+        val bitmapDrawable = BitmapDrawable(parkedBitmap)
+        mlDrawable.postValue(bitmapDrawable)
+
+        // todo - ccs - move this to constant
+        // TODO - SG - Connect to UI Switch
+        if (size > 0 && (timestamp - 1000 > lastDMC)) {
+            lastDMC = timestamp
+            parkedBitmap?.scale(640, 480)?.let { tfRelay.accept(it) }
+        }
+    }
+
+//    private val modelFilename = "depth_trained30_quant.tflite"
+    private val modelFilename = "depth_trained25.tflite"
+
+    private var parkedBitmap: Bitmap? = null
+    private var lastDMC = 0L
     // Firebase Interpreter setup
 //    private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath("depth_trained25.tflite").build()
     private val fireBaseLocalModelSource = FirebaseCustomLocalModel.Builder().setAssetFilePath(modelFilename).build()
@@ -272,7 +282,6 @@ class MainViewModel : ViewModel() {
 
     // TF LIte Interpreter Setup
     private val tfInterpreter  by lazy {
-//        val buffer = ByteBuffer.wrap(modelFile)
         val buffer = ByteBuffer.allocateDirect(modelFile?.size ?: 0).apply { put(modelFile) }
         Interpreter(buffer, Interpreter.Options()
 //            .setNumThreads(4)
@@ -310,7 +319,6 @@ class MainViewModel : ViewModel() {
         }
         val bitmapDrawable = BitmapDrawable(bitmap)
         tfDrawable.postValue(bitmapDrawable)
-        // TODO - once we get perf improvement we can connect output to UI.
         busy = false
     }
 
@@ -344,8 +352,8 @@ class MainViewModel : ViewModel() {
                 // TODO - Look at faster way of doing this the vs forEach
                 output[0].forEach { row ->
                     row.forEach { pixel ->
-                        minPixel = Float.min(minPixel, pixel[0])
-                        maxPixel = Float.max(maxPixel, pixel[0])
+                        minPixel = min(minPixel, pixel[0])
+                        maxPixel = max(maxPixel, pixel[0])
                     }
                 }
 
