@@ -75,9 +75,10 @@
                     android:id="@+id/overlay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:boundingBoxes="@{viewModel.boundingBoxes}"
+                    app:history="@{viewModel.history}"
                     app:risks="@{viewModel.risks}"
                     />
+<!--   TODO - merge risk object into history.              -->
 
             </FrameLayout>
 
