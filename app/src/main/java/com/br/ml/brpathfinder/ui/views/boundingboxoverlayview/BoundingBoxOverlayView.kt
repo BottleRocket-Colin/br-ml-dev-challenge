@@ -7,9 +7,8 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.databinding.BindingAdapter
 import android.util.Log
-import com.br.ml.brpathfinder.models.DetectedObject
+import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
-import kotlin.math.roundToInt
 
 
 class BoundingBoxOverlayView : SurfaceView {
@@ -35,6 +34,21 @@ class BoundingBoxOverlayView : SurfaceView {
         })
         setWillNotDraw(false)
     }
+
+    // Dynamic Elements
+    var history: List<Frame> = emptyList()
+    private val boundingBoxes
+        get() = history.filter {
+            it.timestamp >  System.currentTimeMillis() - tail
+        }.flatMap { frame ->
+            frame.objects.map { Pair(frame.timestamp, it) }
+        }.partition { it.second.id == 0 }.let { (unknown, identified) ->
+            identified.sortedByDescending { it.first }.distinctBy { it.second.id } + unknown
+        }
+
+    private val tail = 1000
+
+    var risks: List<Risk> = emptyList()
 
     // Canvas Info
     var workHeight = 0
@@ -68,15 +82,15 @@ class BoundingBoxOverlayView : SurfaceView {
     // TODO - Drive this via binding or attributes
     //  Create this from DPI
     //  Drive these from XML
-    private val textFontSize: Float = 60f
+    private val textFontSize = 60f
+    private val textLineHeight = 90f
     var stroke = 6f
     var radius = 60f
 
-    // Dynamic Elements
-    var boundingBoxes: List<DetectedObject> = emptyList()
-    var risks: List<Risk> = emptyList()
 
-    // Working holders
+    ///////////////////////////////////////////////////////////////////////////
+    // Paints
+    ///////////////////////////////////////////////////////////////////////////
     private val white = Paint().apply {
         style = Paint.Style.STROKE
         strokeWidth = stroke
@@ -131,25 +145,46 @@ class BoundingBoxOverlayView : SurfaceView {
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        Log.d("CCS", "boxes to draw : ${boundingBoxes.size}")
+
+        // Static elements
         canvas?.drawARGB(0,0,0, 0)
         canvas?.drawCircle( center.first.toFloat(), center.second.toFloat(), radius , white)
-        boundingBoxes.forEach {
-            val paint = colorPicker(it.id)
-            val scaled = it.box.scaleBy(widthScale, heightScale)
-//  We know offset is hardcoded to 0 currently.
-//                .offsetBy(widthOffset, heightOffset)
+
+        // redeclare to avoid costly getter for boundingBoxes.... or move that into function, so iit's implied.... ???
+        val boxes = boundingBoxes
+
+        Log.d("CCS", "history size : ${history.size}")
+        Log.d("CCS", "boxes to draw : ${boxes.size}")
+        val sysTime = System.currentTimeMillis()
+        boxes.forEach { (timestamp, detected) ->
+            val paint = colorPicker(detected.id)
+            val scaled = detected.box.scaleBy(widthScale, heightScale)
+            // TODO - Move risk into object.....
+            val risk = risks.find { risk -> risk.id == detected.id }
+
+
+            paint.alpha = 255 - (((sysTime - timestamp).toFloat() / tail.toFloat()) * 255).toInt().coerceAtMost(255)
             canvas?.drawRect(scaled, paint)
-            val risk = risks.find { risk -> risk.id == it.id }
-            canvas?.drawText("ID: ${it.id}\n Risk: ${risk?.severity}", scaled.left.toFloat(), scaled.top.toFloat(), paint)
+
+            // Add debug info to box.
+            var line1 = ""
+            if (detected.id > 0) line1 += "ID: ${detected.id}  "
+            risk?.severity?.let { line1 += "Risk: ${risk.severity}" }
+            if (line1.isNotEmpty()) {
+                canvas?.drawText(line1, scaled.left.toFloat(), scaled.top.toFloat(), paint)
+            }
+
+            detected.distance?.let {
+                canvas?.drawText("Dist: ${detected.distance}", scaled.left.toFloat(), scaled.top.toFloat() + textLineHeight, paint)
+            }
+            paint.alpha = 255
         }
-        // TODO - Add labels ?? ID number from ML kit?  Perhaps classifcation?
     }
 }
 
-@BindingAdapter("boundingBoxes")
-fun BoundingBoxOverlayView.setBoxes(boxes: List<DetectedObject>) {
-    boundingBoxes = boxes
+@BindingAdapter("history")
+fun BoundingBoxOverlayView.setBoxes(history: List<Frame>) {
+    this.history = history
     invalidate()
 }
 
