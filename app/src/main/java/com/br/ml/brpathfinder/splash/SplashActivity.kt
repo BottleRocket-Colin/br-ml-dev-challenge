@@ -16,7 +16,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
 
-        delayThenGo(5000, whereToGo())
+        delayThenGo(2000, whereToGo())
     }
 
     private fun delayThenGo(delayLength: Long, intent: Intent) {

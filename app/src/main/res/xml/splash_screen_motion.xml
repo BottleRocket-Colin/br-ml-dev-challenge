@@ -88,7 +88,7 @@
         app:autoTransition="animateToEnd"
         app:constraintSetEnd="@+id/end"
         app:constraintSetStart="@+id/start"
-        app:duration="4000"
+        app:duration="1750"
         app:motionInterpolator="linear">
 
         <KeyFrameSet>
