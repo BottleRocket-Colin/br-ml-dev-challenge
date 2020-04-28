@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.main_activity.*
 
 class SettingsFragment : Fragment(), OnItemSelectedListener {
@@ -34,12 +35,21 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         val vibrateImage: ImageView = view.findViewById(R.id.vibrate_icon_image_view)
         val soundImage: ImageView = view.findViewById(R.id.sound_icon_image_view)
 
-        val alertToneSpinner: Spinner = view.findViewById(R.id.settings_feedback_alert_tone_spinner)
+        val alertToneSpinner: Spinner =
+            view.findViewById(R.id.settings_feedback_alert_tone_spinner)
+        val noHeadphoneModeCheckBox: CheckBox =
+            view.findViewById(R.id.settings_fragment_no_headphone_mode_checkBox)
         val buttonLeft: Button = view.findViewById(R.id.settings_feedback_sound_test_left_side)
         val buttonCenter: Button = view.findViewById(R.id.settings_feedback_sound_test_center)
         val buttonRight: Button = view.findViewById(R.id.settings_feedback_sound_test_right_side)
 
-        setUpOptionsFromSharedPrefs(vibrateSwitch, soundSwitch, vibrateImage, soundImage)
+        setUpOptionsFromSharedPrefs(
+            vibrateSwitch,
+            soundSwitch,
+            vibrateImage,
+            soundImage,
+            alertToneSpinner
+        )
 
         // Switch controlling vibration feedback
         vibrateSwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -61,22 +71,22 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                 isChecked && !soundSwitch.isChecked -> {
                     // Only vibrate is selected
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(VIBRATE)
+                    saveFeedbackOptionsToSharedPrefs(VIBRATE)
                 }
                 isChecked && soundSwitch.isChecked -> {
                     // Both vibrate and sound is selected
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(BOTH)
+                    saveFeedbackOptionsToSharedPrefs(BOTH)
                 }
                 !isChecked && soundSwitch.isChecked -> {
                     // No longer vibrate but sound is still active
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(SOUND)
+                    saveFeedbackOptionsToSharedPrefs(SOUND)
                 }
                 else -> {
                     // Nothing is selected
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(NONE)
+                    saveFeedbackOptionsToSharedPrefs(NONE)
                 }
             }
         }
@@ -86,42 +96,49 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
 
             if (isChecked) {
                 soundImage.apply {
-                    // Change icon color to accent color to show active
-                    setAsAccentColor(isChecked)
+                    // Change the layout based on if the checkbox is checked
+                    enableOrDisableSoundSettings(isChecked)
                     // Shake the icon because why not
                     startAnimation(AnimationUtils.loadAnimation(context, R.anim.shake))
                     // Create a mediaPlayer to play the beep when the sound is enabled
                     val mediaPlayer =
-                        MediaPlayer.create(context, pullAlertToneFromSharedPreferences(activity))
+                        MediaPlayer.create(
+                            context,
+                            pullAlertToneFromSharedPreferences(activity).soundFile
+                        )
                     // Play the beep
                     mediaPlayer.start()
                 }
             } else {
-                soundImage.setAsAccentColor(isChecked)
+                enableOrDisableSoundSettings(isChecked)
             }
 
             when {
                 isChecked && !vibrateSwitch.isChecked -> {
                     // Only sound is selected
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(SOUND)
+                    saveFeedbackOptionsToSharedPrefs(SOUND)
                 }
                 isChecked && vibrateSwitch.isChecked -> {
                     // Both vibrate and sound is selected
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(BOTH)
+                    saveFeedbackOptionsToSharedPrefs(BOTH)
                 }
                 !isChecked && vibrateSwitch.isChecked -> {
                     // No longer sound but vibrate is still active
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(VIBRATE)
+                    saveFeedbackOptionsToSharedPrefs(VIBRATE)
                 }
                 else -> {
                     // Nothing is selected
                     // Save the users setting in SharedPreferences
-                    saveFeebackOptionsToSharedPrefs(NONE)
+                    saveFeedbackOptionsToSharedPrefs(NONE)
                 }
             }
+        }
+
+        noHeadphoneModeCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            saveNoHeadphoneModeToSharedPrefs(isChecked)
         }
 
         // Spinner controlling options of alert tone
@@ -130,27 +147,67 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                 ArrayAdapter(
                     it,
                     android.R.layout.simple_list_item_1,
-                    AlertTones.values()
+                    AlertTone.values()
                 )
             }
         alertToneSpinner.onItemSelectedListener = this
 
         // Buttons for user to test sound options
         buttonLeft.setOnClickListener {
-            mediaPlayer = MediaPlayer.create(context, pullAlertToneFromSharedPreferences(activity))
-            mediaPlayer.setVolume(1F, 0F)
+            if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
+                mediaPlayer =
+                    MediaPlayer.create(
+                        context,
+                        pullAlertToneFromSharedPreferences(activity).soundFile
+                    )
+                mediaPlayer.setVolume(1F, 0F)
+            } else {
+                mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep)
+            }
             mediaPlayer.start()
         }
         buttonCenter.setOnClickListener {
-            MediaPlayer.create(context, pullAlertToneFromSharedPreferences(activity)).start()
+            mediaPlayer = if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
+                MediaPlayer.create(context, pullAlertToneFromSharedPreferences(activity).soundFile)
+            } else {
+                MediaPlayer.create(context, R.raw.alert_jazz)
+            }
+            mediaPlayer.start()
         }
         buttonRight.setOnClickListener {
-            mediaPlayer = MediaPlayer.create(context, pullAlertToneFromSharedPreferences(activity))
-            mediaPlayer.setVolume(0F, 1F)
+            if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
+                mediaPlayer =
+                    MediaPlayer.create(
+                        context,
+                        pullAlertToneFromSharedPreferences(activity).soundFile
+                    )
+                mediaPlayer.setVolume(0F, 1F)
+            } else {
+                mediaPlayer = MediaPlayer.create(context, R.raw.alert_snippy)
+            }
             mediaPlayer.start()
         }
 
         return view
+    }
+
+
+    private fun enableOrDisableSoundSettings(isChecked: Boolean) {
+        sound_icon_image_view.setAsAccentColor(isChecked)
+        settings_feedback_alert_tone_spinner.isEnabled = isChecked
+        settings_fragment_no_headphone_mode_checkBox.isEnabled = isChecked
+        settings_feedback_sound_test_left_side.isEnabled = isChecked
+        settings_feedback_sound_test_center.isEnabled = isChecked
+        settings_feedback_sound_test_right_side.isEnabled = isChecked
+        if (!isChecked) {
+            settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.darker_gray))
+            settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.darker_gray))
+            settings_feedback_sound_test_title.setTextColor(resources.getColor(android.R.color.darker_gray))
+        } else {
+            settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
+            settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
+            settings_feedback_sound_test_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
+        }
     }
 
     /*
@@ -160,7 +217,8 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         vibrateSwitch: Switch,
         soundSwitch: Switch,
         vibrateIcon: ImageView,
-        soundIcon: ImageView
+        soundIcon: ImageView,
+        alertToneSpinner: Spinner
     ) {
         when (pullFeedbackOptionFromSharedPreferences(activity)) {
             VIBRATE -> {
@@ -185,6 +243,21 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             }
         }
 
+        when (pullAlertToneFromSharedPreferences(activity)) {
+            AlertTone.Beep -> {
+                alertToneSpinner.prompt = AlertTone.Beep.name
+            }
+            AlertTone.Jazz -> {
+                alertToneSpinner.prompt = AlertTone.Jazz.name
+            }
+            AlertTone.Snippy -> {
+                alertToneSpinner.prompt = AlertTone.Snippy.name
+            }
+            AlertTone.Voice -> {
+                alertToneSpinner.prompt = AlertTone.Voice.name
+            }
+        }
+
         // Set the icon color based on if the switch is on or off
         vibrateIcon.setAsAccentColor(vibrateSwitch.isChecked)
         soundIcon.setAsAccentColor(soundSwitch.isChecked)
@@ -194,7 +267,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     *   Save the user selected option in SharedPreferences and shows a confirmation Snackbar, If the
     *   option that is selected already is saved, do not show the Snackbar
     * */
-    private fun saveFeebackOptionsToSharedPrefs(feedbackOption: FeedbackOption) {
+    private fun saveFeedbackOptionsToSharedPrefs(feedbackOption: FeedbackOption) {
         val sharedPrefs = activity?.getSharedPreferences(
             FEEDBACK_SHARED_PREF_KEY,
             Context.MODE_PRIVATE
@@ -228,21 +301,10 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     }
 
     /*
-    *   Possible feedback options, These are controlled by the switches for Vibrate and Sound
-    * */
-    enum class FeedbackOption(val saveKey: String, val snackBarMessage: String) {
-        VIBRATE("vibrate", "Vibration only has been saved"),
-        SOUND("sound", "Only sound option has been saved"),
-        BOTH("both", "Both vibration and sound has been saved"),
-        NONE("none", "No feedback saved"),
-        NEWUSER("newUser", "")
-    }
-
-    /*
     *   Save the user selected option in SharedPreferences and shows a confirmation Snackbar, If the
     *   option that is selected already is saved, do not show the Snackbar
     * */
-    private fun saveSoundOptionToSharedPrefs(alertTone: AlertTones) {
+    private fun saveSoundOptionToSharedPrefs(alertTone: AlertTone) {
         val sharedPrefs = activity?.getSharedPreferences(
             FEEDBACK_SHARED_PREF_KEY,
             Context.MODE_PRIVATE
@@ -256,9 +318,37 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     }
 
     /*
+    *   Save the no headphone mode to SharedPreferences
+    * */
+    private fun saveNoHeadphoneModeToSharedPrefs(isChecked: Boolean) {
+        val sharedPrefs = activity?.getSharedPreferences(
+            FEEDBACK_SHARED_PREF_KEY,
+            Context.MODE_PRIVATE
+        ) ?: return
+
+        // Save selected option to SharedPreferences
+        with(sharedPrefs.edit()) {
+            putBoolean(NO_HEADPHONE_MODE, isChecked)
+            commit()
+        }
+    }
+
+
+    /*
+    *   Possible feedback options, These are controlled by the switches for Vibrate and Sound
+    * */
+    enum class FeedbackOption(val saveKey: String, val snackBarMessage: String) {
+        VIBRATE("vibrate", "Vibration only has been saved"),
+        SOUND("sound", "Only sound option has been saved"),
+        BOTH("both", "Both vibration and sound has been saved"),
+        NONE("none", "No feedback saved"),
+        NEWUSER("newUser", "")
+    }
+
+    /*
     * Possible alert tones the user can select
     * */
-    enum class AlertTones(val saveKey: String, val soundFile: Int) {
+    enum class AlertTone(val saveKey: String, val soundFile: Int) {
         Beep("beep", R.raw.alert_beep),
         Jazz("jazz", R.raw.alert_jazz),
         Snippy("snippy", R.raw.alert_snippy),
@@ -283,12 +373,8 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
 
     // What to do when a sound is chosen from the spinner
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val selectedSound: AlertTones = parent?.getItemAtPosition(position) as AlertTones
+        val selectedSound: AlertTone = parent?.getItemAtPosition(position) as AlertTone
         saveSoundOptionToSharedPrefs(selectedSound)
-        mediaPlayer = MediaPlayer.create(context, selectedSound.soundFile)
-        mediaPlayer.start()
-
-        Toast.makeText(context, selectedSound.toString(), Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy() {
@@ -298,8 +384,9 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
 
     companion object {
         const val FEEDBACK_SHARED_PREF_KEY: String = "settings.settings_feedback_key_"
-        const val ALERT_TONE_KEY: String = "settings.settings_alert_tone_key"
         const val FEEDBACK_KEY: String = "settings.feedback_key"
+        const val ALERT_TONE_KEY: String = "settings.settings_alert_tone_key"
+        const val NO_HEADPHONE_MODE: String = "settings.settings_no_headphones_mode"
 
         /*
         *   This can be used throughout the app to verify what the current selected options are
@@ -324,23 +411,35 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         }
 
         /*
-        *  This can be used to pull the users selected alert tone.  This only pulls the sound file
+        *  This can be used to pull the users selected alert tone.
         * */
-        fun pullAlertToneFromSharedPreferences(activity: Activity?): Int {
+        fun pullAlertToneFromSharedPreferences(activity: Activity?): AlertTone {
             val sharedPrefs =
                 activity?.getSharedPreferences(FEEDBACK_SHARED_PREF_KEY, Context.MODE_PRIVATE)
-                    ?: return R.raw.alert_beep
+                    ?: return AlertTone.Beep
 
-            val savedAlertTone = sharedPrefs.getString(ALERT_TONE_KEY, AlertTones.Beep.saveKey)
+            val savedAlertTone = sharedPrefs.getString(ALERT_TONE_KEY, AlertTone.Beep.saveKey)
 
-            for (tones in AlertTones.values()) {
-                if (tones.saveKey == savedAlertTone) {
-                    return tones.soundFile
+            for (tone in AlertTone.values()) {
+                if (tone.saveKey == savedAlertTone) {
+                    return tone
                 }
             }
 
             // This should not get hit But if it does, well use Beep as default
-            return R.raw.alert_beep
+            return AlertTone.Beep
+        }
+
+        /*
+        *  This can be used to see if the user is using NoHeadphoneMode
+        * */
+        fun pullNoHeadphonesModeFromSharedPreferences(activity: Activity?): Boolean {
+            val sharedPrefs =
+                activity?.getSharedPreferences(FEEDBACK_SHARED_PREF_KEY, Context.MODE_PRIVATE)
+                    ?: return false
+
+            // Default value is false
+            return sharedPrefs.getBoolean(NO_HEADPHONE_MODE, false)
         }
     }
 }
