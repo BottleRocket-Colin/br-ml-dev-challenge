@@ -49,5 +49,4 @@ class HapticImplementation(val context: Context) : FeedbackInterface {
             }
         }
     }
-
 }

@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Path Finder</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="feedback_settings_title">Feedback Settings</string>
     <string name="vibrate_icon_content_description">Vibrate Icon</string>
     <string name="vibrate">Vibrate</string>
@@ -10,4 +8,11 @@
     <string name="sound">Sound</string>
     <string name="sound_option_description">Produce a sound when an upcoming collision is detected</string>
     <string name="settings_menu_title">Settings</string>
+    <string name="alert_tone_prompt">Choose alert tone</string>
+    <string-array name="alert_tone_array">
+        <item>Beep</item>
+        <item>Jazz</item>
+        <item>Snippy</item>
+        <item>Voice</item>
+    </string-array>
 </resources>

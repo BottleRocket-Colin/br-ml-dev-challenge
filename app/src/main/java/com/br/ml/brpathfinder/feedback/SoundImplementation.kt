@@ -15,7 +15,8 @@ class SoundImplementation(val context: Context) : FeedbackInterface {
 
     fun performSound(context: Context, direction: Direction, severity: Float) {
         // Create a media player with the beep sound
-        val mediaPlayer = MediaPlayer.create(context, R.raw.beep_sound)
+        // TODO - find a way to get the sound options here
+        val mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep)
         when (direction) {
             Direction.LEFT -> {
                 // set the volume to be the severity in the left side and silent in the right side
