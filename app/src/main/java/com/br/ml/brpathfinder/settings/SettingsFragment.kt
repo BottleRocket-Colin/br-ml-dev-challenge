@@ -2,7 +2,10 @@ package com.br.ml.brpathfinder.settings
 
 import android.app.Activity
 import android.content.Context
+import android.content.Context.AUDIO_SERVICE
 import android.graphics.Color
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
@@ -37,8 +40,10 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
 
         val alertToneSpinner: Spinner =
             view.findViewById(R.id.settings_feedback_alert_tone_spinner)
-        val noHeadphoneModeCheckBox: CheckBox =
-            view.findViewById(R.id.settings_fragment_no_headphone_mode_checkBox)
+        val noHeadphoneModeSwitch: Switch =
+            view.findViewById(R.id.settings_fragment_no_headphone_mode_switch)
+        val noHeadphoneSuggestion: TextView =
+            view.findViewById(R.id.settings_feedback_no_headphone_suggestion)
         val buttonLeft: Button = view.findViewById(R.id.settings_feedback_sound_test_left_side)
         val buttonCenter: Button = view.findViewById(R.id.settings_feedback_sound_test_center)
         val buttonRight: Button = view.findViewById(R.id.settings_feedback_sound_test_right_side)
@@ -48,7 +53,9 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             soundSwitch,
             vibrateImage,
             soundImage,
-            alertToneSpinner
+            alertToneSpinner,
+            noHeadphoneModeSwitch,
+            noHeadphoneSuggestion
         )
 
         // Switch controlling vibration feedback
@@ -100,6 +107,12 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     enableOrDisableSoundSettings(isChecked)
                     // Shake the icon because why not
                     startAnimation(AnimationUtils.loadAnimation(context, R.anim.shake))
+                    // Check if headphones are connected, if not, suggest NoHeadphone Mode
+                    if (!areHeadphonesConnected()) {
+                        noHeadphoneSuggestion.visibility = View.VISIBLE
+                    } else {
+                        noHeadphoneSuggestion.visibility = View.INVISIBLE
+                    }
                     // Create a mediaPlayer to play the beep when the sound is enabled
                     val mediaPlayer =
                         MediaPlayer.create(
@@ -137,10 +150,6 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             }
         }
 
-        noHeadphoneModeCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            saveNoHeadphoneModeToSharedPrefs(isChecked)
-        }
-
         // Spinner controlling options of alert tone
         alertToneSpinner.adapter =
             context?.let {
@@ -151,6 +160,12 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                 )
             }
         alertToneSpinner.onItemSelectedListener = this
+        alertToneSpinner.setSelection(pullAlertToneFromSharedPreferences(activity).ordinal)
+
+        // Switch controlling No Headphone mode
+        noHeadphoneModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            saveNoHeadphoneModeToSharedPrefs(isChecked)
+        }
 
         // Buttons for user to test sound options
         buttonLeft.setOnClickListener {
@@ -162,7 +177,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     )
                 mediaPlayer.setVolume(1F, 0F)
             } else {
-                mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep)
+                mediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
             }
             mediaPlayer.start()
         }
@@ -170,7 +185,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             mediaPlayer = if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
                 MediaPlayer.create(context, pullAlertToneFromSharedPreferences(activity).soundFile)
             } else {
-                MediaPlayer.create(context, R.raw.alert_jazz)
+                MediaPlayer.create(context, R.raw.piano_center)
             }
             mediaPlayer.start()
         }
@@ -183,7 +198,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     )
                 mediaPlayer.setVolume(0F, 1F)
             } else {
-                mediaPlayer = MediaPlayer.create(context, R.raw.alert_snippy)
+                mediaPlayer = MediaPlayer.create(context, R.raw.piano_right)
             }
             mediaPlayer.start()
         }
@@ -195,7 +210,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     private fun enableOrDisableSoundSettings(isChecked: Boolean) {
         sound_icon_image_view.setAsAccentColor(isChecked)
         settings_feedback_alert_tone_spinner.isEnabled = isChecked
-        settings_fragment_no_headphone_mode_checkBox.isEnabled = isChecked
+        settings_fragment_no_headphone_mode_switch.isEnabled = isChecked
         settings_feedback_sound_test_left_side.isEnabled = isChecked
         settings_feedback_sound_test_center.isEnabled = isChecked
         settings_feedback_sound_test_right_side.isEnabled = isChecked
@@ -203,6 +218,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.darker_gray))
             settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.darker_gray))
             settings_feedback_sound_test_title.setTextColor(resources.getColor(android.R.color.darker_gray))
+            settings_feedback_no_headphone_suggestion.visibility = View.INVISIBLE
         } else {
             settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
             settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
@@ -218,7 +234,9 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         soundSwitch: Switch,
         vibrateIcon: ImageView,
         soundIcon: ImageView,
-        alertToneSpinner: Spinner
+        alertToneSpinner: Spinner,
+        noHeadphoneSwitch: Switch,
+        noHeadphoneSuggestion: TextView
     ) {
         when (pullFeedbackOptionFromSharedPreferences(activity)) {
             VIBRATE -> {
@@ -258,9 +276,15 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             }
         }
 
+        noHeadphoneSwitch.isChecked = pullNoHeadphonesModeFromSharedPreferences(activity)
+
         // Set the icon color based on if the switch is on or off
         vibrateIcon.setAsAccentColor(vibrateSwitch.isChecked)
         soundIcon.setAsAccentColor(soundSwitch.isChecked)
+
+        if (!areHeadphonesConnected() || soundSwitch.isChecked) {
+            noHeadphoneSuggestion.visibility = View.VISIBLE
+        }
     }
 
     /*
@@ -364,6 +388,26 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         } else {
             this.setColorFilter(Color.BLACK)
         }
+    }
+
+    /*
+    *  Check if the headphones are connected
+    * */
+    private fun areHeadphonesConnected(): Boolean {
+        val audioManager: AudioManager =
+            requireContext().getSystemService(AUDIO_SERVICE) as AudioManager
+        val audioDevices = audioManager.getDevices(AudioManager.GET_DEVICES_ALL)
+
+        for (deviceInfo in audioDevices) {
+            if (deviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                || deviceInfo.type == AudioDeviceInfo.TYPE_WIRED_HEADSET
+                || deviceInfo.type == AudioDeviceInfo.TYPE_BLUETOOTH_A2DP
+            ) {
+                return true
+            }
+        }
+
+        return false
     }
 
     // required override for spinner

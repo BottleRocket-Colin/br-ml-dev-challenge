@@ -1,12 +1,13 @@
 package com.br.ml.brpathfinder.feedback
 
+import android.app.Activity
 import android.content.Context
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import com.br.ml.brpathfinder.models.Direction
 
-class HapticImplementation(val context: Context) : FeedbackInterface {
+class HapticImplementation(val activity: Activity) : FeedbackInterface {
     private val FEEDBACK_LENGTH_A = 100L
     private val FEEDBACK_LENGTH_B = 300L
     private val TAG = "HapticImplementation"
@@ -22,7 +23,7 @@ class HapticImplementation(val context: Context) : FeedbackInterface {
     // TODO - parse risks here????
     override fun signalUser(direction: Direction, severity: Float) {
         if (severity > .25)
-            performVibrate(context, direction, severity)
+            performVibrate(activity.applicationContext, direction, severity)
     }
 
     private fun performVibrate(context: Context, direction: Direction, severity: Float) {

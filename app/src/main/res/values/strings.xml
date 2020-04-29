@@ -16,6 +16,7 @@
     <string name="left_button">Left</string>
     <string name="right_button">Right</string>
     <string name="center_button">Center</string>
+    <string name="no_headphone_suggestion">No headphone mode recommended</string>
     <string-array name="alert_tone_array">
         <item>Beep</item>
         <item>Jazz</item>
