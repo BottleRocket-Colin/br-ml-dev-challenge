@@ -13,7 +13,7 @@
     <style name="SettingsTextHeader">
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 
     <style name="SettingsIcon">
@@ -22,7 +22,7 @@
     </style>
 
     <style name="SettingsTextSubHeader">
-        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:textColor">@android:color/black</item>
         <item name="android:textSize">20sp</item>
     </style>
 
@@ -48,8 +48,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:textColor">@android:color/black</item>
         <item name="strokeColor">@color/colorPrimaryPurple</item>
+        <item name="rippleColor">@color/colorPrimary</item>
     </style>
 
 </resources>

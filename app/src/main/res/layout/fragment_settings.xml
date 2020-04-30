@@ -6,18 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".settings.SettingsFragment">
 
-    <TextView
-        android:id="@+id/settings_feedback_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/feedback_settings_title"
-        android:textColor="@android:color/black"
-        android:textSize="32sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/vibrate_icon_image_view"
         style="@style/SettingsIcon"
@@ -27,7 +15,6 @@
         app:layout_constraintBottom_toBottomOf="@id/settings_feedback_vibrate_switch_title"
         app:layout_constraintEnd_toStartOf="@id/settings_feedback_vibrate_switch_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_feedback_title"
         app:layout_constraintTop_toTopOf="@id/settings_feedback_vibrate_switch_title" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -40,7 +27,6 @@
         android:text="@string/vibrate"
         app:layout_constraintBottom_toBottomOf="@id/settings_feedback_vibrate_switch"
         app:layout_constraintStart_toEndOf="@id/vibrate_icon_image_view"
-        app:layout_constraintTop_toBottomOf="@id/settings_feedback_title"
         app:layout_constraintTop_toTopOf="@+id/settings_feedback_vibrate_switch" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -48,9 +34,9 @@
         style="@style/SettingsSwitch"
         android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_feedback_title" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/vibrate_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -211,7 +197,6 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
 
