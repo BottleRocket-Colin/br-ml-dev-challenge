@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModel
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
 import com.br.ml.brpathfinder.feedback.FeedbackInterface
 import com.br.ml.brpathfinder.models.DetectedObject
+import com.br.ml.brpathfinder.models.Direction
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
 import com.google.firebase.ml.custom.*
@@ -40,7 +41,7 @@ import java.time.LocalDateTime
 class MainViewModel : ViewModel() {
     var modelFile: ByteArray? = null
     val detector by lazy { AlgorithmicDetector() }
-    var feedback: FeedbackInterface? = null
+    val feedbacks = mutableListOf<FeedbackInterface>()
 
     private val intValues = IntArray(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y)
     private var imgData: ByteBuffer = ByteBuffer.allocateDirect(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y * DIM_PIXEL_SIZE * 4)
@@ -128,6 +129,11 @@ class MainViewModel : ViewModel() {
                         postParkedImage(detectedObjects.size, timestamp)
                         // TODO - SG - Add ML kit frame time to UI below MLkit view.
                         //    -- Also add the ML Kit detection count to UI below as well
+
+                        // TODO- replace this with real risk logic.
+                        feedbacks.forEach { feedback ->
+                            feedback.signalUser(Risk(Direction.BOTH, detectedObjects.size / 6f, 1))
+                        }
 
                         detector.addFrame(
                             Frame(

@@ -18,6 +18,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.databinding.FragmentMainBinding
+import com.br.ml.brpathfinder.feedback.HapticImplementation
+import com.br.ml.brpathfinder.feedback.SoundImplementation
 import com.br.ml.brpathfinder.settings.SettingsFragment
 import kotlinx.android.synthetic.main.fragment_main.*
 
@@ -56,7 +58,8 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-//        viewModel.feedback = context?.let { HapticImplementation(it) }
+        context?.let { viewModel.feedbacks.add(HapticImplementation(it)) }
+        activity?.let { viewModel.feedbacks.add(SoundImplementation(it)) }
 
         viewModel.analyzedDimens.observe(this, Observer { dimens ->
             overlay.imageWidth = dimens.first
