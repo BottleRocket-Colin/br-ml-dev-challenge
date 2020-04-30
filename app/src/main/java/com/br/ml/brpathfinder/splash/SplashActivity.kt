@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
+import com.br.ml.brpathfinder.onboarding.OnboardingActivity
 import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
 
@@ -38,8 +39,8 @@ class SplashActivity : AppCompatActivity() {
                 // Go to the onboarding flow
                 // TODO - update this to correct Flow
                 Toast.makeText(this, "onboarding", Toast.LENGTH_SHORT).show()
-                Intent(this, MainActivity::class.java)
+                Intent(this, OnboardingActivity::class.java)
             }
-        }
+    }
     }
 }
