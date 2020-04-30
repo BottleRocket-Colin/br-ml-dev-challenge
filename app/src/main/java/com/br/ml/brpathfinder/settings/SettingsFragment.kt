@@ -18,7 +18,10 @@ import android.widget.AdapterView.OnItemSelectedListener
 import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.android.material.textview.MaterialTextView
 import kotlinx.android.synthetic.main.fragment_settings.*
 import kotlinx.android.synthetic.main.main_activity.*
 
@@ -33,20 +36,23 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
-        val vibrateSwitch: Switch = view.findViewById(R.id.settings_feedback_vibrate_switch)
-        val soundSwitch: Switch = view.findViewById(R.id.settings_feedback_sound_switch)
+        val vibrateSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_vibrate_switch)
+        val soundSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_sound_switch)
         val vibrateImage: ImageView = view.findViewById(R.id.vibrate_icon_image_view)
         val soundImage: ImageView = view.findViewById(R.id.sound_icon_image_view)
 
         val alertToneSpinner: Spinner =
             view.findViewById(R.id.settings_feedback_alert_tone_spinner)
-        val noHeadphoneModeSwitch: Switch =
+        val noHeadphoneModeSwitch: SwitchMaterial =
             view.findViewById(R.id.settings_fragment_no_headphone_mode_switch)
-        val noHeadphoneSuggestion: TextView =
+        val noHeadphoneSuggestion: MaterialTextView =
             view.findViewById(R.id.settings_feedback_no_headphone_suggestion)
-        val buttonLeft: Button = view.findViewById(R.id.settings_feedback_sound_test_left_side)
-        val buttonCenter: Button = view.findViewById(R.id.settings_feedback_sound_test_center)
-        val buttonRight: Button = view.findViewById(R.id.settings_feedback_sound_test_right_side)
+        val buttonLeft: MaterialButton =
+            view.findViewById(R.id.settings_feedback_sound_test_left_side)
+        val buttonCenter: MaterialButton =
+            view.findViewById(R.id.settings_feedback_sound_test_center)
+        val buttonRight: MaterialButton =
+            view.findViewById(R.id.settings_feedback_sound_test_right_side)
 
         setUpOptionsFromSharedPrefs(
             vibrateSwitch,
@@ -206,36 +212,16 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         return view
     }
 
-
-    private fun enableOrDisableSoundSettings(isChecked: Boolean) {
-        sound_icon_image_view.setAsAccentColor(isChecked)
-        settings_feedback_alert_tone_spinner.isEnabled = isChecked
-        settings_fragment_no_headphone_mode_switch.isEnabled = isChecked
-        settings_feedback_sound_test_left_side.isEnabled = isChecked
-        settings_feedback_sound_test_center.isEnabled = isChecked
-        settings_feedback_sound_test_right_side.isEnabled = isChecked
-        if (!isChecked) {
-            settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.darker_gray))
-            settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.darker_gray))
-            settings_feedback_sound_test_title.setTextColor(resources.getColor(android.R.color.darker_gray))
-            settings_feedback_no_headphone_suggestion.visibility = View.INVISIBLE
-        } else {
-            settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
-            settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
-            settings_feedback_sound_test_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
-        }
-    }
-
     /*
     *   Set the switches to be checked based on what the saved options are
     *  */
     private fun setUpOptionsFromSharedPrefs(
-        vibrateSwitch: Switch,
-        soundSwitch: Switch,
+        vibrateSwitch: SwitchMaterial,
+        soundSwitch: SwitchMaterial,
         vibrateIcon: ImageView,
         soundIcon: ImageView,
         alertToneSpinner: Spinner,
-        noHeadphoneSwitch: Switch,
+        noHeadphoneSwitch: SwitchMaterial,
         noHeadphoneSuggestion: TextView
     ) {
         when (pullFeedbackOptionFromSharedPreferences(activity)) {
@@ -288,6 +274,28 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     }
 
     /*
+    *  Disable the sound sub-options when the sound switch is turned off
+    *  */
+    private fun enableOrDisableSoundSettings(isChecked: Boolean) {
+        sound_icon_image_view.setAsAccentColor(isChecked)
+        settings_feedback_alert_tone_spinner.isEnabled = isChecked
+        settings_fragment_no_headphone_mode_switch.isEnabled = isChecked
+        settings_feedback_sound_test_left_side.isEnabled = isChecked
+        settings_feedback_sound_test_center.isEnabled = isChecked
+        settings_feedback_sound_test_right_side.isEnabled = isChecked
+        if (!isChecked) {
+            settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.darker_gray))
+            settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.darker_gray))
+            settings_feedback_sound_test_title.setTextColor(resources.getColor(android.R.color.darker_gray))
+            settings_feedback_no_headphone_suggestion.visibility = View.INVISIBLE
+        } else {
+            settings_feedback_select_alert_tone_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
+            settings_feedback_no_headphones_mode_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
+            settings_feedback_sound_test_title.setTextColor(resources.getColor(android.R.color.primary_text_light))
+        }
+    }
+
+    /*
     *   Save the user selected option in SharedPreferences and shows a confirmation Snackbar, If the
     *   option that is selected already is saved, do not show the Snackbar
     * */
@@ -314,8 +322,11 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     feedbackOption.snackBarMessage,
                     Snackbar.LENGTH_SHORT
                 )
+            }?.apply {
+                setTextColor(Color.WHITE)
+                animationMode = Snackbar.ANIMATION_MODE_FADE
+                duration = Snackbar.LENGTH_LONG
             }
-        snackBar?.setTextColor(Color.WHITE)
 
         snackBar?.setBackgroundTint(resources.getColor(R.color.colorPrimary))
         if (previouslySavedOption != feedbackOption) {
@@ -356,7 +367,6 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             commit()
         }
     }
-
 
     /*
     *   Possible feedback options, These are controlled by the switches for Vibrate and Sound

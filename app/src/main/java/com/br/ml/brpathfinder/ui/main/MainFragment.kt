@@ -58,7 +58,7 @@ class MainFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(MainViewModel::class.java)
-        context?.let { viewModel.feedbacks.add(HapticImplementation(it)) }
+        activity?.let { viewModel.feedbacks.add(HapticImplementation(it)) }
         activity?.let { viewModel.feedbacks.add(SoundImplementation(it)) }
 
         viewModel.analyzedDimens.observe(this, Observer { dimens ->

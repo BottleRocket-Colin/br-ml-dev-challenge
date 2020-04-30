@@ -20,8 +20,7 @@
 
     <ImageView
         android:id="@+id/vibrate_icon_image_view"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        style="@style/SettingsIcon"
         android:layout_marginStart="8dp"
         android:contentDescription="@string/vibrate_icon_content_description"
         android:src="@drawable/ic_vibrate_black_24dp"
@@ -31,30 +30,23 @@
         app:layout_constraintTop_toBottomOf="@id/settings_feedback_title"
         app:layout_constraintTop_toTopOf="@id/settings_feedback_vibrate_switch_title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_feedback_vibrate_switch_title"
+        style="@style/SettingsTextHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/vibrate"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="28sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/settings_feedback_vibrate_switch"
         app:layout_constraintStart_toEndOf="@id/vibrate_icon_image_view"
         app:layout_constraintTop_toBottomOf="@id/settings_feedback_title"
         app:layout_constraintTop_toTopOf="@+id/settings_feedback_vibrate_switch" />
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/settings_feedback_vibrate_switch"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        style="@style/SettingsSwitch"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:textSize="28sp"
-        android:thumbTint="@color/colorPrimaryPurple"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/settings_feedback_title" />
 
@@ -70,8 +62,7 @@
 
     <ImageView
         android:id="@+id/sound_icon_image_view"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        style="@style/SettingsIcon"
         android:layout_marginStart="8dp"
         android:contentDescription="@string/sound_icon_content_description"
         android:src="@drawable/ic_sound_icon_black_24dp"
@@ -79,33 +70,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/settings_feedback_sound_switch_title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_feedback_sound_switch_title"
+        style="@style/SettingsTextHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="@string/sound"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="28sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/settings_feedback_sound_switch"
         app:layout_constraintStart_toEndOf="@+id/sound_icon_image_view"
         app:layout_constraintTop_toTopOf="@id/settings_feedback_sound_switch" />
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/settings_feedback_sound_switch"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:textSize="28sp"
-        android:thumbTint="@color/colorPrimaryPurple"
+        style="@style/SettingsSwitch"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/settings_divider"
+        app:layout_constraintTop_toBottomOf="@+id/settings_divider"
         tools:checked="true" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/sound_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -117,24 +101,18 @@
 
     <View
         android:id="@+id/settings_divider"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginTop="16dp"
-        android:background="@android:color/darker_gray"
+        style="@style/SettingsDivider"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/vibrate_description"
-        tools:layout_editor_absoluteY="142dp" />
+        app:layout_constraintTop_toBottomOf="@+id/vibrate_description" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_feedback_select_alert_tone_title"
+        style="@style/SettingsTextSubHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/alert_tone_header"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/sound_description"
         app:layout_constraintTop_toBottomOf="@+id/sound_description" />
 
@@ -149,31 +127,26 @@
         app:layout_constraintStart_toStartOf="@+id/sound_description"
         app:layout_constraintTop_toBottomOf="@+id/settings_feedback_select_alert_tone_title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_feedback_no_headphones_mode_title"
+        style="@style/SettingsTextSubHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/no_headphones_mode_title"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/settings_feedback_alert_tone_spinner"
         app:layout_constraintTop_toBottomOf="@+id/settings_feedback_alert_tone_spinner" />
 
-    <Switch
+    <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/settings_fragment_no_headphone_mode_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorPrimary"
-        android:textSize="28sp"
-        android:thumbTint="@color/colorPrimaryPurple"
-        app:buttonTint="@color/checkbox_filter_tint"
+        style="@style/SettingsSwitch"
+        android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toBottomOf="@+id/settings_feedback_no_headphones_mode_title"
-        app:layout_constraintEnd_toEndOf="@+id/settings_feedback_sound_switch"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/settings_feedback_sound_switch"
         app:layout_constraintTop_toTopOf="@+id/settings_feedback_no_headphones_mode_title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_fragment_no_headphone_mode_description"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -184,46 +157,29 @@
         app:layout_constraintStart_toStartOf="@+id/settings_feedback_no_headphones_mode_title"
         app:layout_constraintTop_toBottomOf="@+id/settings_feedback_no_headphones_mode_title" />
 
-    <TextView
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_feedback_sound_test_title"
+        style="@style/SettingsTextSubHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/test_sound_settings_header"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="20sp"
         app:layout_constraintStart_toStartOf="@+id/settings_fragment_no_headphone_mode_description"
         app:layout_constraintTop_toBottomOf="@+id/settings_fragment_no_headphone_mode_description" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/settings_feedback_sound_test_left_side"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/SettingsButton"
         android:layout_marginTop="8dp"
         android:text="@string/left_button"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/settings_feedback_sound_test_center"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="@+id/settings_feedback_sound_test_title"
         app:layout_constraintTop_toBottomOf="@+id/settings_feedback_sound_test_title" />
 
-    <Button
-        android:id="@+id/settings_feedback_sound_test_right_side"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/right_button"
-        android:textColor="@android:color/primary_text_light"
-        android:textSize="18sp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/settings_feedback_sound_test_center"
-        app:layout_constraintEnd_toEndOf="@+id/settings_fragment_no_headphone_mode_description"
-        app:layout_constraintStart_toEndOf="@+id/settings_feedback_sound_test_center" />
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/settings_feedback_sound_test_center"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        style="@style/SettingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/center_button"
@@ -233,7 +189,19 @@
         app:layout_constraintEnd_toStartOf="@+id/settings_feedback_sound_test_right_side"
         app:layout_constraintStart_toEndOf="@+id/settings_feedback_sound_test_left_side" />
 
-    <TextView
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/settings_feedback_sound_test_right_side"
+        style="@style/SettingsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/right_button"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="18sp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/settings_feedback_sound_test_center"
+        app:layout_constraintEnd_toEndOf="@+id/settings_fragment_no_headphone_mode_description"
+        app:layout_constraintStart_toEndOf="@+id/settings_feedback_sound_test_center" />
+
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/settings_feedback_no_headphone_suggestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

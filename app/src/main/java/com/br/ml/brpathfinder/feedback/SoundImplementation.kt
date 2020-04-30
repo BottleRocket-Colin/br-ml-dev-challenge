@@ -16,7 +16,7 @@ class SoundImplementation(val activity: Activity) : FeedbackInterface {
         if (severity > .25) performSound(activity.applicationContext, direction, severity)
     }
 
-    fun performSound(context: Context, direction: Direction, severity: Float) {
+    private fun performSound(context: Context, direction: Direction, severity: Float) {
         if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
             // No headphones mode is turned OFF, play the sounds only on the side of incoming collision
             // Create a media player with the users chosen sound
@@ -44,9 +44,9 @@ class SoundImplementation(val activity: Activity) : FeedbackInterface {
             }
         } else {
             // No Headphone Mode is turned on
-            val leftMediaPlayer = MediaPlayer.create(context, R.raw.alert_beep)
-            val centerMediaPlayer = MediaPlayer.create(context, R.raw.alert_jazz)
-            val rightMediaPlayer = MediaPlayer.create(context, R.raw.alert_snippy)
+            val leftMediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
+            val centerMediaPlayer = MediaPlayer.create(context, R.raw.piano_center)
+            val rightMediaPlayer = MediaPlayer.create(context, R.raw.piano_right)
             when (direction) {
                 Direction.LEFT -> {
                     leftMediaPlayer.setVolume(severity, severity)

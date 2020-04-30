@@ -1,11 +1,55 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!--    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryPurple</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="SettingsTextHeader">
+        <item name="android:textSize">28sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+    </style>
+
+    <style name="SettingsIcon">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+    </style>
+
+    <style name="SettingsTextSubHeader">
+        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="SettingsDivider">
+        <item name="background">@android:color/darker_gray</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:layout_height">2dp</item>
+        <item name="android:layout_width">0dp</item>
+    </style>
+
+    <style name="SettingsSwitch" parent="AppTheme">
+        <item name="android:textSize">28sp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="thumbTint">@color/colorPrimaryPurple</item>
+        <item name="buttonTint">@color/checkbox_filter_tint</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="SettingsButton" parent="@style/Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/primary_text_light</item>
+        <item name="strokeColor">@color/colorPrimaryPurple</item>
     </style>
 
 </resources>
