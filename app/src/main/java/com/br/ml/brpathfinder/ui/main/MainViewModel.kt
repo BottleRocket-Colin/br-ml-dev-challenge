@@ -148,18 +148,13 @@ class MainViewModel : ViewModel() {
                 val timestamp = System.currentTimeMillis()
                 parkImage(mediaImage, timestamp) // Must run before FirebaseVisionImage.fromMediaImage
                 val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
+                postParkedImage(5, timestamp)
 
                 objectDetector.processImage(image)
                     .addOnSuccessListener { detectedObjects ->
                         Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
-                        postParkedImage(detectedObjects.size, timestamp)
                         // TODO - SG - Add ML kit frame time to UI below MLkit view.
-                        //    -- Also add the ML Kit detection count to UI below as well
-
-                        // TODO- replace this with real risk logic.
-                        feedbacks.forEach { feedback ->
-                            feedback.signalUser(Risk(Direction.BOTH, detectedObjects.size / 6f, 1))
-                        }
+                        //  --  Also add the ML Kit detection count to UI below as well
 
                         detector.addFrame(
                             Frame(
@@ -181,6 +176,12 @@ class MainViewModel : ViewModel() {
 //                                feedback?.signalUser(maxRisk)
 //                            }
 //                        }
+
+                        // TODO- replace this with real risk logic.
+                        feedbacks.forEach { feedback ->
+                            feedback.signalUser(Risk(Direction.BOTH, detectedObjects.size / 6f, 1))
+                        }
+
                     }
                     .addOnFailureListener { e ->
                         // TODO - proper error handling
