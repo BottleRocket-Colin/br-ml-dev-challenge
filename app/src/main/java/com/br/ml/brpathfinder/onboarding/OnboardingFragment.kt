@@ -1,6 +1,7 @@
 package com.br.ml.brpathfinder.onboarding
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -8,13 +9,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.cleveroad.slidingtutorial.*
 
 class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListener {
     private val TAG = "CustomTutorialSFragment"
-    private val TOTAL_PAGES = 6
+    private val TOTAL_PAGES = 5
 
     private val mOnSkipClickListener = View.OnClickListener { Toast.makeText(context, "Skip button clicked", Toast.LENGTH_SHORT).show() }
 
@@ -22,6 +24,12 @@ class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListen
 
     private var pagesColors: IntArray? = null
     private var noRollback = false
+
+    override fun onStop() {
+        super.onStop()
+        startActivity(Intent(context, MainActivity::class.java))
+        activity?.finish()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -24,10 +24,6 @@ class OnboardingPageProvider : TutorialPageProvider<Fragment> {
             4 -> {
                 SettingsFragment()
             }
-            5 -> {
-                // TODO: get rid of this hack...
-                MainFragment()
-            }
             else -> {
                 throw IllegalArgumentException("Unknown position: $position")
             }
