@@ -19,7 +19,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.R
+import com.br.ml.brpathfinder.onboarding.OnBoardingEnum
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
+import com.br.ml.brpathfinder.util.putEnum
+import com.erkutaras.showcaseview.ShowcaseManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -32,16 +35,18 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     private var mediaPlayer: MediaPlayer = MediaPlayer()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_settings, container, false)
 
         val vibrateSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_vibrate_switch)
         val soundSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_sound_switch)
         val vibrateImage: ImageView = view.findViewById(R.id.vibrate_icon_image_view)
+        vibrateFocus = buildFocus(vibrateImage, "Enable Vibrate")
         val soundImage: ImageView = view.findViewById(R.id.sound_icon_image_view)
+        soundFocus = buildFocus(soundImage, "Enable Sound")
 
         val alertToneSpinner: Spinner = view.findViewById(R.id.settings_feedback_alert_tone_spinner)
         val noHeadphoneModeSwitch: SwitchMaterial = view.findViewById(R.id.settings_fragment_no_headphone_mode_switch)
@@ -169,15 +174,24 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         noHeadphoneModeSwitch.setOnCheckedChangeListener { _, isChecked ->
             saveNoHeadphoneModeToSharedPrefs(isChecked)
         }
+        alertToneSpinner.adapter =
+                context?.let {
+                    ArrayAdapter(
+                            it,
+                            android.R.layout.simple_list_item_1,
+                            AlertTone.values()
+                    )
+                }
+        alertToneSpinner.onItemSelectedListener = this
 
         // Buttons for user to test sound options
         buttonLeft.setOnClickListener {
             if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
                 mediaPlayer =
-                    MediaPlayer.create(
-                        context,
-                        pullAlertToneFromSharedPreferences(activity).soundFile
-                    )
+                        MediaPlayer.create(
+                                context,
+                                pullAlertToneFromSharedPreferences(activity).soundFile
+                        )
                 mediaPlayer.setVolume(1F, 0F)
             } else {
                 mediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
@@ -195,10 +209,10 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         buttonRight.setOnClickListener {
             if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
                 mediaPlayer =
-                    MediaPlayer.create(
-                        context,
-                        pullAlertToneFromSharedPreferences(activity).soundFile
-                    )
+                        MediaPlayer.create(
+                                context,
+                                pullAlertToneFromSharedPreferences(activity).soundFile
+                        )
                 mediaPlayer.setVolume(0F, 1F)
             } else {
                 mediaPlayer = MediaPlayer.create(context, R.raw.piano_right)
@@ -447,7 +461,9 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         const val FEEDBACK_KEY: String = "settings.feedback_key"
         const val ALERT_TONE_KEY: String = "settings.settings_alert_tone_key"
         const val NO_HEADPHONE_MODE: String = "settings.settings_no_headphones_mode"
-
+        const val ONBOARDING_KEY: String = "invokeLocation"
+        lateinit var vibrateFocus: ShowcaseManager
+        lateinit var soundFocus: ShowcaseManager
         /*
         *   This can be used throughout the app to verify what the current selected options are
         * */
@@ -495,11 +511,37 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         * */
         fun pullNoHeadphonesModeFromSharedPreferences(activity: Activity?): Boolean {
             val sharedPrefs =
-                activity?.getSharedPreferences(FEEDBACK_SHARED_PREF_KEY, Context.MODE_PRIVATE)
-                    ?: return false
+                    activity?.getSharedPreferences(FEEDBACK_SHARED_PREF_KEY, Context.MODE_PRIVATE)
+                            ?: return false
 
             // Default value is false
             return sharedPrefs.getBoolean(NO_HEADPHONE_MODE, false)
         }
+
+        @JvmStatic
+        fun newInstance(invokeLocation: OnBoardingEnum) = SettingsFragment().apply {
+            arguments = Bundle().apply {
+                putEnum(ONBOARDING_KEY, invokeLocation)
+            }
+        }
+
+        fun showSoundFocus() = soundFocus.show()
+        fun showVibrateFocus() = vibrateFocus.show()
+    }
+
+    fun buildFocus(view: View, keyText:String): ShowcaseManager {
+        val builder = ShowcaseManager.Builder()
+        return builder.context(context!!)
+                .key(keyText)
+                .developerMode(false)
+                .view(view!!)
+                //.descriptionImageRes(R.mipmap.ic_launcher)
+                .descriptionTitle("Notification Method")
+                .descriptionText("Toggle to enable")
+                .buttonText("Next")
+                .marginFocusArea(40)
+                .add()
+                .build()
+                //.show()
     }
 }

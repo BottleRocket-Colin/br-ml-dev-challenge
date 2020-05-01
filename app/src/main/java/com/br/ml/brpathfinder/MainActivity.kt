@@ -7,8 +7,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
-import com.br.ml.brpathfinder.settings.SettingsFragment
-import com.br.ml.brpathfinder.ui.main.MainFragment
 import kotlinx.android.synthetic.main.main_activity.*
 
 
@@ -108,7 +106,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         setSupportActionBar(my_toolbar)
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
