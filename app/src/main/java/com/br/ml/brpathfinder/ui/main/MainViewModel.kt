@@ -16,8 +16,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
 import com.br.ml.brpathfinder.feedback.FeedbackInterface
+import com.br.ml.brpathfinder.feedback.SoundImplementation
 import com.br.ml.brpathfinder.models.DetectedObject
-import com.br.ml.brpathfinder.models.Direction
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
 import com.br.ml.brpathfinder.utils.convertBitmapToByteBuffer
@@ -206,13 +206,16 @@ class MainViewModel : ViewModel() {
         // TODO- This should go into a feedback manager
         risks.sortedByDescending { it.severity }.take(notifyAmount).let { notificationList ->
             notificationList.forEach { risk ->
-                feedbacks.forEach { feedback -> feedback.signalUser(risk) }
+                // only notify the first via haptic
+                feedbacks.forEachIndexed { idx, feedback ->
+                    if (feedback is SoundImplementation || idx == 0  ) {
+                        feedback.signalUser(risk)
+                    }
+                }
                 Thread.sleep(notifyWindow / notificationList.size + 2)
-
             }
         }
     }
-
 
 
     init {
