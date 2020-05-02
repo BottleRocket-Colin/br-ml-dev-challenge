@@ -181,20 +181,21 @@ class MainViewModel : ViewModel() {
                         history.clear()
                         history.addAll(detector.frameHistory)
 
-                        // TODO - Reconnect risk detection when we can get data from distance map into it.
                         // Run detection and pass results to feedback engine
-//                        detector.runDetection { list ->
-//                            risks.addAll(list)
-//
+                        detector.runDetection { list ->
+                            risks.clear()
+                            risks.addAll(list)
+
+                            // TODO - Notify in expanding ripple based off of severity....
 //                            risks.maxBy { it.severity }?.let { maxRisk ->
 //                                feedback?.signalUser(maxRisk)
 //                            }
-//                        }
+                        }
 
                         // TODO- replace this with real risk logic.
-                        feedbacks.forEach { feedback ->
-                            feedback.signalUser(Risk(Direction.BOTH, detectedObjects.size / 6f, 1))
-                        }
+//                        feedbacks.forEach { feedback ->
+//                            feedback.signalUser(Risk(Direction.BOTH, detectedObjects.size / 6f, 1))
+//                        }
 
                     }
                     .addOnFailureListener { e ->

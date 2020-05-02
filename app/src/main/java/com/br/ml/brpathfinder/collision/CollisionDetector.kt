@@ -12,6 +12,7 @@ abstract class CollisionDetector {
     //  Store H&W for image
     var height = 0
     var width = 0
+    val center get() = width / 2
 
     private fun trimHistory() {
         history.removeAll { it.timestamp < System.currentTimeMillis() - memory }

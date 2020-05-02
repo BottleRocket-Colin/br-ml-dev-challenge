@@ -7,6 +7,7 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import androidx.databinding.BindingAdapter
 import android.util.Log
+import com.br.ml.brpathfinder.models.DetectedObject
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
 import java.math.RoundingMode
@@ -75,6 +76,7 @@ class BoundingBoxOverlayView : SurfaceView {
 
     private val tail = 1500
 
+    // TODO - Remove after we don't need this to trigger update of UI
     var risks: List<Risk> = emptyList()
 
     // Canvas Info
@@ -154,8 +156,8 @@ class BoundingBoxOverlayView : SurfaceView {
         textSize = textFontSize
     }
 
-    private fun colorPicker(id: Int) =
-        when (risks.find { it.id == id }?.severity ?: 0f) {
+    private fun colorPicker(obj: DetectedObject) =
+        when (obj.risk?.severity ?: 0f) {
             in .8f .. 1.0f -> red
             in .6f .. .8f -> orange
             in .4f .. .6f -> yellow
@@ -184,10 +186,8 @@ class BoundingBoxOverlayView : SurfaceView {
         Log.d("CCS", "boxes to draw : ${boxes.size}")
         val sysTime = System.currentTimeMillis()
         boxes.forEach { (timestamp, detected) ->
-            val paint = colorPicker(detected.id)
+            val paint = colorPicker(detected)
             val scaled = detected.box.scaleBy(widthScale, heightScale)
-            // TODO - Move risk into object.....
-            val risk = risks.find { risk -> risk.id == detected.id }
 
 
             paint.alpha = 255 - (((sysTime - timestamp).toFloat() / tail.toFloat()) * 255).toInt().coerceAtMost(255)
@@ -196,7 +196,7 @@ class BoundingBoxOverlayView : SurfaceView {
             // Add debug info to box.
             var line1 = ""
             if (detected.id > 0) line1 += "ID: ${detected.id}  "
-            risk?.severity?.let { line1 += "Risk: ${risk.severity}" }
+            detected.risk?.severity?.let { line1 += "Risk: ${detected.risk?.severity}" }
             if (line1.isNotEmpty()) {
                 canvas?.drawText(line1, scaled.left.toFloat(), scaled.top.toFloat(), paint)
             }
@@ -215,9 +215,9 @@ fun BoundingBoxOverlayView.setBoxes(history: List<Frame>) {
     invalidate()
 }
 
+// FIXME - USe another mehtod than this unsued list to trigger UI updates....
 @BindingAdapter("risks")
 fun BoundingBoxOverlayView.setRiskList(riskList: List<Risk>) {
-    risks = riskList
     invalidate()
 }
 
