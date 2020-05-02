@@ -54,24 +54,26 @@ class BoundingBoxOverlayView : SurfaceView {
             }.apply {
                 forEach { (_, detected) ->
                     Log.d("CCS", "BBB - Made it to forEach")
-                    if (detected.id != 0 && detected.distance == null) {
+                    if (detected.id != 0) {
                         // TODO - Do same thing of risk....
-                        detected.distance = flatList.filter {
+                        detected.bubbledUpDistance = flatList.filter {
                             it.second.id == detected.id && it.second.distance != null
                         }.maxBy {
                             Log.d("CCS", "BBB - Made it to maxBy")
                             it.first
                         }?.second?.distance
                     }
+//                    if (detected.bubbledUpDistance == null) {
+                        // TODO - Implement a positional based search as backup in case ID changes
+                        //   ..... So a frame with new ID that overlapped a preivous frame less than a bit ago....
+                        //    if underlying ID doesn't exist in current frame then likely ID number just changed, also
+                        //  but it won't make sense until our depth map is closer to 100 milisecond round trip
+//                    }
                 }
             }
         }
-    // TODO - Implement a positional based search as backup in case ID changes
-    //   ..... So a frame with new ID that overlapped a preivous frame less than a bit ago....
-    //    if underlying ID doesn't exist in current frame then likely ID number just changed, also
-    //  but it won't make sense until our depth map is closer to 100 milisecond round trip
 
-    private val tail = 1000
+    private val tail = 1500
 
     var risks: List<Risk> = emptyList()
 
@@ -199,7 +201,7 @@ class BoundingBoxOverlayView : SurfaceView {
                 canvas?.drawText(line1, scaled.left.toFloat(), scaled.top.toFloat(), paint)
             }
 
-            detected.distance?.let {
+            detected.bubbledUpDistance?.let {
                 canvas?.drawText("Dist: ${decimalFormat.format(it)}", scaled.left.toFloat(), scaled.top.toFloat() + textLineHeight, paint)
             }
             paint.alpha = 255

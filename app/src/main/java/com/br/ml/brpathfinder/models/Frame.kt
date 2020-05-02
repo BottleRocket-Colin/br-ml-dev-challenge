@@ -12,4 +12,6 @@ data class Frame(val objects: List<DetectedObject>,
 
 data class DetectedObject(val id: Int,
                           val box: Rect,
-                          var distance: Double? = null)
+                          var distance: Double? = null,
+                          var bubbledUpDistance: Double? = null
+)
