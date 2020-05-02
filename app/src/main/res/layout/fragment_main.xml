@@ -50,7 +50,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="@id/center_line"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:scaleType="fitCenter"
+                android:scaleType="fitXY"
                 />
 
             <FrameLayout

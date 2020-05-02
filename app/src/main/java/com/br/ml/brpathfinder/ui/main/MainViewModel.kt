@@ -28,6 +28,7 @@ import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
 import com.jakewharton.rxrelay2.BehaviorRelay
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.tensorflow.lite.Interpreter
 import org.tensorflow.lite.gpu.GpuDelegate
@@ -35,6 +36,8 @@ import java.nio.ByteBuffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.time.LocalDateTime
+import kotlin.math.abs
+import kotlin.math.roundToInt
 
 
 class MainViewModel : ViewModel() {
@@ -49,6 +52,9 @@ class MainViewModel : ViewModel() {
         const val IMAGE_STD = 128.0f
         private const val dmTime = 1000
 
+        const val DISTANCE_W = 320
+        const val DISTANCE_H = 240
+
         // TODO - gather output constants
     }
 
@@ -59,9 +65,9 @@ class MainViewModel : ViewModel() {
     //  Heavy allocations
     private val intValues = IntArray(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y)
     private var imgData = ByteBuffer.allocateDirect(DIM_IMG_SIZE_X * DIM_IMG_SIZE_Y * DIM_PIXEL_SIZE * 4)
-    private val output = FloatBuffer.allocate(1 * 240 * 320 * 1)
+    private val output = FloatBuffer.allocate(1 * DISTANCE_H * DISTANCE_W * 1)
     private val outputMap = mapOf(0 to output)
-    private val outBitmap = Bitmap.createBitmap(320, 240, Bitmap.Config.ARGB_8888)
+    private val outBitmap = Bitmap.createBitmap(DISTANCE_W, DISTANCE_H, Bitmap.Config.ARGB_8888)
 
 
     // UI
@@ -74,7 +80,9 @@ class MainViewModel : ViewModel() {
     val tfDrawable = MutableLiveData<Drawable>()
 
     // Relays
-    private val tfRelay = BehaviorRelay.create<Bitmap>()
+    private val tfRelay = BehaviorRelay.create<Pair<Long, Bitmap>>()
+    private val distanceMapRelay = BehaviorRelay.create<Pair<Long, FloatArray>>()
+    private val disposables = CompositeDisposable()
 
     // State
     private var tfBusy = false
@@ -82,8 +90,14 @@ class MainViewModel : ViewModel() {
     private var lastDMC = 0L
 
     init {
-        // TODO - Connect disposables
-        tfRelay.observeOn(Schedulers.newThread()).subscribe { depthMapTFLite(it) }
+        tfRelay.observeOn(Schedulers.newThread()).subscribe { depthMapTFLite(it.first, it.second) }?.also { disposables.add(it)}
+        distanceMapRelay.observeOn(Schedulers.newThread()).subscribe { computeDistances(it.first, it.second) }?.also { disposables.add(it) }
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -217,13 +231,13 @@ class MainViewModel : ViewModel() {
         // TODO - SG - Connect to UI Switch
         if (size > 0 && (timestamp - dmTime > lastDMC)) {
             lastDMC = timestamp
-            parkedBitmap?.scale(640, 480)?.let { tfRelay.accept(it) }
+            parkedBitmap?.scale(640, 480)?.let { tfRelay.accept(Pair(timestamp,it)) }
         }
     }
 
 
 
-    private fun depthMapTFLite(bitmap: Bitmap) {
+    private fun depthMapTFLite(timestamp: Long, bitmap: Bitmap) {
         if (tfBusy) return
         tfBusy = true
         Log.d("CCS", "DMTF - Setup  ${LocalDateTime.now()}")
@@ -234,15 +248,46 @@ class MainViewModel : ViewModel() {
         output.rewind()
 
         Log.d("CCS", "DMTF - Start TF ${LocalDateTime.now()}")
-        // TODO maybe a try catch to see if emualtor is crashing and use non GPU
+        // TODO maybe a try catch to see if emulator is crashing and use non GPU
         tfInterpreter.runForMultipleInputsOutputs(inputArray, outputMap)
         Log.d("CCS", "DMTF - End TF ${LocalDateTime.now()}")
 
         outputMap[0]?.array()?.let {
             convertFloatArrayToBitmap(it, outBitmap)
             tfDrawable.postValue(BitmapDrawable(outBitmap))
+            distanceMapRelay.accept(Pair(timestamp,it ))
         }
+
         tfBusy = false
         Log.d("CCS", "DMTF - End func ${LocalDateTime.now()}")
     }
+
+    private fun computeDistances(timestamp: Long, distanceMap: FloatArray) {
+        Log.d("CCS", "CD- About to compute distances")
+
+        // Match closest frame by timestamp - no more than 1 second away from sample timestamp
+        Log.d("CCS", "CD- Timestamp: $timestamp")
+        val frame = detector.frameHistory.filter {
+//            Log.d("CCS", "CD- Delta: ${abs(it.timestamp - timestamp)}")
+            abs(it.timestamp - timestamp) < 1000
+        }.minBy { abs(it.timestamp - timestamp) } ?: return
+        Log.d("CCS", "CD- Continuing")
+
+        // Scale distance map to detector
+        val scaleX = DISTANCE_W.toDouble() / detector.width.toDouble()
+        val scaleY  = DISTANCE_H.toDouble() / detector.height.toDouble()
+
+        frame.objects.forEach { detected ->
+            val rangeX = ((detected.box.left * scaleX).roundToInt().coerceAtLeast(0) ..
+                    (detected.box.right * scaleX).roundToInt().coerceAtMost(DISTANCE_W-1))
+            val rangeY = ((detected.box.top * scaleY).roundToInt().coerceAtLeast(0) ..
+                    (detected.box.bottom * scaleY).roundToInt().coerceAtMost(DISTANCE_H-1))
+            val pixels = rangeX.count() * rangeY.count()
+            // TODO - Improve this to remove outliers instead of regular average
+            val sum = rangeY.sumByDouble { y -> rangeX.sumByDouble { x -> distanceMap[(y * DISTANCE_W) + x].toDouble() } }
+            detected.distance = sum / pixels
+            Log.d("CCS", "CD- ID: ${detected.id}  -  Distance: ${detected.distance}")
+        }
+    }
+
 }

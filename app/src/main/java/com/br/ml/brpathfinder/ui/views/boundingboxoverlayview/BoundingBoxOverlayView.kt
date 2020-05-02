@@ -9,6 +9,8 @@ import androidx.databinding.BindingAdapter
 import android.util.Log
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
+import java.math.RoundingMode
+import java.text.DecimalFormat
 
 
 class BoundingBoxOverlayView : SurfaceView {
@@ -35,6 +37,10 @@ class BoundingBoxOverlayView : SurfaceView {
         setWillNotDraw(false)
     }
 
+    private val decimalFormat = DecimalFormat("###.###").apply {
+        roundingMode = RoundingMode.CEILING
+    }
+
     // Dynamic Elements
     var history: List<Frame> = emptyList()
     private val boundingBoxes
@@ -42,9 +48,28 @@ class BoundingBoxOverlayView : SurfaceView {
             it.timestamp >  System.currentTimeMillis() - tail
         }.flatMap { frame ->
             frame.objects.map { Pair(frame.timestamp, it) }
-        }.partition { it.second.id == 0 }.let { (unknown, identified) ->
-            identified.sortedByDescending { it.first }.distinctBy { it.second.id } + unknown
+        }.let { flatList ->
+            flatList.partition { it.second.id == 0 }.let { (unknown, identified) ->
+                identified.sortedByDescending { it.first }.distinctBy { it.second.id } + unknown
+            }.apply {
+                forEach { (_, detected) ->
+                    Log.d("CCS", "BBB - Made it to forEach")
+                    if (detected.id != 0 && detected.distance == null) {
+                        // TODO - Do same thing of risk....
+                        detected.distance = flatList.filter {
+                            it.second.id == detected.id && it.second.distance != null
+                        }.maxBy {
+                            Log.d("CCS", "BBB - Made it to maxBy")
+                            it.first
+                        }?.second?.distance
+                    }
+                }
+            }
         }
+    // TODO - Implement a positional based search as backup in case ID changes
+    //   ..... So a frame with new ID that overlapped a preivous frame less than a bit ago....
+    //    if underlying ID doesn't exist in current frame then likely ID number just changed, also
+    //  but it won't make sense until our depth map is closer to 100 milisecond round trip
 
     private val tail = 1000
 
@@ -175,7 +200,7 @@ class BoundingBoxOverlayView : SurfaceView {
             }
 
             detected.distance?.let {
-                canvas?.drawText("Dist: ${detected.distance}", scaled.left.toFloat(), scaled.top.toFloat() + textLineHeight, paint)
+                canvas?.drawText("Dist: ${decimalFormat.format(it)}", scaled.left.toFloat(), scaled.top.toFloat() + textLineHeight, paint)
             }
             paint.alpha = 255
         }
