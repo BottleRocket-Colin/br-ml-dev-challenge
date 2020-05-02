@@ -36,6 +36,7 @@ import java.nio.ByteBuffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -54,8 +55,9 @@ class MainViewModel : ViewModel() {
 
         const val DISTANCE_W = 320
         const val DISTANCE_H = 240
+        const val notifyWindow = 333L
+        const val notifyAmount = 4
 
-        // TODO - gather output constants
     }
 
     var modelFile: ByteArray? = null
@@ -82,6 +84,7 @@ class MainViewModel : ViewModel() {
     // Relays
     private val tfRelay = BehaviorRelay.create<Pair<Long, Bitmap>>()
     private val distanceMapRelay = BehaviorRelay.create<Pair<Long, FloatArray>>()
+    private val notifyRelay = BehaviorRelay.create<List<Risk>>()
     private val disposables = CompositeDisposable()
 
     // State
@@ -92,6 +95,8 @@ class MainViewModel : ViewModel() {
     init {
         tfRelay.observeOn(Schedulers.newThread()).subscribe { depthMapTFLite(it.first, it.second) }?.also { disposables.add(it)}
         distanceMapRelay.observeOn(Schedulers.newThread()).subscribe { computeDistances(it.first, it.second) }?.also { disposables.add(it) }
+        notifyRelay.observeOn(Schedulers.newThread()).throttleFirst(notifyWindow, TimeUnit.MILLISECONDS)
+            .subscribe { notifyUser(it) }?.also { disposables.add(it) }
     }
 
 
@@ -186,17 +191,8 @@ class MainViewModel : ViewModel() {
                             risks.clear()
                             risks.addAll(list)
 
-                            // TODO - Notify in expanding ripple based off of severity....
-//                            risks.maxBy { it.severity }?.let { maxRisk ->
-//                                feedback?.signalUser(maxRisk)
-//                            }
+                            notifyRelay.accept(list)
                         }
-
-                        // TODO- replace this with real risk logic.
-//                        feedbacks.forEach { feedback ->
-//                            feedback.signalUser(Risk(Direction.BOTH, detectedObjects.size / 6f, 1))
-//                        }
-
                     }
                     .addOnFailureListener { e ->
                         // TODO - proper error handling
@@ -205,6 +201,19 @@ class MainViewModel : ViewModel() {
             }
         }
     }
+
+    private fun notifyUser(risks: List<Risk>) {
+        // TODO- This should go into a feedback manager
+        risks.sortedByDescending { it.severity }.take(notifyAmount).let { notificationList ->
+            notificationList.forEach { risk ->
+                feedbacks.forEach { feedback -> feedback.signalUser(risk) }
+                Thread.sleep(notifyWindow / notificationList.size + 2)
+
+            }
+        }
+    }
+
+
 
     init {
         imageAnalysis.setAnalyzer(AsyncTask.THREAD_POOL_EXECUTOR, analyzer)
