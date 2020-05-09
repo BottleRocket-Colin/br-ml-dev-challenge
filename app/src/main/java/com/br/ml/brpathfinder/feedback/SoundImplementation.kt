@@ -6,8 +6,8 @@ import android.media.MediaPlayer
 import android.util.Log
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.models.Direction
-import com.br.ml.brpathfinder.settings.SettingsFragment.Companion.pullAlertToneFromSharedPreferences
-import com.br.ml.brpathfinder.settings.SettingsFragment.Companion.pullNoHeadphonesModeFromSharedPreferences
+import com.br.ml.brpathfinder.settings.convertToAlertTone
+import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 
 class SoundImplementation(val activity: Activity) : FeedbackInterface {
     private val TAG = "SoundImplementation"
@@ -21,10 +21,14 @@ class SoundImplementation(val activity: Activity) : FeedbackInterface {
     }
 
     private fun performSound(context: Context, direction: Direction, severity: Float) {
-        if (!pullNoHeadphonesModeFromSharedPreferences(activity)) {
+        val preferences = PreferencesImplementation(context)
+        if (!preferences.noHeadphoneModeActive) {
             // No headphones mode is turned OFF, play the sounds only on the side of incoming collision
             // Create a media player with the users chosen sound
-            val mediaPlayer = MediaPlayer.create(context, pullAlertToneFromSharedPreferences(activity).soundFile)
+            val mediaPlayer = MediaPlayer.create(
+                context,
+                preferences.currentAlertToneSaveKey.convertToAlertTone().soundFile
+            )
             when (direction) {
                 Direction.LEFT -> {
                     // set the volume to be the severity in the left side and silent in the right side
