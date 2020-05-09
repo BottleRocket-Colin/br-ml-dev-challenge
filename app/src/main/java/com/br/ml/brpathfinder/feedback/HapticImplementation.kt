@@ -22,7 +22,7 @@ class HapticImplementation(val activity: Activity) : FeedbackInterface {
     private val bothVibratePattern =
         longArrayOf(FEEDBACK_LENGTH_A, FEEDBACK_LENGTH_OFF, FEEDBACK_LENGTH_A)
 
-    override fun signalUser(direction: Direction, severity: Float) {
+    override fun signalUser(direction: Direction, severity: Float, position: Float) {
         if (severity > .25)
             performVibrate(activity.applicationContext, direction, severity)
     }

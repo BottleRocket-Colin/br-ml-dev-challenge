@@ -61,18 +61,24 @@ class AlgorithmicDetector : CollisionDetector() {
         Log.d("CCS", "AG - ID: ${obj.id}\t    Timespan: $timeDelta")
         if (timeDelta == 0L) return null
 
+        // Isolate First and last boxes to determine deltas
         val firstBox = first.objects.first().box
         val lastBox = last.objects.first().box
 
+        // Compute delta of width
         val firstWidth =  with (firstBox) { right - left }
         val lastWidth =  with (lastBox) { right - left }
         val widthDelta = lastWidth - firstWidth
 
+        // Determine if object is approaching or not.
         val approachVelocity = widthDelta.toDouble() / timeDelta.toDouble()
         Log.d("CCS", "AG - ID: ${obj.id}\t    Velocity: $approachVelocity")
-
         val approaching: Boolean = approachVelocity > velocityThreshold
         if (approaching) Log.d("CCS", "AG - ID: ${obj.id}\t    approaching!")
+
+        // Determine precise directionality
+        val position = lastBox.exactCenterX() / width
+        Log.d("CCS", "AG - Position float: $position")
 
         // determine centered
         val direction: Direction = with (lastBox) {
@@ -138,7 +144,7 @@ class AlgorithmicDetector : CollisionDetector() {
         severity *= finalScale
         severity = severity.coerceAtMost(1.0)
         Log.d("CCS", "AG - ID: ${obj.id}\t    Final Risk: $severity")
-        return Risk(direction, severity.toFloat()).also { obj.risk = it }
+        return Risk(direction, severity.toFloat(), position).also { obj.risk = it }
     }
 
     private fun getRightOffset(lastBox: Rect) = lastBox.left - (width / 2)
