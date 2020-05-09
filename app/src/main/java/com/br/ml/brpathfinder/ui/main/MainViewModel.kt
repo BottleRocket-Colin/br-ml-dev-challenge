@@ -109,16 +109,31 @@ class MainViewModel : ViewModel() {
     // Gravity sensor setup
     ///////////////////////////////////////////////////////////////////////////
 
-
+    // TODO - Setup fall back so emulator can use CPU when first GPU exception is thrown.... maybe...
     // TF LIte Interpreter Setup
     private val tfInterpreter  by lazy {
         val buffer = ByteBuffer.allocateDirect(modelFile?.size ?: 0).apply { put(modelFile) }
         Interpreter(buffer, Interpreter.Options()
-            // TODO - Setup fall back so emulator can use CPU when first GPU exception is thrown.... maybe...
-//            .setNumThreads(4)
-            .addDelegate(GpuDelegate())
+            .addDelegate(GpuDelegate(GpuDelegate.Options().apply {
+                setPrecisionLossAllowed(true)
+            }))
         )
     }
+
+    // OpenGl Shader Storage Buffer Object
+//    private val ssboId by lazy{
+//        // Ensure a valid EGL rendering context.
+////        val eglContext: EGLContext = eglGetCurrentContext()
+////        if (eglContext.equals(EGL_NO_CONTEXT)) return false
+//
+//// Create an SSBO.
+//        val id = IntArray(1)
+//        glGenBuffers(id.size, id, 0)
+//        glBindBuffer(GL_SHADER_STORAGE_BUFFER, id[0])
+//        glBufferData(GL_SHADER_STORAGE_BUFFER, inputSize, null, GL_STREAM_COPY)
+//        glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0) // unbind
+//        id[0]
+//    }
 
     ///////////////////////////////////////////////////////////////////////////
     // Image analysis setup
@@ -256,14 +271,16 @@ class MainViewModel : ViewModel() {
         Log.d("CCS", "DMTF - Setup  ${LocalDateTime.now()}")
 
         convertBitmapToByteBuffer(bitmap, imgData, intValues)
-        val input = (imgData.rewind() as? ByteBuffer)?.asFloatBuffer()
+        val input = (imgData.rewind() as? ByteBuffer)
         val inputArray = arrayOf(input)
         output.rewind()
 
         Log.d("CCS", "DMTF - Start TF ${LocalDateTime.now()}")
         // TODO maybe a try catch to see if emulator is crashing and use non GPU
-        tfInterpreter.runForMultipleInputsOutputs(inputArray, outputMap)
+
+        tfInterpreter.run(inputArray[0], outputMap[0])
         Log.d("CCS", "DMTF - End TF ${LocalDateTime.now()}")
+        Log.d("CCS", "DMTF - TF Logged Duration  ${tfInterpreter.lastNativeInferenceDurationNanoseconds}")
 
         outputMap[0]?.array()?.let {
             convertFloatArrayToBitmap(it, outBitmap)
