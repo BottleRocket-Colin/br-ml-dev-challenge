@@ -12,7 +12,11 @@ import com.br.ml.brpathfinder.settings.SettingsFragment.Companion.pullNoHeadphon
 class SoundImplementation(val activity: Activity) : FeedbackInterface {
     private val TAG = "SoundImplementation"
 
-    override fun signalUser(direction: Direction, severity: Float) {
+    // TODO - Eric here's where you can pickup that float value we discussed.
+    //  0  = left speaker at 100% of severity value, right = 0
+    //  .5 = both speakers at 100% of severity value
+    //  1  = right speaker at 100% of severity value, left = 0
+    override fun signalUser(direction: Direction, severity: Float, position: Float) {
         if (severity > .25) performSound(activity.applicationContext, direction, severity)
     }
 
