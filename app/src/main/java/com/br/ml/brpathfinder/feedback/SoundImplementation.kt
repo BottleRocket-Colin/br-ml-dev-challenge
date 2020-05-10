@@ -12,66 +12,79 @@ import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 class SoundImplementation(val activity: Activity) : FeedbackInterface {
     private val TAG = "SoundImplementation"
 
-    // TODO - Eric here's where you can pickup that float value we discussed.
-    //  0  = left speaker at 100% of severity value, right = 0
-    //  .5 = both speakers at 100% of severity value
-    //  1  = right speaker at 100% of severity value, left = 0
+    /*
+    If the position is below .5 the left ear will be 100% volume and the right ear will be 2x the position
+    basically making it a 10% volume reduction for ever .05 lower from .5 the position is
+    If the position is above .5 the left ear will be 1-position x2 and right ear will be 100p
+    (Ex. - .15 = L 100, R 30
+         - .40 = L 100, R 80
+         - .65 = L 70, R 100
+         - .85 = L 30, R 100
+    * */
     override fun signalUser(direction: Direction, severity: Float, position: Float) {
-        if (severity > .25) performSound(activity.applicationContext, direction, severity)
+        Log.d("ere signalUser", "Direction: $direction, Severity: $severity, Position $position")
+        val leftSide: Float
+        val rightSide: Float
+        val noHeadphoneModeAlertTone = 0
+
+        @Suppress("DEPRECATION")
+        if (position in 0..1) {
+            when {
+                position > .5 -> {
+                    leftSide = ((1 - position) * 2)
+                    rightSide = 1f
+                }
+                position < .5 -> {
+                    leftSide = 1f
+                    rightSide = (position * 2)
+                }
+                else -> {
+                    leftSide = 1f
+                    rightSide = 1f
+                }
+            }
+        } else {
+            leftSide = 0f
+            rightSide = 0f
+        }
+
+        performSound(activity.applicationContext, leftSide, rightSide, noHeadphoneModeAlertTone)
     }
 
-    private fun performSound(context: Context, direction: Direction, severity: Float) {
+    private fun performSound(
+        context: Context,
+        leftSide: Float,
+        rightSide: Float,
+        noHeadphoneModeAlertTone: Int
+    ) {
         val preferences = PreferencesImplementation(context)
-        if (!preferences.noHeadphoneModeActive) {
-            // No headphones mode is turned OFF, play the sounds only on the side of incoming collision
-            // Create a media player with the users chosen sound
+        Log.d(
+            "ere performSound",
+            "leftSide: $leftSide, rightSide: $rightSide, noHeadphoneModeAlertTone $noHeadphoneModeAlertTone"
+        )
+        if (preferences.noHeadphoneModeActive) {
+            val mediaPlayer: MediaPlayer
+            when {
+                leftSide > rightSide -> {
+                    mediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
+                    mediaPlayer.setVolume(leftSide, rightSide)
+                }
+                leftSide < rightSide -> {
+                    mediaPlayer = MediaPlayer.create(context, R.raw.piano_right)
+                    mediaPlayer.setVolume(leftSide, rightSide)
+                }
+                else -> {
+                    mediaPlayer = MediaPlayer.create(context, R.raw.piano_center)
+                }
+            }
+            mediaPlayer.start()
+        } else {
             val mediaPlayer = MediaPlayer.create(
                 context,
                 preferences.currentAlertToneSaveKey.convertToAlertTone().soundFile
             )
-            when (direction) {
-                Direction.LEFT -> {
-                    // set the volume to be the severity in the left side and silent in the right side
-                    mediaPlayer.setVolume(severity, 0f)
-                    // play the beep sound
-                    mediaPlayer.start()
-                    Log.d(TAG, "Sound on $direction side at $severity severity")
-                }
-                Direction.RIGHT -> {
-                    // Set the volume as silent in the left side and the level of the severity on the right side
-                    mediaPlayer.setVolume(0f, severity)
-                    mediaPlayer.start()
-                    Log.d(TAG, "Sound on $direction side at $severity severity")
-                }
-                Direction.BOTH -> {
-                    // Play both sides at the volume of the severity
-                    mediaPlayer.setVolume(severity, severity)
-                    mediaPlayer.start()
-                    Log.d(TAG, "Sound on $direction side at $severity severity")
-                }
-            }
-        } else {
-            // No Headphone Mode is turned on
-            val leftMediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
-            val centerMediaPlayer = MediaPlayer.create(context, R.raw.piano_center)
-            val rightMediaPlayer = MediaPlayer.create(context, R.raw.piano_right)
-            when (direction) {
-                Direction.LEFT -> {
-                    leftMediaPlayer.setVolume(severity, severity)
-                    leftMediaPlayer.start()
-                    Log.d(TAG, "No Headphone Mode Sound on $direction side at $severity severity")
-                }
-                Direction.BOTH -> {
-                    centerMediaPlayer.setVolume(severity, severity)
-                    centerMediaPlayer.start()
-                    Log.d(TAG, "No Headphone Mode Sound on $direction side at $severity severity")
-                }
-                Direction.RIGHT -> {
-                    rightMediaPlayer.setVolume(severity, severity)
-                    rightMediaPlayer.start()
-                    Log.d(TAG, "No Headphone Mode Sound on $direction side at $severity severity")
-                }
-            }
+            mediaPlayer.setVolume(leftSide, rightSide)
+            mediaPlayer.start()
         }
     }
 }
