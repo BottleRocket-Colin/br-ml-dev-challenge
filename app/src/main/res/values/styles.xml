@@ -8,6 +8,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryPurple</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="fontFamily">@font/open_sans</item>
     </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
@@ -20,6 +21,7 @@
         <item name="android:textSize">28sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@android:color/black</item>
+        <item name="fontFamily">@font/montserrat</item>
     </style>
 
     <style name="SettingsIcon">
@@ -28,6 +30,7 @@
     </style>
 
     <style name="SettingsTextSubHeader">
+        <item name="fontFamily">@font/montserrat</item>
         <item name="android:textColor">@android:color/black</item>
         <item name="android:textSize">20sp</item>
     </style>
