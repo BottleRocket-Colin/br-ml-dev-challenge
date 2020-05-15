@@ -1,18 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.percentlayout.widget.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootFirstPage"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:background="@android:color/holo_orange_dark"
+    android:background="@drawable/background_color"
     tools:ignore="ContentDescription">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/logoRoot"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="16dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintVertical_bias="0">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/logoImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@mipmap/path_finder_logo_complete"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="328:350"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/guideline"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="@string/text_path_finder"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintStart_toStartOf="@id/logoRoot"
+        app:layout_constraintTop_toBottomOf="@id/logoRoot" />
 
     <ImageView
         android:id="@+id/ivFirstImage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:visibility="gone"
         android:src="@mipmap/path_finder_logo_complete"
         app:layout_heightPercent="80%"
         app:layout_widthPercent="80%" />
@@ -97,16 +148,4 @@
         app:layout_marginTopPercent="38%"
         app:layout_widthPercent="8%" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="@string/text_path_finder"
-        android:textColor="@android:color/white"
-        android:textSize="@dimen/text_size_large"
-        app:layout_heightPercent="50%"
-        app:layout_marginBottomPercent="5%"
-        app:layout_widthPercent="80%" />
-</androidx.percentlayout.widget.PercentRelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

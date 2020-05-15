@@ -8,7 +8,7 @@ import com.cleveroad.slidingtutorial.TransformItem
 
 class OnboardingSoundNotifSettingFragment : PageSupportFragment() {
     override fun getLayoutResId(): Int {
-        return R.layout.fragment_page_onboarding_sound_setting
+        return R.layout.fragment_page_onboarding_vibration_setting
     }
 
     @NonNull
