@@ -13,6 +13,7 @@ class OnboardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
         setSupportActionBar(toolbar)
+        toolbar.title = getString(R.string.onboarding_title)
     }
 
 }

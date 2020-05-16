@@ -8,4 +8,9 @@
         android:icon="@drawable/ic_settings"
         app:showAsAction="always"/>
 
+    <item android:id='@+id/action_mainFragment_to_about'
+        android:title="@string/menu_about"
+        android:icon="@drawable/ic_baseline_info"
+        app:showAsAction="ifRoom"/>
+
 </menu>
