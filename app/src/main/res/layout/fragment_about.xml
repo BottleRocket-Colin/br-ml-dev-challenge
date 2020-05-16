@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    >
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        tools:context=".AboutFragment">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/start_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="20dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/end_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_end="20dp" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/center_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent=".50" />
+
+        <TextView
+            android:id="@+id/about_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/black"
+            android:textSize="32sp"
+            android:text="@string/app_name"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+        <TextView
+            android:id="@+id/about_subtitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            android:text="brought to you by the"
+            app:layout_constraintTop_toBottomOf="@id/about_title"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+
+        <TextView
+            android:id="@+id/club_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/montserrat"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:text="Bottle Rocket ML Club"
+            app:layout_constraintTop_toBottomOf="@id/about_subtitle"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+        <View
+            android:id="@+id/divider1"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/black"
+
+            app:layout_constraintTop_toBottomOf="@id/club_name"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+
+        <TextView
+            android:id="@+id/about_dev1_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:text="Lead Developer"
+            app:layout_constraintTop_toBottomOf="@id/divider1"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/center_guideline"
+            />
+
+        <TextView
+            android:id="@+id/about_dev1_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Colin Shelton"
+            app:layout_constraintStart_toStartOf="@id/center_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintBottom_toBottomOf="@id/about_dev1_label"
+            />
+
+        <TextView
+            android:id="@+id/about_dev2_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:text="Club Founder"
+            app:layout_constraintTop_toBottomOf="@id/about_dev1_label"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/center_guideline"
+            />
+
+        <TextView
+            android:id="@+id/about_dev2_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Jing Chang"
+            app:layout_constraintStart_toStartOf="@id/center_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintBottom_toBottomOf="@id/about_dev2_label"
+            />
+
+        <TextView
+            android:id="@+id/about_dev3_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:text="Developer"
+            app:layout_constraintTop_toBottomOf="@id/about_dev2_label"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/center_guideline"
+            />
+
+        <TextView
+            android:id="@+id/about_dev3_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Eric Emery"
+            app:layout_constraintStart_toStartOf="@id/center_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintBottom_toBottomOf="@id/about_dev3_label"
+            />
+
+
+        <TextView
+            android:id="@+id/about_dev4_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:text="Developer"
+            app:layout_constraintTop_toBottomOf="@id/about_dev3_label"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/center_guideline"
+            />
+
+        <TextView
+            android:id="@+id/about_dev4_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Sam Grogan"
+            app:layout_constraintStart_toStartOf="@id/center_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintBottom_toBottomOf="@id/about_dev4_label"
+            />
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="24dp"
+            android:background="@color/black"
+
+            app:layout_constraintTop_toBottomOf="@id/about_dev4_label"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+        <!--  TODO -link both to GPL and to our repo.  -->
+        <TextView
+            android:id="@+id/license_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:text="Licensed under GNU GPL v3.0"
+            app:layout_constraintTop_toBottomOf="@id/divider2"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+
+        <TextView
+            android:id="@+id/repo_link"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="10sp"
+            android:text="https://github.com/BottleRocket-Colin/br-ml-dev-challenge"
+            app:layout_constraintTop_toBottomOf="@id/license_label"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+        <!--    Attribution to dense depth.  -->
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_marginTop="16dp"
+            android:background="@color/black"
+
+            app:layout_constraintTop_toBottomOf="@id/repo_link"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+        <TextView
+            android:id="@+id/credits_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:text="Credits"
+            app:layout_constraintTop_toBottomOf="@id/divider3"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+        <TextView
+            android:id="@+id/about_credit1_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:text="DenseDepth"
+            app:layout_constraintTop_toBottomOf="@id/credits_label"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/center_guideline"
+            />
+
+        <TextView
+            android:id="@+id/about_credit1_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="Ibraheem Alhashim"
+            app:layout_constraintStart_toStartOf="@id/center_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            app:layout_constraintBottom_toBottomOf="@id/about_credit1_label"
+            />
+
+
+
+
+        <TextView
+            android:id="@+id/credit1_linka"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="10sp"
+            android:text="https://github.com/ialhashim"
+            app:layout_constraintTop_toBottomOf="@id/about_credit1_label"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+        <TextView
+            android:id="@+id/credit1_linkb"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:fontFamily="@font/open_sans"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="10sp"
+            android:text="https://github.com/ialhashim/DenseDepth"
+            app:layout_constraintTop_toBottomOf="@id/credit1_linka"
+            app:layout_constraintStart_toStartOf="@id/start_guideline"
+            app:layout_constraintEnd_toEndOf="@id/end_guideline"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

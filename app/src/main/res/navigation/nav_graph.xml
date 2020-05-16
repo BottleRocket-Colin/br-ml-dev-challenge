@@ -8,7 +8,16 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.br.ml.brpathfinder.ui.main.MainFragment"
-        android:label="MainFragment" />
+        android:label="MainFragment" >
+
+        <action
+            android:id="@+id/action_mainFragment_to_about"
+            app:destination="@id/about"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
     <navigation
         android:id="@+id/settings"
         app:startDestination="@id/settingsFragment" >
@@ -18,4 +27,9 @@
             android:label="fragment_settings"
             tools:layout="@layout/fragment_settings" />
     </navigation>
+    <fragment
+        android:id="@+id/about"
+        android:name="com.br.ml.brpathfinder.AboutFragment"
+        android:label="@string/about_title"
+        tools:layout="@layout/fragment_about" />
 </navigation>
