@@ -84,6 +84,15 @@ class MainFragment : Fragment() {
         }
     }
 
+    override fun onResume() {
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        super.onResume()
+    }
+
+    override fun onPause() {
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        super.onPause()
+    }
 
     private fun startCamera() {
         preview.setOnPreviewOutputUpdateListener { previewOutput ->

@@ -201,8 +201,9 @@ class BoundingBoxOverlayView : SurfaceView {
                 canvas?.drawText(line1, scaled.left.toFloat(), scaled.top.toFloat(), paint)
             }
 
+            // Raw distance is on reverse scale from 0 - 10 where 10 = close and 0 = far
             detected.bubbledUpDistance?.let {
-                canvas?.drawText("Dist: ${decimalFormat.format(it)}", scaled.left.toFloat(), scaled.top.toFloat() + textLineHeight, paint)
+                canvas?.drawText("Dist: ${decimalFormat.format(10 - it)}", scaled.left.toFloat(), scaled.top.toFloat() + textLineHeight, paint)
             }
             paint.alpha = 255
         }
