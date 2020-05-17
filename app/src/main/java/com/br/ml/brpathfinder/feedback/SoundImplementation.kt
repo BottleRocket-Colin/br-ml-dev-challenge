@@ -31,16 +31,16 @@ class SoundImplementation(val activity: Activity) : FeedbackInterface {
         if (position in 0..1) {
             when {
                 position > .5 -> {
-                    leftSide = ((1 - position) * 2)
-                    rightSide = 1f
+                    leftSide = (((1 - position) * 2) * severity)
+                    rightSide = severity
                 }
                 position < .5 -> {
-                    leftSide = 1f
-                    rightSide = (position * 2)
+                    leftSide = severity
+                    rightSide = ((position * 2) * severity)
                 }
                 else -> {
-                    leftSide = 1f
-                    rightSide = 1f
+                    leftSide = severity
+                    rightSide = severity
                 }
             }
         } else {
