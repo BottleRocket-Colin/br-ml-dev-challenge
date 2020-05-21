@@ -1,50 +1,42 @@
 package com.br.ml.brpathfinder.splash
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
+import android.util.DisplayMetrics
+import android.view.MotionEvent
+import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
-import com.br.ml.brpathfinder.onboarding.OnboardingActivity
-import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
-import com.br.ml.brpathfinder.settings.convertToFeedbackOption
-import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 
 class SplashActivity : AppCompatActivity() {
 
-    private lateinit var preferences: PreferencesImplementation
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash)
-        preferences = PreferencesImplementation(baseContext)
-
-        delayThenGo(2000, whereToGo())
+        try {
+            val videoHolder = VideoView(this)
+            setContentView(videoHolder)
+            val video: Uri =
+                Uri.parse("android.resource://" + packageName + "/" + R.raw.splash)
+            videoHolder.apply {
+                setVideoURI(video)
+                setOnCompletionListener { jump() }
+                start()
+            }
+        } catch (ex: Exception) {
+            jump()
+        }
     }
 
-    private fun delayThenGo(delayLength: Long, intent: Intent) {
-        val handler = Handler()
-        handler.postDelayed({
-            startActivity(intent)
-            finish()
-        }, delayLength)
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        jump()
+        return true
     }
 
-    private fun whereToGo(): Intent {
-        // Check if the user needs to be assigned as new
-        if (preferences.currentFeedbackMode.isBlank()) {
-            preferences.currentFeedbackMode == NEWUSER.saveKey
-        }
-        return when (preferences.currentFeedbackMode.convertToFeedbackOption()) {
-            VIBRATE, SOUND, BOTH, NONE -> {
-                // Go to the Main Activity
-                Intent(this, MainActivity::class.java)
-            }
-            else -> {
-                // Go to the onboarding flow
-                Intent(this, OnboardingActivity::class.java)
-            }
-        }
+    private fun jump() {
+        if (isFinishing) return
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }
