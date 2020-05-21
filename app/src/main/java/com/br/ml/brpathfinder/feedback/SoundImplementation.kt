@@ -3,7 +3,7 @@ package com.br.ml.brpathfinder.feedback
 import android.app.Activity
 import android.content.Context
 import android.media.MediaPlayer
-import android.util.Log
+import android.media.PlaybackParams
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.models.Direction
 import com.br.ml.brpathfinder.settings.convertToAlertTone
@@ -19,13 +19,14 @@ class SoundImplementation(val activity: Activity) : FeedbackInterface {
     (Ex. - .15 = L 100, R 30
          - .40 = L 100, R 80
          - .65 = L 70, R 100
-         - .85 = L 30, R 100
+         - .85 = L 30, R 100 )
+    Then we take these and multiply by severity to give the user a sense of sonar
+    Finally in the performSound() function we add a pitch based of how far the position is away from .5F
     * */
     override fun signalUser(direction: Direction, severity: Float, position: Float) {
-        Log.d("ere signalUser", "Direction: $direction, Severity: $severity, Position $position")
         val leftSide: Float
         val rightSide: Float
-        val noHeadphoneModeAlertTone = 0
+        val pitch: Float?
 
         @Suppress("DEPRECATION")
         if (position in 0..1) {
@@ -33,37 +34,43 @@ class SoundImplementation(val activity: Activity) : FeedbackInterface {
                 position > .5 -> {
                     leftSide = (((1 - position) * 2) * severity)
                     rightSide = severity
+                    pitch = position - .49F
                 }
                 position < .5 -> {
                     leftSide = severity
                     rightSide = ((position * 2) * severity)
+                    pitch = .51F - position
                 }
                 else -> {
                     leftSide = severity
                     rightSide = severity
+                    pitch = null
                 }
             }
         } else {
             leftSide = 0f
             rightSide = 0f
+            pitch = null
         }
 
-        performSound(activity.applicationContext, leftSide, rightSide, noHeadphoneModeAlertTone)
+        performSound(
+            activity.applicationContext,
+            leftSide,
+            rightSide,
+            pitch
+        )
     }
 
     private fun performSound(
         context: Context,
         leftSide: Float,
         rightSide: Float,
-        noHeadphoneModeAlertTone: Int
+        pitch: Float?
     ) {
         val preferences = PreferencesImplementation(context)
-        Log.d(
-            "ere performSound",
-            "leftSide: $leftSide, rightSide: $rightSide, noHeadphoneModeAlertTone $noHeadphoneModeAlertTone"
-        )
         if (preferences.noHeadphoneModeActive) {
             val mediaPlayer: MediaPlayer
+            val params = PlaybackParams()
             when {
                 leftSide > rightSide -> {
                     mediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
@@ -77,12 +84,21 @@ class SoundImplementation(val activity: Activity) : FeedbackInterface {
                     mediaPlayer = MediaPlayer.create(context, R.raw.piano_center)
                 }
             }
+            if (pitch != null && pitch > 0.0F && pitch < 1.0F) {
+                params.pitch = pitch
+                mediaPlayer.playbackParams = params
+            }
             mediaPlayer.start()
         } else {
             val mediaPlayer = MediaPlayer.create(
                 context,
                 preferences.currentAlertToneSaveKey.convertToAlertTone().soundFile
             )
+            val params = PlaybackParams()
+            if (pitch != null && pitch > 0.0F && pitch < 1.0F) {
+                params.pitch = pitch
+                mediaPlayer.playbackParams = params
+            }
             mediaPlayer.setVolume(leftSide, rightSide)
             mediaPlayer.start()
         }
