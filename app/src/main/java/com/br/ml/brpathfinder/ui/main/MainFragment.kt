@@ -3,6 +3,7 @@ package com.br.ml.brpathfinder.ui.main
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
@@ -13,14 +14,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.databinding.FragmentMainBinding
 import com.br.ml.brpathfinder.feedback.HapticImplementation
 import com.br.ml.brpathfinder.feedback.SoundImplementation
-import com.br.ml.brpathfinder.settings.SettingsFragment
 import kotlinx.android.synthetic.main.fragment_main.*
 
 
@@ -60,7 +59,7 @@ class MainFragment : Fragment() {
         activity?.let { viewModel.feedbacks.add(HapticImplementation(it)) }
         activity?.let { viewModel.feedbacks.add(SoundImplementation(it)) }
 
-        viewModel.analyzedDimens.observe(this, Observer { dimens ->
+        viewModel.analyzedDimens.observe(viewLifecycleOwner, Observer { dimens ->
             overlay.imageWidth = dimens.first
             overlay.imageHeight = dimens.second
         })
@@ -77,7 +76,7 @@ class MainFragment : Fragment() {
             if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
                 // TODO - Show rationale
             } else {
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.CAMERA), cameraPermissionCode)
+                requestPermissions(arrayOf(Manifest.permission.CAMERA), cameraPermissionCode)
             }
         } else {
             startCamera()
@@ -99,10 +98,7 @@ class MainFragment : Fragment() {
             cameraTextureView.surfaceTexture = previewOutput.surfaceTexture
         }
 
-        CameraX.bindToLifecycle(this as LifecycleOwner, viewModel.imageAnalysis, preview)
-        // TODO - SG - Look at connecting preview to toggle.
-        //  it can be unbound using following:
-        //        CameraX.unbind(preview)
+        CameraX.bindToLifecycle(viewLifecycleOwner, viewModel.imageAnalysis)
     }
 
 
@@ -110,6 +106,7 @@ class MainFragment : Fragment() {
         when (requestCode) {
             cameraPermissionCode -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Log.d("MainFrag", "Starting Camera")
                     startCamera()
                 } else {
                     // TODO - permission denied, boo!

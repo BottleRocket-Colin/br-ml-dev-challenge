@@ -9,7 +9,7 @@ import com.br.ml.brpathfinder.models.Direction
 import com.br.ml.brpathfinder.settings.convertToAlertTone
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 
-class SoundImplementation(val activity: Activity) : FeedbackInterface {
+class SoundImplementation(private val activity: Activity) : FeedbackInterface {
     private val TAG = "SoundImplementation"
 
     /*

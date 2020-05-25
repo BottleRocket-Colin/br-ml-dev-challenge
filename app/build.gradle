@@ -79,10 +79,3 @@ dependencies {
 }
 
 //apply plugin: 'com.google.gms.google-services'
-
-
-//sceneform.asset('../../../Downloads/andy.obj',
-//        'default',
-//        '../../../Downloads/andy.sfa',
-//        'src/main/assets/andy')
-
