@@ -37,11 +37,11 @@ class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListen
             val requireContext: Context? = context
             pagesColors = requireContext?.let {
                 intArrayOf(
-                    ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
-                    ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
-                    ContextCompat.getColor(requireContext, R.color.design_default_color_background),
-                    ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
-                    ContextCompat.getColor(requireContext, R.color.design_default_color_background)
+                        ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
+                        ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
+                        ContextCompat.getColor(requireContext, R.color.design_default_color_background),
+                        ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
+                        ContextCompat.getColor(requireContext, R.color.design_default_color_background)
                 )
             }
         }
@@ -77,10 +77,12 @@ class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListen
                 Log.i(TAG, "onPageChanged: Empty fragment is visible")
             }
             2 -> {
-                SettingsFragment.showSoundFocus()
+                OnboardingSettingsVibrateFragment.showVibrateFocus()
+                Log.i(TAG, "onPageChanged: show vibrate focus")
             }
             4 -> {
-                SettingsFragment.showVibrateFocus()
+                OnboardingSettingsSoundFragment.showSoundFocus()
+                Log.i(TAG, "onPageChanged: show sound focus")
             }
         }
 
