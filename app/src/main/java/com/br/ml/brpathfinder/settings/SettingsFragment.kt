@@ -20,7 +20,6 @@ import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment.AlertTone.Beep
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
-import com.erkutaras.showcaseview.ShowcaseManager
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -48,9 +47,9 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         val vibrateSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_vibrate_switch)
         val soundSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_sound_switch)
         val vibrateImage: ImageView = view.findViewById(R.id.vibrate_icon_image_view)
-        vibrateFocus = buildFocus(vibrateImage, "Enable Vibrate")
+        //vibrateFocus = buildFocus(vibrateImage, "Enable Vibrate")
         val soundImage: ImageView = view.findViewById(R.id.sound_icon_image_view)
-        soundFocus = buildFocus(soundImage, "Enable Sound")
+        //soundFocus = buildFocus(soundImage, "Enable Sound")
 
         val alertToneSpinner: Spinner = view.findViewById(R.id.settings_feedback_alert_tone_spinner)
         val noHeadphoneModeSwitch: SwitchMaterial =
@@ -345,7 +344,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     *   Save the user selected option in SharedPreferences and shows a confirmation Snackbar, If the
     *   option that is selected already is saved, do not show the Snackbar
     * */
-    private fun saveFeedbackOptionsToSharedPrefs(feedbackOption: FeedbackOption) {
+    fun saveFeedbackOptionsToSharedPrefs(feedbackOption: FeedbackOption) {
         // Get previously saved option, in future we could have this also "undo" the change
         val previouslySavedOption = preferences.currentFeedbackMode
 
@@ -441,29 +440,13 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         mediaPlayer.release()
     }
 
-    companion object {
+/*    companion object {
         lateinit var vibrateFocus: ShowcaseManager
         lateinit var soundFocus: ShowcaseManager
 
         fun showSoundFocus() = soundFocus.show()
         fun showVibrateFocus() = vibrateFocus.show()
-    }
-
-    fun buildFocus(view: View, keyText: String): ShowcaseManager {
-        val builder = ShowcaseManager.Builder()
-        return builder.context(context!!)
-            .key(keyText)
-            .developerMode(false)
-            .view(view)
-            //.descriptionImageRes(R.mipmap.ic_launcher)
-            .descriptionTitle("Notification Method")
-            .descriptionText("Toggle to enable")
-            .buttonText("Next")
-            .marginFocusArea(40)
-            .add()
-            .build()
-        //.show()
-    }
+    }*/
 }
 
 fun String.convertToFeedbackOption(): SettingsFragment.FeedbackOption {

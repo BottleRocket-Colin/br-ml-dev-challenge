@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".settings.SettingsFragment">
+
+    <ImageView
+        android:id="@+id/vibrate_icon_image_view"
+        style="@style/SettingsIcon"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/vibrate_icon_content_description"
+        android:src="@drawable/ic_vibrate_black_24dp"
+        app:layout_constraintBottom_toBottomOf="@id/onboarding_settings_vibrate_switch_title"
+        app:layout_constraintEnd_toStartOf="@id/onboarding_settings_vibrate_switch_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/onboarding_settings_vibrate_switch_title"
+        style="@style/SettingsTextHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="@string/vibrate"
+        app:layout_constraintBottom_toBottomOf="@id/onboarding_settings_feedback_vibrate_switch"
+        app:layout_constraintStart_toEndOf="@id/vibrate_icon_image_view"
+        app:layout_constraintTop_toBottomOf="@id/guideline"  />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/onboarding_settings_feedback_vibrate_switch"
+        style="@style/SettingsSwitch"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline"
+        android:contentDescription="@string/vibrate_option_description" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/vibrate_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/open_sans"
+        android:text="@string/vibrate_option_description"
+        app:layout_constraintEnd_toEndOf="@id/onboarding_settings_feedback_vibrate_switch"
+        app:layout_constraintStart_toStartOf="@id/onboarding_settings_vibrate_switch_title"
+        app:layout_constraintTop_toBottomOf="@id/onboarding_settings_vibrate_switch_title"  />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
