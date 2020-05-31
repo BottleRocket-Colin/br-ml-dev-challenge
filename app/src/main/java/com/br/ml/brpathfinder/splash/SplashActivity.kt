@@ -9,11 +9,17 @@ import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
+import com.br.ml.brpathfinder.onboarding.OnboardingActivity
+import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 
 class SplashActivity : AppCompatActivity() {
+    private lateinit var preferences: PreferencesImplementation
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        preferences = PreferencesImplementation(this)
+
         try {
             val videoHolder = VideoView(this)
             setContentView(videoHolder)
@@ -36,7 +42,13 @@ class SplashActivity : AppCompatActivity() {
 
     private fun jump() {
         if (isFinishing) return
-        startActivity(Intent(this, MainActivity::class.java))
+
+        if (preferences.completedOnboarding) {
+            startActivity(Intent(this, MainActivity::class.java))
+        } else {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+        }
+
         finish()
     }
 }

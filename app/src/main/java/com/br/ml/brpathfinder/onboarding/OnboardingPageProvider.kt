@@ -1,8 +1,6 @@
 package com.br.ml.brpathfinder.onboarding
 
 import androidx.fragment.app.Fragment
-import com.br.ml.brpathfinder.settings.SettingsFragment
-import com.br.ml.brpathfinder.ui.main.MainFragment
 import com.cleveroad.slidingtutorial.TutorialPageProvider
 
 class OnboardingPageProvider : TutorialPageProvider<Fragment> {
@@ -13,16 +11,16 @@ class OnboardingPageProvider : TutorialPageProvider<Fragment> {
                 OnboardingStartFragment()
             }
             1 -> {
-                OnboardingSoundNotifSettingFragment()
+                OnboardingSettingsVibrationInstructionsFragment()
             }
             2 -> {
-                SettingsFragment()
+                OnboardingSettingsVibrateFragment()
             }
             3 -> {
-                OnboardingVibrationNotifSettingFragment()
+                OnboardingSettingsSoundInstructionsFragment()
             }
             4 -> {
-                SettingsFragment()
+                OnboardingSettingsSoundFragment()
             }
             else -> {
                 throw IllegalArgumentException("Unknown position: $position")

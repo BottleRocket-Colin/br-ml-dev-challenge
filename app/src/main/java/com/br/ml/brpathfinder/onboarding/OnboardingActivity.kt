@@ -17,8 +17,3 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
 }
-
-enum class OnBoardingEnum {
-    SOUND_NOTIFICATION_SETTING,
-    VIBRATION_NOTIFICATION_SETTING
-}

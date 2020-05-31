@@ -12,11 +12,14 @@ import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment
+import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 import com.cleveroad.slidingtutorial.*
 
 class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListener {
     private val TAG = "CustomTutorialSFragment"
     private val TOTAL_PAGES = 5
+
+    private lateinit var preferences: PreferencesImplementation
 
     private val mOnSkipClickListener = View.OnClickListener { Toast.makeText(context, "Skip button clicked", Toast.LENGTH_SHORT).show() }
 
@@ -28,20 +31,23 @@ class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListen
     override fun onStop() {
         super.onStop()
         startActivity(Intent(context, MainActivity::class.java))
+        preferences.completedOnboarding = true
         activity?.finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        preferences = PreferencesImplementation(requireContext())
+
         if (pagesColors == null) {
             val requireContext: Context? = context
             pagesColors = requireContext?.let {
                 intArrayOf(
-                    ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
-                    ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
-                    ContextCompat.getColor(requireContext, R.color.design_default_color_background),
-                    ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
-                    ContextCompat.getColor(requireContext, R.color.design_default_color_background)
+                        ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
+                        ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
+                        ContextCompat.getColor(requireContext, R.color.design_default_color_background),
+                        ContextCompat.getColor(requireContext, R.color.colorPurpleBackground),
+                        ContextCompat.getColor(requireContext, R.color.design_default_color_background)
                 )
             }
         }
@@ -77,10 +83,12 @@ class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListen
                 Log.i(TAG, "onPageChanged: Empty fragment is visible")
             }
             2 -> {
-                SettingsFragment.showSoundFocus()
+                OnboardingSettingsVibrateFragment.showVibrateFocus()
+                Log.i(TAG, "onPageChanged: show vibrate focus")
             }
             4 -> {
-                SettingsFragment.showVibrateFocus()
+                OnboardingSettingsSoundFragment.showSoundFocus()
+                Log.i(TAG, "onPageChanged: show sound focus")
             }
         }
 

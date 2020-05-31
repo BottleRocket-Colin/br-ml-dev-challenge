@@ -246,10 +246,14 @@ class MainViewModel : ViewModel() {
         // TODO - SG - if both UI switches are off this step can be skipped.
         Log.d("CCS","Beginning park for timestamp: $timestamp")
 
-        val intBuffer: IntBuffer = convertYUVImageToARGBIntBuffer(image)
-        parkedBitmap = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
-        parkedBitmap?.copyPixelsFromBuffer(intBuffer)
-        Log.d("CCS","Bitmap parked for timestamp: $timestamp")
+        try {
+            val intBuffer: IntBuffer = convertYUVImageToARGBIntBuffer(image)
+            parkedBitmap = Bitmap.createBitmap(image.height, image.width, Bitmap.Config.ARGB_8888)
+            parkedBitmap?.copyPixelsFromBuffer(intBuffer)
+            Log.d("MVM","Bitmap parked for timestamp: $timestamp")
+        } catch (e: Exception) {
+            Log.e("MVM", "Failed parking bitmap for: $timestamp", e)
+        }
     }
 
     fun postParkedImage(size: Int, timestamp: Long) {
