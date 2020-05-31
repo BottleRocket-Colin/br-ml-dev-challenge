@@ -4,4 +4,5 @@ interface PreferencesInterface {
     var currentFeedbackMode: String
     var currentAlertToneSaveKey: String
     var noHeadphoneModeActive: Boolean
+    var completedOnboarding: Boolean
 }
