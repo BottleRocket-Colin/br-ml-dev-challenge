@@ -47,9 +47,9 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         val vibrateSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_vibrate_switch)
         val soundSwitch: SwitchMaterial = view.findViewById(R.id.settings_feedback_sound_switch)
         val vibrateImage: ImageView = view.findViewById(R.id.vibrate_icon_image_view)
-        //vibrateFocus = buildFocus(vibrateImage, "Enable Vibrate")
         val soundImage: ImageView = view.findViewById(R.id.sound_icon_image_view)
-        //soundFocus = buildFocus(soundImage, "Enable Sound")
+        val pitchSwitch: SwitchMaterial =
+            view.findViewById(R.id.settings_feedback_pitch_adjust_switch)
 
         val alertToneSpinner: Spinner = view.findViewById(R.id.settings_feedback_alert_tone_spinner)
         val noHeadphoneModeSwitch: SwitchMaterial =
@@ -70,7 +70,8 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             soundImage,
             alertToneSpinner,
             noHeadphoneModeSwitch,
-            noHeadphoneSuggestion
+            noHeadphoneSuggestion,
+            pitchSwitch
         )
 
         // Switch controlling vibration feedback
@@ -166,6 +167,12 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         noHeadphoneModeSwitch.setOnCheckedChangeListener { _, isChecked ->
             preferences.noHeadphoneModeActive = isChecked
         }
+
+        // Switch controlling the 'Pitch Adjust' setting
+        pitchSwitch.setOnCheckedChangeListener { _, isChecked ->
+            preferences.pitchAdjustModeActive = isChecked
+        }
+
         alertToneSpinner.adapter =
             context?.let {
                 ArrayAdapter(
@@ -237,7 +244,8 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         soundIcon: ImageView,
         alertToneSpinner: Spinner,
         noHeadphoneSwitch: SwitchMaterial,
-        noHeadphoneSuggestion: TextView
+        noHeadphoneSuggestion: TextView,
+        pitchSwitch: SwitchMaterial
     ) {
         when (preferences.currentFeedbackMode.convertToFeedbackOption()) {
             VIBRATE -> {
@@ -278,6 +286,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         }
 
         noHeadphoneSwitch.isChecked = preferences.noHeadphoneModeActive
+        pitchSwitch.isChecked = preferences.pitchAdjustModeActive
 
         // Set the icon color based on if the switch is on or off
         vibrateIcon.setAsAccentColor(vibrateSwitch.isChecked)
@@ -298,6 +307,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         settings_feedback_sound_test_left_side.isEnabled = isChecked
         settings_feedback_sound_test_center.isEnabled = isChecked
         settings_feedback_sound_test_right_side.isEnabled = isChecked
+        settings_feedback_pitch_adjust_switch.isEnabled = isChecked
         if (!isChecked) {
             settings_feedback_select_alert_tone_title.setTextColor(
                 ContextCompat.getColor(
@@ -440,13 +450,6 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         mediaPlayer.release()
     }
 
-/*    companion object {
-        lateinit var vibrateFocus: ShowcaseManager
-        lateinit var soundFocus: ShowcaseManager
-
-        fun showSoundFocus() = soundFocus.show()
-        fun showVibrateFocus() = vibrateFocus.show()
-    }*/
 }
 
 fun String.convertToFeedbackOption(): SettingsFragment.FeedbackOption {

@@ -11,6 +11,7 @@ import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 
 class SoundImplementation(private val activity: Activity) : FeedbackInterface {
     private val TAG = "SoundImplementation"
+    val preferences = PreferencesImplementation(activity.applicationContext)
 
     /*
     If the position is below .5 the left ear will be 100% volume and the right ear will be 2x the position
@@ -34,12 +35,12 @@ class SoundImplementation(private val activity: Activity) : FeedbackInterface {
                 position > .5 -> {
                     leftSide = (((1 - position) * 2) * severity)
                     rightSide = severity
-                    pitch = position - .49F
+                    pitch = if (preferences.pitchAdjustModeActive) position - .49F else null
                 }
                 position < .5 -> {
                     leftSide = severity
                     rightSide = ((position * 2) * severity)
-                    pitch = .51F - position
+                    pitch = if (preferences.pitchAdjustModeActive) .51F - position else null
                 }
                 else -> {
                     leftSide = severity
