@@ -166,6 +166,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         // Switch controlling No Headphone mode
         noHeadphoneModeSwitch.setOnCheckedChangeListener { _, isChecked ->
             preferences.noHeadphoneModeActive = isChecked
+            pitchSwitch.isEnabled = !isChecked
         }
 
         // Switch controlling the 'Pitch Adjust' setting
@@ -193,7 +194,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     )
                 mediaPlayer.setVolume(1F, 0F)
             } else {
-                mediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
+                mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep2)
             }
             mediaPlayer.start()
         }
@@ -204,7 +205,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     preferences.currentAlertToneSaveKey.convertToAlertTone().soundFile
                 )
             } else {
-                MediaPlayer.create(context, R.raw.piano_center)
+                MediaPlayer.create(context, R.raw.alert_beep)
             }
             mediaPlayer.start()
         }
@@ -217,7 +218,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     )
                 mediaPlayer.setVolume(0F, 1F)
             } else {
-                mediaPlayer = MediaPlayer.create(context, R.raw.piano_right)
+                mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep3)
             }
             mediaPlayer.start()
         }
@@ -287,6 +288,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
 
         noHeadphoneSwitch.isChecked = preferences.noHeadphoneModeActive
         pitchSwitch.isChecked = preferences.pitchAdjustModeActive
+        pitchSwitch.isEnabled = !noHeadphoneSwitch.isChecked
 
         // Set the icon color based on if the switch is on or off
         vibrateIcon.setAsAccentColor(vibrateSwitch.isChecked)

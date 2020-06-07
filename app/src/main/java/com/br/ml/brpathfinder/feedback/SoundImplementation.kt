@@ -35,12 +35,12 @@ class SoundImplementation(private val activity: Activity) : FeedbackInterface {
                 position > .5 -> {
                     leftSide = (((1 - position) * 2) * severity)
                     rightSide = severity
-                    pitch = if (preferences.pitchAdjustModeActive) position - .49F else null
+                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position - .49F else null
                 }
                 position < .5 -> {
                     leftSide = severity
                     rightSide = ((position * 2) * severity)
-                    pitch = if (preferences.pitchAdjustModeActive) .51F - position else null
+                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) .51F - position else null
                 }
                 else -> {
                     leftSide = severity
@@ -74,18 +74,18 @@ class SoundImplementation(private val activity: Activity) : FeedbackInterface {
             val params = PlaybackParams()
             when {
                 leftSide > rightSide -> {
-                    mediaPlayer = MediaPlayer.create(context, R.raw.piano_left)
+                    mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep2)
                     mediaPlayer.setVolume(leftSide, rightSide)
                 }
                 leftSide < rightSide -> {
-                    mediaPlayer = MediaPlayer.create(context, R.raw.piano_right)
+                    mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep3)
                     mediaPlayer.setVolume(leftSide, rightSide)
                 }
                 else -> {
-                    mediaPlayer = MediaPlayer.create(context, R.raw.piano_center)
+                    mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep)
                 }
             }
-            if (pitch != null && pitch > 0.0F && pitch < 1.0F) {
+            if (pitch != null && pitch > 0.0F && pitch < 1.0F ) {
                 params.pitch = pitch
                 mediaPlayer.playbackParams = params
             }
