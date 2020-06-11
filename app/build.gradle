@@ -21,10 +21,11 @@ android {
         versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        setProperty("archivesBaseName", applicationId + "-v" + versionCode + "(" + versionName + ")")
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -44,10 +45,19 @@ android {
     aaptOptions {
         noCompress "tflite"  // Your model's file extension: "tflite", "lite", etc.
     }
+
+    signingConfigs {
+        releaseSigning {
+            storeFile System.env.KEYSTORE_PATH
+            storePassword System.env.KEYSTORE_PASSWORD
+            keyAlias System.env.KEY_ALIAS
+            keyPassword System.env.KEY_ALIAS_PASSWORD
+        }
+    }
+
 }
 
 dependencies {
-//    implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.2.0'
