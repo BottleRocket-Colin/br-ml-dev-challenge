@@ -99,11 +99,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:visibility="gone"
         android:text="@string/alert_tone_header"
         app:layout_constraintStart_toStartOf="@+id/sound_description"
         app:layout_constraintTop_toBottomOf="@+id/sound_description" />
 
     <Spinner
+        android:visibility="gone"
         android:id="@+id/settings_feedback_alert_tone_spinner"
         android:layout_width="0dp"
         android:layout_height="26dp"
@@ -121,7 +123,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/pitch_adjust_title"
-        app:layout_constraintStart_toStartOf="@+id/settings_feedback_alert_tone_spinner"
+        app:layout_constraintStart_toStartOf="@+id/settings_feedback_sound_switch_title"
         app:layout_constraintTop_toBottomOf="@+id/settings_feedback_alert_tone_spinner" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -134,6 +136,7 @@
         app:layout_constraintTop_toBottomOf="@+id/settings_feedback_alert_tone_spinner" />
 
     <com.google.android.material.textview.MaterialTextView
+        android:visibility="gone"
         android:id="@+id/settings_feedback_no_headphones_mode_title"
         style="@style/SettingsTextSubHeader"
         android:layout_width="wrap_content"
@@ -144,6 +147,7 @@
         app:layout_constraintTop_toBottomOf="@+id/settings_feedback_pitch_adjust_title" />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
+        android:visibility="gone"
         android:id="@+id/settings_fragment_no_headphone_mode_switch"
         style="@style/SettingsSwitch"
         android:layout_marginEnd="16dp"

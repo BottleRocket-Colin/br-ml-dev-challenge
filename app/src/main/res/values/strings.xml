@@ -9,7 +9,7 @@
     <string name="sound_option_description">Produce a sound when an upcoming collision is detected</string>
     <string name="settings_menu_title">Settings</string>
     <string name="alert_tone_prompt">Choose alert tone</string>
-    <string name="no_headphone_mode_description">Alerts will sound differently for detected collisions on the left, center, and right rather than sounds coming from each side of headphones. \nUse the below buttons to hear how the sounds will differ.</string>
+    <string name="no_headphone_mode_description">We recommend using a stereo headset for best results.  Tones will sound from either the left headphone or right headphone.  Louder tones represent objects that are closer and or more directly in the path of the phone. \nUse the below buttons to hear how the sounds will differ.</string>
     <string name="alert_tone_header">Alert tone</string>
     <string name="no_headphones_mode_title">No Headphones Mode</string>
     <string name="test_sound_settings_header">Test Sound Settings</string>
