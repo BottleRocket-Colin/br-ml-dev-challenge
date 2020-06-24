@@ -7,7 +7,7 @@ apply plugin: 'com.google.ar.sceneform.plugin'
 
 // App Versioning
 def versionMajor = 0 // Must be less than 100
-def versionMinor = 5 // Must be less than 100
+def versionMinor = 6 // Must be less than 100
 def versionPatch = 0 // Must be less than 100
 def versionBuild = 0 // Must be less than 100
 
