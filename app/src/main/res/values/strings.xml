@@ -43,4 +43,6 @@
     <string name="about_title">About</string>
     <string name="onboarding_title">Onboarding</string>
     <string name="pitch_adjust_title">Pitch Adjust</string>
+    <string name="oom_message">This app uses a lot of memory can not run on all devices.  You can try closing other apps before startup.</string>
+    <string name="oom_title">Out of Memory</string>
 </resources>
