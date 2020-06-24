@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.media.PlaybackParams
 import android.os.Bundle
 import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
@@ -116,11 +117,12 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                     // Shake the icon because why not
                     startAnimation(AnimationUtils.loadAnimation(context, R.anim.shake))
                     // Check if headphones are connected, if not, suggest NoHeadphone Mode
-                    if (!areHeadphonesConnected()) {
-                        noHeadphoneSuggestion.visibility = View.VISIBLE
-                    } else {
+                    // FIXME - add no headhones mode back in after we can run things past UAT.
+//                    if (!areHeadphonesConnected()) {
+//                        noHeadphoneSuggestion.visibility = View.VISIBLE
+//                    } else {
                         noHeadphoneSuggestion.visibility = View.INVISIBLE
-                    }
+//                    }
                     // Create a mediaPlayer to play the beep when the sound is enabled
                     val mediaPlayer =
                         MediaPlayer.create(
@@ -184,6 +186,7 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             }
         alertToneSpinner.onItemSelectedListener = this
 
+        // TODO - Convert this logic to use sound interface
         // Buttons for user to test sound options
         buttonLeft.setOnClickListener {
             if (!preferences.noHeadphoneModeActive) {
@@ -196,6 +199,12 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
             } else {
                 mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep2)
             }
+            if (preferences.pitchAdjustModeActive) {
+                val params = PlaybackParams()
+                params.pitch = .5f
+                mediaPlayer.playbackParams = params
+            }
+
             mediaPlayer.start()
         }
         buttonCenter.setOnClickListener {
@@ -219,6 +228,11 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
                 mediaPlayer.setVolume(0F, 1F)
             } else {
                 mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep3)
+            }
+            if (preferences.pitchAdjustModeActive) {
+                val params = PlaybackParams()
+                params.pitch = 1.5f
+                mediaPlayer.playbackParams = params
             }
             mediaPlayer.start()
         }
@@ -294,9 +308,9 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
         vibrateIcon.setAsAccentColor(vibrateSwitch.isChecked)
         soundIcon.setAsAccentColor(soundSwitch.isChecked)
 
-        if (!areHeadphonesConnected() || soundSwitch.isChecked) {
-            noHeadphoneSuggestion.visibility = View.VISIBLE
-        }
+//        if (!areHeadphonesConnected() || soundSwitch.isChecked) {
+//            noHeadphoneSuggestion.visibility = View.VISIBLE
+//        }
     }
 
     /*
