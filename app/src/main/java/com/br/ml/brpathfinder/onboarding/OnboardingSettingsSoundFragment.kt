@@ -10,6 +10,7 @@ import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 import com.google.android.material.switchmaterial.SwitchMaterial
 import smartdevelop.ir.eram.showcaseviewlib.GuideView
+import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
 
 class OnboardingSettingsSoundFragment : Fragment() {
 
@@ -58,6 +59,7 @@ class OnboardingSettingsSoundFragment : Fragment() {
                 .setTitle(keyText)
                 .setContentText("Toggle here to enable SOUND notification")
                 .setTargetView(view)
+                .setDismissType(DismissType.anywhere)
 //                .setContentTypeFace(Typeface)//optional
 //                .setTitleTypeFace(Typeface)//optional
 //                .setDismissType(DismissType.outSide) //optional - default dismissible by TargetView
