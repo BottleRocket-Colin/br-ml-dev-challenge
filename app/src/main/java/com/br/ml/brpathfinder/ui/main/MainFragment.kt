@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraX
@@ -50,7 +51,16 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         DataBindingUtil.inflate<FragmentMainBinding>(inflater, R.layout.fragment_main, container, false).apply {
             viewModel = ViewModelProviders.of(this@MainFragment).get(MainViewModel::class.java)
-            viewModel?.modelFile = context?.assets?.open("depth_trained30_quant_f16.tflite")?.readBytes()
+            try {
+                viewModel?.modelFile = context?.assets?.open("depth_trained30_quant_f16.tflite")?.readBytes()
+            } catch (e: OutOfMemoryError) {
+                activity?.let {
+                    AlertDialog.Builder(it)
+                }?.setMessage(R.string.oom_message)
+                    ?.setTitle(R.string.oom_title)
+                    ?.setPositiveButton(android.R.string.ok) { _, _ -> activity?.finish() }
+                    ?.create()?.show()
+            }
         }.root
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

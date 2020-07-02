@@ -58,7 +58,7 @@ class MainViewModel : ViewModel() {
         const val DISTANCE_W = 320
         const val DISTANCE_H = 240
         const val notifyWindow = 333L
-        const val notifyAmount = 4
+        const val notifyAmount = 3
 
     }
 
@@ -183,38 +183,45 @@ class MainViewModel : ViewModel() {
 
                 val timestamp = System.currentTimeMillis()
                 parkImage(mediaImage, timestamp) // Must run before FirebaseVisionImage.fromMediaImage
-                val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
-                postParkedImage(5, timestamp)
+                try {
+                    val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
+                    postParkedImage(5, timestamp)
 
-                objectDetector.processImage(image)
-                    .addOnSuccessListener { detectedObjects ->
-                        Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
-                        // TODO - SG - Add ML kit frame time to UI below MLkit view.
-                        //  --  Also add the ML Kit detection count to UI below as well
+                    objectDetector.processImage(image)
+                        .addOnSuccessListener { detectedObjects ->
+                            Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
+                            // TODO - SG - Add ML kit frame time to UI below MLkit view.
+                            //  --  Also add the ML Kit detection count to UI below as well
 
-                        detector.addFrame(
-                            Frame(
-                                objects = detectedObjects.map {
-                                    DetectedObject(it.trackingId ?: 0, it.boundingBox)
-                                },
-                                timestamp = timestamp
+                            detector.addFrame(
+                                Frame(
+                                    objects = detectedObjects.map {
+                                        DetectedObject(it.trackingId ?: 0, it.boundingBox)
+                                    },
+                                    timestamp = timestamp
+                                )
                             )
-                        )
-                        history.clear()
-                        history.addAll(detector.frameHistory)
+                            history.clear()
+                            history.addAll(detector.frameHistory)
 
-                        // Run detection and pass results to feedback engine
-                        detector.runDetection { list ->
-                            risks.clear()
-                            risks.addAll(list)
+                            // Run detection and pass results to feedback engine
+                            detector.runDetection { list ->
+                                risks.clear()
+                                risks.addAll(list)
 
-                            notifyRelay.accept(list)
+                                notifyRelay.accept(list)
+                            }
                         }
-                    }
-                    .addOnFailureListener { e ->
-                        // TODO - proper error handling
-                        Log.e("CCS", "FAIL!!!")
-                    }
+                        .addOnFailureListener { e ->
+                            // TODO - proper error handling
+                            Log.e("CCS", "FAIL!!!")
+                        }
+
+                } catch (e: Exception) {
+                    // TODO - Check to see if everything proceeds cleanly
+                } finally {
+                }
+
             }
         }
     }

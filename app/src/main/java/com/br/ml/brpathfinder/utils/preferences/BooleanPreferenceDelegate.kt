@@ -4,11 +4,12 @@ import android.content.SharedPreferences
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-class BooleanPreferenceDelegate(private val prefs: SharedPreferences?) :
+class BooleanPreferenceDelegate(private val prefs: SharedPreferences?,
+                                private val initialValue: Boolean = false) :
     ReadWriteProperty<Any, Boolean> {
 
     override fun getValue(thisRef: Any, property: KProperty<*>) =
-        prefs?.getBoolean(property.name, false) ?: false
+        prefs?.getBoolean(property.name, initialValue) ?: initialValue
 
     override fun setValue(thisRef: Any, property: KProperty<*>, value: Boolean) {
         prefs?.edit()?.apply {

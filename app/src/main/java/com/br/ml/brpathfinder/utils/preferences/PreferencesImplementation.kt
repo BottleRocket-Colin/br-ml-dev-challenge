@@ -16,8 +16,11 @@ class PreferencesImplementation(private val context: Context) : PreferencesInter
         )
 
     override var currentFeedbackMode: String by StringPreferenceDelegate(preferences)
-    override var currentAlertToneSaveKey: String by StringPreferenceDelegate(preferences)
-    override var noHeadphoneModeActive: Boolean by BooleanPreferenceDelegate(preferences)
-    override var pitchAdjustModeActive: Boolean by BooleanPreferenceDelegate(preferences)
+//    override var currentAlertToneSaveKey: String by StringPreferenceDelegate(preferences)
+    override var currentAlertToneSaveKey = "beep"
+//    override var noHeadphoneModeActive: Boolean by BooleanPreferenceDelegate(preferences)
+    override var noHeadphoneModeActive = false
+
+    override var pitchAdjustModeActive: Boolean by BooleanPreferenceDelegate(preferences, true)
     override var completedOnboarding: Boolean by BooleanPreferenceDelegate(preferences)
 }

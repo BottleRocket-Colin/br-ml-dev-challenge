@@ -35,12 +35,12 @@ class SoundImplementation(private val activity: Activity) : FeedbackInterface {
                 position > .5 -> {
                     leftSide = (((1 - position) * 2) * severity)
                     rightSide = severity
-                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position - .49F else null
+                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position + .5F else null
                 }
                 position < .5 -> {
                     leftSide = severity
                     rightSide = ((position * 2) * severity)
-                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) .51F - position else null
+                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position + .5f else null
                 }
                 else -> {
                     leftSide = severity
@@ -85,7 +85,7 @@ class SoundImplementation(private val activity: Activity) : FeedbackInterface {
                     mediaPlayer = MediaPlayer.create(context, R.raw.alert_beep)
                 }
             }
-            if (pitch != null && pitch > 0.0F && pitch < 1.0F ) {
+            if (pitch != null && pitch > 0.0F && pitch < 1.5F ) {
                 params.pitch = pitch
                 mediaPlayer.playbackParams = params
             }
