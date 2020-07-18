@@ -6,6 +6,8 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import com.br.ml.brpathfinder.models.Direction
+import com.br.ml.brpathfinder.settings.SettingsFragment
+import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 
 class HapticImplementation(val activity: Activity) : FeedbackInterface {
     private val FEEDBACK_LENGTH_A = 90L
@@ -22,9 +24,16 @@ class HapticImplementation(val activity: Activity) : FeedbackInterface {
     private val bothVibratePattern =
         longArrayOf(FEEDBACK_LENGTH_A, FEEDBACK_LENGTH_OFF, FEEDBACK_LENGTH_A)
 
+    val preferences = PreferencesImplementation(activity.applicationContext)
+
     override fun signalUser(direction: Direction, severity: Float, position: Float) {
-        if (severity > .25)
-            performVibrate(activity.applicationContext, direction, severity)
+        // check if user has enabled vibration in the settings before proceeding
+        if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.BOTH.saveKey ||
+            preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.VIBRATE.saveKey)
+        {
+            if (severity > .25)
+                performVibrate(activity.applicationContext, direction, severity)
+        }
     }
 
     private fun performVibrate(context: Context, direction: Direction, severity: Float) {

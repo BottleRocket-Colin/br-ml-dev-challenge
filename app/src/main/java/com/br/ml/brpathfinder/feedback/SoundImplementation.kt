@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.media.PlaybackParams
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.models.Direction
+import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.settings.convertToAlertTone
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 
@@ -25,41 +26,48 @@ class SoundImplementation(private val activity: Activity) : FeedbackInterface {
     Finally in the performSound() function we add a pitch based of how far the position is away from .5F
     * */
     override fun signalUser(direction: Direction, severity: Float, position: Float) {
-        val leftSide: Float
-        val rightSide: Float
-        val pitch: Float?
+        // check if user has enabled sound in the settings before proceeding
+        if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.BOTH.saveKey ||
+            preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.SOUND.saveKey) {
 
-        @Suppress("DEPRECATION")
-        if (position in 0..1) {
-            when {
-                position > .5 -> {
-                    leftSide = (((1 - position) * 2) * severity)
-                    rightSide = severity
-                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position + .5F else null
+            val leftSide: Float
+            val rightSide: Float
+            val pitch: Float?
+
+            @Suppress("DEPRECATION")
+            if (position in 0..1) {
+                when {
+                    position > .5 -> {
+                        leftSide = (((1 - position) * 2) * severity)
+                        rightSide = severity
+                        pitch =
+                            if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position + .5F else null
+                    }
+                    position < .5 -> {
+                        leftSide = severity
+                        rightSide = ((position * 2) * severity)
+                        pitch =
+                            if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position + .5f else null
+                    }
+                    else -> {
+                        leftSide = severity
+                        rightSide = severity
+                        pitch = null
+                    }
                 }
-                position < .5 -> {
-                    leftSide = severity
-                    rightSide = ((position * 2) * severity)
-                    pitch = if (preferences.pitchAdjustModeActive && !preferences.noHeadphoneModeActive) position + .5f else null
-                }
-                else -> {
-                    leftSide = severity
-                    rightSide = severity
-                    pitch = null
-                }
+            } else {
+                leftSide = 0f
+                rightSide = 0f
+                pitch = null
             }
-        } else {
-            leftSide = 0f
-            rightSide = 0f
-            pitch = null
-        }
 
-        performSound(
-            activity.applicationContext,
-            leftSide,
-            rightSide,
-            pitch
-        )
+            performSound(
+                activity.applicationContext,
+                leftSide,
+                rightSide,
+                pitch
+            )
+        }
     }
 
     private fun performSound(
