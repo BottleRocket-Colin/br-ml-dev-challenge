@@ -104,9 +104,9 @@ class MainFragment : Fragment() {
     }
 
     private fun startCamera() {
-        preview.setOnPreviewOutputUpdateListener { previewOutput ->
+        /*preview.setOnPreviewOutputUpdateListener { previewOutput ->
             cameraTextureView.surfaceTexture = previewOutput.surfaceTexture
-        }
+        }*/
 
         CameraX.bindToLifecycle(viewLifecycleOwner, viewModel.imageAnalysis)
     }

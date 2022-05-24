@@ -26,7 +26,7 @@ class AlgorithmicDetector : CollisionDetector() {
 
     override fun runDetection(callback: (List<Risk>) -> Unit)  {
         val risks: MutableList<Risk> = mutableListOf()
-        val latest = history.maxBy { it.timestamp }
+        val latest = history.maxByOrNull { it.timestamp }
         latest?.objects?.forEach { risks.add(calculateRisk(it) ?: return@forEach) }
         callback(risks)
     }
@@ -114,7 +114,7 @@ class AlgorithmicDetector : CollisionDetector() {
                 frame.objects.map { Pair(frame.timestamp, it) }
             }.filter {
                 it.second.id == obj.id && it.second.distance != null
-            }.maxBy {
+            }.maxByOrNull {
                 it.first
             }?.second?.distance
         }

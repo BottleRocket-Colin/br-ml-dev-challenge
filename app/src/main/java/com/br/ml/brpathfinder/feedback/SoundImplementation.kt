@@ -35,7 +35,7 @@ class SoundImplementation(private val activity: Activity) : FeedbackInterface {
             val pitch: Float?
 
             @Suppress("DEPRECATION")
-            if (position in 0..1) {
+            if (position in 0f..1f) {
                 when {
                     position > .5 -> {
                         leftSide = (((1 - position) * 2) * severity)

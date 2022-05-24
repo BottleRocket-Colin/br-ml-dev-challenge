@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         my_toolbar.setupWithNavController(navController)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
         return true

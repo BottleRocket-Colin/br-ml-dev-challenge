@@ -7,6 +7,7 @@ import android.media.Image
 import android.os.AsyncTask
 import android.util.Log
 import android.util.Size
+import android.view.Surface
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysisConfig
 import androidx.camera.core.ImageProxy
@@ -24,12 +25,10 @@ import com.br.ml.brpathfinder.models.Risk
 import com.br.ml.brpathfinder.utils.convertBitmapToByteBuffer
 import com.br.ml.brpathfinder.utils.convertFloatArrayToBitmap
 import com.br.ml.brpathfinder.utils.convertYUVImageToARGBIntBuffer
-import com.google.firebase.ml.vision.FirebaseVision
-import com.google.firebase.ml.vision.common.FirebaseVisionImage
-import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
-import com.google.firebase.ml.vision.objects.FirebaseVisionObjectDetectorOptions
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.objects.ObjectDetection
+import com.google.mlkit.vision.objects.defaults.ObjectDetectorOptions
 import com.jakewharton.rxrelay2.BehaviorRelay
-import io.reactivex.Observable.empty
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.tensorflow.lite.Interpreter
@@ -148,20 +147,20 @@ class MainViewModel : ViewModel() {
     val imageAnalysis = ImageAnalysis(imageAnalysisConfig)
 
     // Live detection and tracking
-    private val options = FirebaseVisionObjectDetectorOptions.Builder()
-        .setDetectorMode(FirebaseVisionObjectDetectorOptions.STREAM_MODE)
-        .enableMultipleObjects()
+    val options = ObjectDetectorOptions.Builder()
+        .setDetectorMode(ObjectDetectorOptions.SINGLE_IMAGE_MODE)
+        .enableMultipleObjects() // Optional
         .build()
 
-    val objectDetector = FirebaseVision.getInstance().getOnDeviceObjectDetector(options)
+    val objectDetector = ObjectDetection.getClient(options)
 
     private val analyzer = BRImageAnalyzer()
     inner class BRImageAnalyzer : ImageAnalysis.Analyzer {
         private fun degreesToFirebaseRotation(degrees: Int): Int = when(degrees) {
-            0 -> FirebaseVisionImageMetadata.ROTATION_0
-            90 -> FirebaseVisionImageMetadata.ROTATION_90
-            180 -> FirebaseVisionImageMetadata.ROTATION_180
-            270 -> FirebaseVisionImageMetadata.ROTATION_270
+            0 -> Surface.ROTATION_0
+            90 -> Surface.ROTATION_90
+            180 -> Surface.ROTATION_180
+            270 -> Surface.ROTATION_270
             else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
         }
 
@@ -184,10 +183,10 @@ class MainViewModel : ViewModel() {
                 val timestamp = System.currentTimeMillis()
                 parkImage(mediaImage, timestamp) // Must run before FirebaseVisionImage.fromMediaImage
                 try {
-                    val image = FirebaseVisionImage.fromMediaImage(mediaImage, imageRotation)
+                    val image = InputImage.fromMediaImage(mediaImage, imageRotation)
                     postParkedImage(5, timestamp)
 
-                    objectDetector.processImage(image)
+                    objectDetector.process(image)
                         .addOnSuccessListener { detectedObjects ->
                             Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
                             // TODO - SG - Add ML kit frame time to UI below MLkit view.
@@ -313,7 +312,7 @@ class MainViewModel : ViewModel() {
         val frame = detector.frameHistory.filter {
 //            Log.d("CCS", "CD- Delta: ${abs(it.timestamp - timestamp)}")
             abs(it.timestamp - timestamp) < 1000
-        }.minBy { abs(it.timestamp - timestamp) } ?: return
+        }.minByOrNull { abs(it.timestamp - timestamp) } ?: return
         Log.d("CCS", "CD- Continuing")
 
         // Scale distance map to detector

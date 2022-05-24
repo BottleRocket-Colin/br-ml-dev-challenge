@@ -25,15 +25,15 @@ class BoundingBoxOverlayView : SurfaceView {
         setZOrderOnTop(true)
         holder.setFormat(PixelFormat.TRANSPARENT)
         holder.addCallback(object : SurfaceHolder.Callback {
-            override fun surfaceCreated(holder: SurfaceHolder?) = drawWrapper(holder)
-            override fun surfaceChanged(holder: SurfaceHolder?, format: Int, width: Int, height: Int) {
+            override fun surfaceCreated(holder: SurfaceHolder) = drawWrapper(holder)
+            override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
                 Log.v("CCS", "BB - Surface changed = h: $height  |  w: $width")
                 center = Pair(width/2, height/2)
                 workHeight = height
                 workWidth = width
                 drawWrapper(holder)
             }
-            override fun surfaceDestroyed(holder: SurfaceHolder?) {}
+            override fun surfaceDestroyed(holder: SurfaceHolder) {}
         })
         setWillNotDraw(false)
     }
@@ -59,7 +59,7 @@ class BoundingBoxOverlayView : SurfaceView {
                         // TODO - Do same thing of risk....
                         detected.bubbledUpDistance = flatList.filter {
                             it.second.id == detected.id && it.second.distance != null
-                        }.maxBy {
+                        }.maxByOrNull {
                             Log.d("CCS", "BBB - Made it to maxBy")
                             it.first
                         }?.second?.distance

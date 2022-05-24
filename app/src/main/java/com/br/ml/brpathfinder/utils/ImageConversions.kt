@@ -96,8 +96,8 @@ fun convertFloatArrayToBitmap(
     bitmap: Bitmap,
     imageWidth: Int = 320
 ) {
-    val minPixel = floats.min() ?: 0f
-    val maxPixel = floats.max() ?: 0f
+    val minPixel = floats.minOrNull() ?: 0f
+    val maxPixel = floats.maxOrNull() ?: 0f
     var pixelVal = 0f
 
     floats.forEachIndexed { index, pixel ->
