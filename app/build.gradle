@@ -64,6 +64,7 @@ android {
         noCompress 'tflite'
     }
     namespace 'com.br.ml.brpathfinder'
+    buildToolsVersion '32.0.0'
 
 }
 
