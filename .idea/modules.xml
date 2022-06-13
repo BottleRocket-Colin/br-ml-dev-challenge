@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ModuleRenamingHistory">
+    <module old-name="br-ml-dev-challenge-BrPathFinder" new-name="BrPathFinder.br-ml-dev-challenge-BrPathFinder" />
+    <module old-name="br-ml-dev-challenge-app" new-name="BrPathFinder.app.br-ml-dev-challenge-app" />
+  </component>
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/br-ml-dev-challenge-BrPathFinder.iml" filepath="$PROJECT_DIR$/br-ml-dev-challenge-BrPathFinder.iml" group="BrPathFinder" />
-      <module fileurl="file://$PROJECT_DIR$/app/br-ml-dev-challenge-app.iml" filepath="$PROJECT_DIR$/app/br-ml-dev-challenge-app.iml" group="BrPathFinder/app" />
+      <module fileurl="file://$PROJECT_DIR$/app/BrPathFinder.app.br-ml-dev-challenge-app.iml" filepath="$PROJECT_DIR$/app/BrPathFinder.app.br-ml-dev-challenge-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/BrPathFinder.br-ml-dev-challenge-BrPathFinder.iml" filepath="$PROJECT_DIR$/BrPathFinder.br-ml-dev-challenge-BrPathFinder.iml" />
     </modules>
   </component>
 </project>

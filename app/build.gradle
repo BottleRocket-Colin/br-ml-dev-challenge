@@ -47,9 +47,6 @@ android {
         enabled = true
     }
 
-    aaptOptions {
-        noCompress "tflite"  // Your model's file extension: "tflite", "lite", etc.
-    }
 
     composeOptions {
         kotlinCompilerExtensionVersion '1.1.1'
@@ -62,6 +59,9 @@ android {
             keyAlias System.env.KEY_ALIAS
             keyPassword System.env.KEY_ALIAS_PASSWORD
         }
+    }
+    androidResources {
+        noCompress 'tflite'
     }
 
 }
