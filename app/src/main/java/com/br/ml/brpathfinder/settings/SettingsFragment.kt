@@ -15,18 +15,14 @@ import android.view.animation.AnimationUtils
 import android.widget.*
 import android.widget.AdapterView.OnItemSelectedListener
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.settings.SettingsFragment.AlertTone.Beep
 import com.br.ml.brpathfinder.settings.SettingsFragment.FeedbackOption.*
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
-import kotlinx.android.synthetic.main.fragment_settings.*
-import kotlinx.android.synthetic.main.main_activity.*
 
 class SettingsFragment : Fragment(), OnItemSelectedListener {
 
@@ -317,53 +313,53 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     *  Disable the sound sub-options when the sound switch is turned off
     *  */
     private fun enableOrDisableSoundSettings(isChecked: Boolean) {
-        sound_icon_image_view.setAsAccentColor(isChecked)
-        settings_feedback_alert_tone_spinner.isEnabled = isChecked
-        settings_fragment_no_headphone_mode_switch.isEnabled = isChecked
-        settings_feedback_sound_test_left_side.isEnabled = isChecked
-        settings_feedback_sound_test_center.isEnabled = isChecked
-        settings_feedback_sound_test_right_side.isEnabled = isChecked
-        settings_feedback_pitch_adjust_switch.isEnabled = isChecked
-        if (!isChecked) {
-            settings_feedback_select_alert_tone_title.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.darker_gray
-                )
-            )
-            settings_feedback_no_headphones_mode_title.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.darker_gray
-                )
-            )
-            settings_feedback_sound_test_title.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.darker_gray
-                )
-            )
-            settings_feedback_no_headphone_suggestion.visibility = View.INVISIBLE
-        } else {
-            settings_feedback_select_alert_tone_title.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.black
-                )
-            )
-            settings_feedback_no_headphones_mode_title.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.black
-                )
-            )
-            settings_feedback_sound_test_title.setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    android.R.color.black
-                )
-            )
-        }
+//        sound_icon_image_view.setAsAccentColor(isChecked)
+//        settings_feedback_alert_tone_spinner.isEnabled = isChecked
+//        settings_fragment_no_headphone_mode_switch.isEnabled = isChecked
+//        settings_feedback_sound_test_left_side.isEnabled = isChecked
+//        settings_feedback_sound_test_center.isEnabled = isChecked
+//        settings_feedback_sound_test_right_side.isEnabled = isChecked
+//        settings_feedback_pitch_adjust_switch.isEnabled = isChecked
+//        if (!isChecked) {
+//            settings_feedback_select_alert_tone_title.setTextColor(
+//                ContextCompat.getColor(
+//                    requireContext(),
+//                    android.R.color.darker_gray
+//                )
+//            )
+//            settings_feedback_no_headphones_mode_title.setTextColor(
+//                ContextCompat.getColor(
+//                    requireContext(),
+//                    android.R.color.darker_gray
+//                )
+//            )
+//            settings_feedback_sound_test_title.setTextColor(
+//                ContextCompat.getColor(
+//                    requireContext(),
+//                    android.R.color.darker_gray
+//                )
+//            )
+//            settings_feedback_no_headphone_suggestion.visibility = View.INVISIBLE
+//        } else {
+//            settings_feedback_select_alert_tone_title.setTextColor(
+//                ContextCompat.getColor(
+//                    requireContext(),
+//                    android.R.color.black
+//                )
+//            )
+//            settings_feedback_no_headphones_mode_title.setTextColor(
+//                ContextCompat.getColor(
+//                    requireContext(),
+//                    android.R.color.black
+//                )
+//            )
+//            settings_feedback_sound_test_title.setTextColor(
+//                ContextCompat.getColor(
+//                    requireContext(),
+//                    android.R.color.black
+//                )
+//            )
+//        }
     }
 
     /*
@@ -371,31 +367,31 @@ class SettingsFragment : Fragment(), OnItemSelectedListener {
     *   option that is selected already is saved, do not show the Snackbar
     * */
     fun saveFeedbackOptionsToSharedPrefs(feedbackOption: FeedbackOption) {
-        // Get previously saved option, in future we could have this also "undo" the change
-        val previouslySavedOption = preferences.currentFeedbackMode
-
-        // Save selected option to SharedPreferences
-        preferences.currentFeedbackMode = feedbackOption.saveKey
-
-        // Snack bar to tell the user that the selected option was saved
-        val snackBar =
-            activity?.container?.let {
-                Snackbar.make(
-                    it,
-                    feedbackOption.snackBarMessage,
-                    Snackbar.LENGTH_SHORT
-                )
-            }?.apply {
-                setTextColor(Color.WHITE)
-                animationMode = Snackbar.ANIMATION_MODE_FADE
-                duration = Snackbar.LENGTH_LONG
-            }
-
-        snackBar?.setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-        if (previouslySavedOption != preferences.currentFeedbackMode) {
-            // Only show the snackBar if a new option has been selected
-            snackBar?.show()
-        }
+//        // Get previously saved option, in future we could have this also "undo" the change
+//        val previouslySavedOption = preferences.currentFeedbackMode
+//
+//        // Save selected option to SharedPreferences
+//        preferences.currentFeedbackMode = feedbackOption.saveKey
+//
+//        // Snack bar to tell the user that the selected option was saved
+//        val snackBar =
+//            activity?.container?.let {
+//                Snackbar.make(
+//                    it,
+//                    feedbackOption.snackBarMessage,
+//                    Snackbar.LENGTH_SHORT
+//                )
+//            }?.apply {
+//                setTextColor(Color.WHITE)
+//                animationMode = Snackbar.ANIMATION_MODE_FADE
+//                duration = Snackbar.LENGTH_LONG
+//            }
+//
+//        snackBar?.setBackgroundTint(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+//        if (previouslySavedOption != preferences.currentFeedbackMode) {
+//            // Only show the snackBar if a new option has been selected
+//            snackBar?.show()
+//        }
     }
 
     /*

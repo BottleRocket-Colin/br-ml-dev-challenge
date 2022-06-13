@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
@@ -18,8 +19,10 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        setSupportActionBar(my_toolbar)
 
+        @Suppress("LocalVariableName")
+        val my_toolbar: Toolbar = findViewById(R.id.my_toolbar)
+        setSupportActionBar(my_toolbar)
         my_toolbar.setupWithNavController(navController)
     }
 

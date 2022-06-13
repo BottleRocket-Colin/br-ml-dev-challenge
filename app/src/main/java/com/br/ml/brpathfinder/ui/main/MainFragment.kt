@@ -4,7 +4,10 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
@@ -21,7 +24,6 @@ import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.databinding.FragmentMainBinding
 import com.br.ml.brpathfinder.feedback.HapticImplementation
 import com.br.ml.brpathfinder.feedback.SoundImplementation
-import kotlinx.android.synthetic.main.fragment_main.*
 
 
 class MainFragment : Fragment() {
@@ -70,16 +72,16 @@ class MainFragment : Fragment() {
         activity?.let { viewModel.feedbacks.add(SoundImplementation(it)) }
 
         viewModel.analyzedDimens.observe(viewLifecycleOwner, Observer { dimens ->
-            overlay.imageWidth = dimens.first
-            overlay.imageHeight = dimens.second
+//            overlay.imageWidth = dimens.first
+//            overlay.imageHeight = dimens.second
         })
 
         viewModel.mlDrawable.observe(viewLifecycleOwner, Observer {
-            mlkit_image.setImageDrawable(it)
+//            mlkit_image.setImageDrawable(it)
         })
 
         viewModel.tfDrawable.observe(viewLifecycleOwner, Observer {
-            tflite_image.setImageDrawable(it)
+//            tflite_image.setImageDrawable(it)
         })
 
         if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
