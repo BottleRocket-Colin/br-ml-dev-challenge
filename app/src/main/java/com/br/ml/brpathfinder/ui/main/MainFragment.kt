@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraX
 import androidx.camera.core.Preview
-import androidx.camera.core.PreviewConfig
+//import androidx.camera.core.PreviewConfig
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -34,10 +34,10 @@ class MainFragment : Fragment() {
 
     // CameraX
     private val cameraPermissionCode = 12
-    private val previewConfig = PreviewConfig.Builder()
-        .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-        .build()
-    private val preview = Preview(previewConfig)
+//    private val previewConfig = PreviewConfig.Builder()
+//        .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+//        .build()
+//    private val preview = Preview(previewConfig)
 
     private lateinit var viewModel: MainViewModel
 
@@ -110,7 +110,7 @@ class MainFragment : Fragment() {
             cameraTextureView.surfaceTexture = previewOutput.surfaceTexture
         }*/
 
-        CameraX.bindToLifecycle(viewLifecycleOwner, viewModel.imageAnalysis)
+//        CameraX.bindToLifecycle(viewLifecycleOwner, viewModel.imageAnalysis)
     }
 
 

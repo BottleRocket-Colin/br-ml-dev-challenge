@@ -74,9 +74,9 @@
                     android:id="@+id/overlay"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:history="@{viewModel.history}"
-                    app:risks="@{viewModel.risks}"
                     />
+<!--                    app:risks="@{viewModel.risks}"-->
+<!--                    app:history="@{viewModel.history}"-->
 <!--   TODO - merge risk object into history.              -->
 
             </FrameLayout>

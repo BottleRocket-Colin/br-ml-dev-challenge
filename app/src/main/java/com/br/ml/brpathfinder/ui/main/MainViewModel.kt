@@ -9,7 +9,7 @@ import android.util.Log
 import android.util.Size
 import android.view.Surface
 import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageAnalysisConfig
+//import androidx.camera.core.ImageAnalysisConfig
 import androidx.camera.core.ImageProxy
 import androidx.core.graphics.scale
 import androidx.databinding.Observable
@@ -140,11 +140,11 @@ class MainViewModel : ViewModel() {
     // Image analysis setup
     ///////////////////////////////////////////////////////////////////////////
     // fixme - this pattern is broken in alpha-08
-    private val imageAnalysisConfig = ImageAnalysisConfig.Builder()
-        .setTargetResolution(Size(1280, 960))
-        .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
-        .build()
-    val imageAnalysis = ImageAnalysis(imageAnalysisConfig)
+//    private val imageAnalysisConfig = ImageAnalysisConfig.Builder()
+//        .setTargetResolution(Size(1280, 960))
+//        .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
+//        .build()
+//    val imageAnalysis = ImageAnalysis(imageAnalysisConfig)
 
     // Live detection and tracking
     val options = ObjectDetectorOptions.Builder()
@@ -154,76 +154,76 @@ class MainViewModel : ViewModel() {
 
     val objectDetector = ObjectDetection.getClient(options)
 
-    private val analyzer = BRImageAnalyzer()
-    inner class BRImageAnalyzer : ImageAnalysis.Analyzer {
-        private fun degreesToFirebaseRotation(degrees: Int): Int = when(degrees) {
-            0 -> Surface.ROTATION_0
-            90 -> Surface.ROTATION_90
-            180 -> Surface.ROTATION_180
-            270 -> Surface.ROTATION_270
-            else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
-        }
-
-        // Connect main analysis loop
-        override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
-            val mediaImage = imageProxy?.image
-            val imageRotation = degreesToFirebaseRotation(degrees)
-            if (mediaImage != null) {
-                // Notify fragment
-                // TODO - Handle rotation here - this is for fixed portrait
-                analyzedDimens.postValue(Pair(imageProxy.height , imageProxy.width))
-
-//                return  // TODO - connect this to ui toggle
-
-                // Store values for detector use
-                // TODO - Handle rotation here - this is for fixed portrait
-                detector.width = imageProxy.height
-                detector.height = imageProxy.width
-
-                val timestamp = System.currentTimeMillis()
-                parkImage(mediaImage, timestamp) // Must run before FirebaseVisionImage.fromMediaImage
-                try {
-                    val image = InputImage.fromMediaImage(mediaImage, imageRotation)
-                    postParkedImage(5, timestamp)
-
-                    objectDetector.process(image)
-                        .addOnSuccessListener { detectedObjects ->
-                            Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
-                            // TODO - SG - Add ML kit frame time to UI below MLkit view.
-                            //  --  Also add the ML Kit detection count to UI below as well
-
-                            detector.addFrame(
-                                Frame(
-                                    objects = detectedObjects.map {
-                                        DetectedObject(it.trackingId ?: 0, it.boundingBox)
-                                    },
-                                    timestamp = timestamp
-                                )
-                            )
-                            history.clear()
-                            history.addAll(detector.frameHistory)
-
-                            // Run detection and pass results to feedback engine
-                            detector.runDetection { list ->
-                                risks.clear()
-                                risks.addAll(list)
-
-                                notifyRelay.accept(list)
-                            }
-                        }
-                        .addOnFailureListener { e ->
-                            // TODO - proper error handling
-                            Log.e("CCS", "FAIL!!!")
-                        }
-
-                } catch (e: Exception) {
-                    // TODO - Check to see if everything proceeds cleanly
-                } finally {
-                }
-
-            }
-        }
-    }
+//    private val analyzer = BRImageAnalyzer()
+//    inner class BRImageAnalyzer : ImageAnalysis.Analyzer {
+//        private fun degreesToFirebaseRotation(degrees: Int): Int = when(degrees) {
+//            0 -> Surface.ROTATION_0
+//            90 -> Surface.ROTATION_90
+//            180 -> Surface.ROTATION_180
+//            270 -> Surface.ROTATION_270
+//            else -> throw Exception("Rotation must be 0, 90, 180, or 270.")
+//        }
+//
+//        // Connect main analysis loop
+//        override fun analyze(imageProxy: ImageProxy?, degrees: Int) {
+//            val mediaImage = imageProxy?.image
+//            val imageRotation = degreesToFirebaseRotation(degrees)
+//            if (mediaImage != null) {
+//                // Notify fragment
+//                // TODO - Handle rotation here - this is for fixed portrait
+//                analyzedDimens.postValue(Pair(imageProxy.height , imageProxy.width))
+//
+////                return  // TODO - connect this to ui toggle
+//
+//                // Store values for detector use
+//                // TODO - Handle rotation here - this is for fixed portrait
+//                detector.width = imageProxy.height
+//                detector.height = imageProxy.width
+//
+//                val timestamp = System.currentTimeMillis()
+//                parkImage(mediaImage, timestamp) // Must run before FirebaseVisionImage.fromMediaImage
+//                try {
+//                    val image = InputImage.fromMediaImage(mediaImage, imageRotation)
+//                    postParkedImage(5, timestamp)
+//
+//                    objectDetector.process(image)
+//                        .addOnSuccessListener { detectedObjects ->
+//                            Log.d("CCS", "ML Kit Detected: ${detectedObjects.size}")
+//                            // TODO - SG - Add ML kit frame time to UI below MLkit view.
+//                            //  --  Also add the ML Kit detection count to UI below as well
+//
+//                            detector.addFrame(
+//                                Frame(
+//                                    objects = detectedObjects.map {
+//                                        DetectedObject(it.trackingId ?: 0, it.boundingBox)
+//                                    },
+//                                    timestamp = timestamp
+//                                )
+//                            )
+//                            history.clear()
+//                            history.addAll(detector.frameHistory)
+//
+//                            // Run detection and pass results to feedback engine
+//                            detector.runDetection { list ->
+//                                risks.clear()
+//                                risks.addAll(list)
+//
+//                                notifyRelay.accept(list)
+//                            }
+//                        }
+//                        .addOnFailureListener { e ->
+//                            // TODO - proper error handling
+//                            Log.e("CCS", "FAIL!!!")
+//                        }
+//
+//                } catch (e: Exception) {
+//                    // TODO - Check to see if everything proceeds cleanly
+//                } finally {
+//                }
+//
+//            }
+//        }
+//    }
 
     private fun notifyUser(risks: List<Risk>) {
         // TODO- This should go into a feedback manager
@@ -242,7 +242,7 @@ class MainViewModel : ViewModel() {
 
 
     init {
-        imageAnalysis.setAnalyzer(AsyncTask.THREAD_POOL_EXECUTOR, analyzer)
+//        imageAnalysis.setAnalyzer(AsyncTask.THREAD_POOL_EXECUTOR, analyzer)
     }
 
     ///////////////////////////////////////////////////////////////////////////
