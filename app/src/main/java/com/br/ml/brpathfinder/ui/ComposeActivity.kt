@@ -14,6 +14,7 @@ import com.br.ml.pathfinder.compose.navigation.Routes
 import com.br.ml.pathfinder.domain.infrastructure.flow.MutableStateFlowDelegate
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.br.ml.brpathfinder.navigation.mainNavGraph
 import com.br.ml.pathfinder.compose.resources.PathFinderTheme
 
 
@@ -72,7 +73,7 @@ class ComposeActivity : ComponentActivity() {
                     },
                 ) {
                     NavHost(navController = navController,startDestination = Routes.Main) {
-//                        mainNavGraph(navController = navController, activity = this@ComposeActivity)
+                        mainNavGraph(navController = navController, activity = this@ComposeActivity)
                     }
                 }
             }

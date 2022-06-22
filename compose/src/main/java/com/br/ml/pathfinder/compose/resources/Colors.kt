@@ -13,6 +13,7 @@ private val Peach = Color(0xFFF48174)
 private val Purple = Color(0xFF7d6bb0)
 private val Green = Color(0xFF00574B)
 private val Pink = Color(0xFFD81B60)
+val SplashBackground = Color(0xFFFBFAFB)
 
 
 val LightColors = lightColors(
