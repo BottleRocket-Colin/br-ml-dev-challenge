@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.MainActivity
 import com.br.ml.brpathfinder.R
-import com.br.ml.brpathfinder.settings.SettingsFragment
+//import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 import com.cleveroad.slidingtutorial.*
 
@@ -55,13 +55,13 @@ class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListen
     }
 
     override fun provideTutorialOptions(): TutorialOptions? {
-        return newTutorialOptionsBuilder(context!!)
+        return newTutorialOptionsBuilder(requireContext())
                 .setUseAutoRemoveTutorialFragment(true)
                 .setUseInfiniteScroll(false)
                 .setNoRollBack(noRollback)
                 .setPagesColors(pagesColors!!)
                 .setPagesCount(TOTAL_PAGES)
-                .setIndicatorOptions(IndicatorOptions.newBuilder(context!!)
+                .setIndicatorOptions(IndicatorOptions.newBuilder(requireContext())
                         .setElementSizeRes(R.dimen.indicator_size)
                         .setElementSpacingRes(R.dimen.indicator_spacing)
                         .setElementColorRes(android.R.color.darker_gray)

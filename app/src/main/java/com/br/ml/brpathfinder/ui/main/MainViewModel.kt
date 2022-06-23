@@ -18,7 +18,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.br.ml.brpathfinder.collision.AlgorithmicDetector
 import com.br.ml.brpathfinder.feedback.FeedbackInterface
-import com.br.ml.brpathfinder.feedback.SoundImplementation
+//import com.br.ml.brpathfinder.feedback.SoundImplementation
 import com.br.ml.brpathfinder.models.DetectedObject
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
@@ -231,9 +231,9 @@ class MainViewModel : ViewModel() {
             notificationList.forEach { risk ->
                 // only notify the first via haptic
                 feedbacks.forEachIndexed { idx, feedback ->
-                    if (feedback is SoundImplementation || idx == 0  ) {
+//                    if (feedback is SoundImplementation || idx == 0  ) {
                         feedback.signalUser(risk)
-                    }
+//                    }
                 }
                 Thread.sleep(notifyWindow / notificationList.size + 2)
             }
