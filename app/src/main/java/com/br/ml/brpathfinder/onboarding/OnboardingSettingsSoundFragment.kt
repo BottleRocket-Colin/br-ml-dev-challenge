@@ -9,17 +9,13 @@ import com.br.ml.brpathfinder.R
 //import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 import com.google.android.material.switchmaterial.SwitchMaterial
+import org.koin.android.ext.android.inject
 import smartdevelop.ir.eram.showcaseviewlib.GuideView
 import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
 
 class OnboardingSettingsSoundFragment : Fragment() {
-
-    private lateinit var preferences: PreferencesImplementation
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        preferences = PreferencesImplementation(requireContext())
-    }
+    // DI
+    private val preferences: PreferencesImplementation by inject()
 
     override fun onCreateView(
             inflater: LayoutInflater,

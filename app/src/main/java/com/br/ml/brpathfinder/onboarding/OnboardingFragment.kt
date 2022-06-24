@@ -14,12 +14,13 @@ import com.br.ml.brpathfinder.R
 //import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 import com.cleveroad.slidingtutorial.*
+import org.koin.android.ext.android.inject
 
 class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListener {
     private val TAG = "CustomTutorialSFragment"
     private val TOTAL_PAGES = 5
 
-    private lateinit var preferences: PreferencesImplementation
+    private val preferences: PreferencesImplementation by inject()
 
     private val mOnSkipClickListener = View.OnClickListener { Toast.makeText(context, "Skip button clicked", Toast.LENGTH_SHORT).show() }
 
@@ -37,7 +38,6 @@ class OnboardingFragment : TutorialSupportFragment(), OnTutorialPageChangeListen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        preferences = PreferencesImplementation(requireContext())
 
         if (pagesColors == null) {
             val requireContext: Context? = context
