@@ -1,12 +1,15 @@
 package com.br.ml.brpathfinder.ui
 
+import Icon
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -16,6 +19,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.br.ml.brpathfinder.navigation.mainNavGraph
 import com.br.ml.pathfinder.compose.resources.PathFinderTheme
+import com.br.ml.pathfinder.compose.ui.widgets.SlidingAppBar
+import com.br.ml.pathfinder.compose.utils.toggle
+import kotlinx.coroutines.launch
 
 
 class ComposeActivity : ComponentActivity() {
@@ -60,16 +66,31 @@ class ComposeActivity : ComponentActivity() {
             val navBackStackEntry = navController.currentBackStackEntryAsState()
             val currentRoute = navBackStackEntry.value?.destination?.route
 
+//             TODO - Nav Drawer (Home, Tutorial, Settings)
             PathFinderTheme {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     topBar = {
-//                        ArchAppBar(
-//                            state = activityViewModel.toArchAppBarState(),
-//                            scaffoldState = scaffoldState,
-//                            navController = navController,
-//                            navIntercept = navIntercept
-//                        )
+                        SlidingAppBar(
+                            visible = activityViewModel.showToolbar.collectAsState(initial = true).value,
+                            title = {
+                                Text(
+                                    activityViewModel.title.collectAsState().value,
+                                    style = MaterialTheme.typography.h4
+                                )
+                            },
+                            navigationIcon = {
+                                IconButton(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            scaffoldState.drawerState.toggle()
+                                        }
+                                    }
+                                ) {
+                                    Icons.Default.Menu.Icon()
+                                }
+                            }
+                        )
                     },
                 ) {
                     NavHost(navController = navController,startDestination = Routes.Main) {

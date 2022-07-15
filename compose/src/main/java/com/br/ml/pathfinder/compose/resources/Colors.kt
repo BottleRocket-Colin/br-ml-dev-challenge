@@ -17,8 +17,11 @@ val SplashBackground = Color(0xFFFBFAFB)
 
 
 val LightColors = lightColors(
+    background = Color.White,
     primary = Peach,
-    background = Purple
+    primaryVariant = Purple,
+    secondary = Green,
+    secondaryVariant = Pink,
 )
 
 val DarkColors = darkColors()
