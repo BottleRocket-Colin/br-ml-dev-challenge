@@ -37,6 +37,6 @@ fun ProvideColors(
 }
 
 // TODO update this to use compositionLocalOf when a set of dark mode colors has been added
-private val LocalAppColors = staticCompositionLocalOf {
+internal val LocalAppColors = staticCompositionLocalOf {
     LightColors
 }

@@ -1,14 +1,15 @@
 package com.br.ml.brpathfinder.ui.settings
 
-import androidx.navigation.NavController
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.ui.ComposeActivity
 import com.br.ml.pathfinder.compose.navigation.Routes
 import com.br.ml.pathfinder.compose.ui.settings.SettingScreen
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
-fun ComposeActivity.settingsComposable(navGraphBuilder: NavGraphBuilder, navController: NavController) {
+fun ComposeActivity.settingsComposable(navGraphBuilder: NavGraphBuilder) {
     navGraphBuilder.composable(Routes.Settings) {
         val vm: SettingsViewModel = getViewModel()
 
@@ -16,7 +17,6 @@ fun ComposeActivity.settingsComposable(navGraphBuilder: NavGraphBuilder, navCont
             SettingScreen(state = it.toState())
         }
 
-        //  TODO - Strings.xml
-        controls.title = "Settings"
+        controls.title = stringResource(id = R.string.settings_title)
     }
 }

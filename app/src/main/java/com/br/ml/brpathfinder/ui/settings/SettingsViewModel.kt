@@ -10,7 +10,7 @@ class SettingsViewModel: BaseViewModel() {
     private val preferences: PreferencesInterface by inject()
 
     // UI
-    val vibrationActive = MutableStateFlow<Boolean>(preferences.vibrationEnabled)
+    val vibrationActive = MutableStateFlow(preferences.vibrationEnabled)
 
     init {
         launchIO {

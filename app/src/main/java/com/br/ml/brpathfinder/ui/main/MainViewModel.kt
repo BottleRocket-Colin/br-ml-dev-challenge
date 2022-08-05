@@ -22,6 +22,7 @@ import com.br.ml.brpathfinder.feedback.FeedbackInterface
 import com.br.ml.brpathfinder.models.DetectedObject
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
+import com.br.ml.brpathfinder.ui.BaseViewModel
 import com.br.ml.brpathfinder.utils.convertBitmapToByteBuffer
 import com.br.ml.brpathfinder.utils.convertFloatArrayToBitmap
 import com.br.ml.brpathfinder.utils.convertYUVImageToARGBIntBuffer
@@ -42,7 +43,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
-class MainViewModel : ViewModel() {
+class MainViewModel : BaseViewModel() {
 
     companion object {
         /** Dimensions of inputs.  */

@@ -1,6 +1,7 @@
 package com.br.ml.pathfinder.compose.resources
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
@@ -26,3 +27,21 @@ fun PathFinderTheme(
         }
     }
 }
+
+object PathFinderTheme {
+    val colors: Colors
+        @Composable
+        get() = LocalAppColors.current
+
+    val dimens: Dimensions
+        @Composable
+        get() = LocalAppDimens.current
+}
+
+val Dimens: Dimensions
+    @Composable
+    get() = PathFinderTheme.dimens
+
+val Colors: Colors
+    @Composable
+    get() = PathFinderTheme.colors

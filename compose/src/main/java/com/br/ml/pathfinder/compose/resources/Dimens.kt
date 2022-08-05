@@ -105,6 +105,6 @@ fun ProvideDimens(
     CompositionLocalProvider(LocalAppDimens provides dimensionSet, content = content)
 }
 
-private val LocalAppDimens = compositionLocalOf {
+internal val LocalAppDimens = compositionLocalOf {
     sw360Dimensions
 }
