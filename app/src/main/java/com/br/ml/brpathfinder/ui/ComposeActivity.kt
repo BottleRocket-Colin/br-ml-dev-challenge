@@ -1,21 +1,34 @@
 package com.br.ml.brpathfinder.ui
 
+import Icon
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.br.ml.pathfinder.compose.navigation.Routes
 import com.br.ml.pathfinder.domain.infrastructure.flow.MutableStateFlowDelegate
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.navigation.mainNavGraph
+import com.br.ml.pathfinder.compose.resources.Dimens
 import com.br.ml.pathfinder.compose.resources.PathFinderTheme
+import com.br.ml.pathfinder.compose.ui.widgets.NavDrawer
+import com.br.ml.pathfinder.compose.ui.widgets.NavItem
+import com.br.ml.pathfinder.compose.ui.widgets.PathfinderAppBar
 
 
 class ComposeActivity : ComponentActivity() {
@@ -64,13 +77,21 @@ class ComposeActivity : ComponentActivity() {
                 Scaffold(
                     scaffoldState = scaffoldState,
                     topBar = {
-//                        ArchAppBar(
-//                            state = activityViewModel.toArchAppBarState(),
-//                            scaffoldState = scaffoldState,
-//                            navController = navController,
-//                            navIntercept = navIntercept
-//                        )
+                        PathfinderAppBar(
+                            scaffoldState,
+                            activityViewModel.showToolbar.collectAsState(initial = true).value,
+                            activityViewModel.title.collectAsState().value,
+                            Icons.Default.Menu
+                        )
                     },
+                    drawerContent = {
+                        NavDrawer(
+                            items = navItems,
+                            currentRoute = currentRoute ?: "",
+                            navController,
+                            scaffoldState
+                        )
+                    }
                 ) {
                     NavHost(navController = navController,startDestination = Routes.Main) {
                         mainNavGraph(navController = navController, activity = this@ComposeActivity)
@@ -78,6 +99,32 @@ class ComposeActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private val navItems = listOf(
+        NavItem(
+            route = Routes.Home
+        ) {
+            PathfinderNavItem(icon = Icons.Default.Home, itemText = getString(R.string.home_title))
+        },
+        NavItem(
+            route = Routes.Settings
+        ) {
+            PathfinderNavItem(icon = Icons.Default.Settings, itemText = getString(R.string.settings_title))
+        }
+    )
+
+    @Composable
+    fun PathfinderNavItem(
+        icon: ImageVector,
+        itemText: String,
+    ) {
+        icon.Icon()
+
+        Text(
+            text = itemText,
+            modifier = Modifier.padding(start = Dimens.grid_3)
+        )
     }
 
 }

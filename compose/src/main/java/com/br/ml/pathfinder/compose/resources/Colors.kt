@@ -17,8 +17,11 @@ val SplashBackground = Color(0xFFFBFAFB)
 
 
 val LightColors = lightColors(
+    background = Color.White,
     primary = Peach,
-    background = Purple
+    primaryVariant = Purple,
+    secondary = Green,
+    secondaryVariant = Pink,
 )
 
 val DarkColors = darkColors()
@@ -34,6 +37,6 @@ fun ProvideColors(
 }
 
 // TODO update this to use compositionLocalOf when a set of dark mode colors has been added
-private val LocalAppColors = staticCompositionLocalOf {
+internal val LocalAppColors = staticCompositionLocalOf {
     LightColors
 }

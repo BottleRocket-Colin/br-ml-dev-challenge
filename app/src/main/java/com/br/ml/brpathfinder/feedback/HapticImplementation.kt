@@ -6,10 +6,15 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
 import com.br.ml.brpathfinder.models.Direction
-import com.br.ml.brpathfinder.settings.SettingsFragment
-import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
+import com.br.ml.pathfinder.domain.utils.PreferencesInterface
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class HapticImplementation(val activity: Activity) : FeedbackInterface {
+class HapticImplementation(private val activity: Activity) : FeedbackInterface, KoinComponent {
+    // DI
+    val preferences: PreferencesInterface by inject()
+
+
     private val FEEDBACK_LENGTH_A = 90L
     private val FEEDBACK_LENGTH_B = 190L
     private val FEEDBACK_LENGTH_OFF = 45L
@@ -24,16 +29,15 @@ class HapticImplementation(val activity: Activity) : FeedbackInterface {
     private val bothVibratePattern =
         longArrayOf(FEEDBACK_LENGTH_A, FEEDBACK_LENGTH_OFF, FEEDBACK_LENGTH_A)
 
-    val preferences = PreferencesImplementation(activity.applicationContext)
 
     override fun signalUser(direction: Direction, severity: Float, position: Float) {
         // check if user has enabled vibration in the settings before proceeding
-        if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.BOTH.saveKey ||
-            preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.VIBRATE.saveKey)
-        {
+//        if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.BOTH.saveKey ||
+//            preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.VIBRATE.saveKey)
+//        {
             if (severity > .25)
                 performVibrate(activity.applicationContext, direction, severity)
-        }
+//        }
     }
 
     private fun performVibrate(context: Context, direction: Direction, severity: Float) {

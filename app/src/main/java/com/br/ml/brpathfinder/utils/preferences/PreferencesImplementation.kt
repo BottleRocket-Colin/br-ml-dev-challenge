@@ -2,11 +2,16 @@ package com.br.ml.brpathfinder.utils.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.br.ml.brpathfinder.settings.SettingsFragment
+import com.br.ml.pathfinder.domain.utils.PreferencesInterface
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class PreferencesImplementation(private val context: Context) : PreferencesInterface {
+class PreferencesImplementation: PreferencesInterface, KoinComponent {
+    // DI
+    private val context: Context by inject()
+
     companion object {
-        private const val SharedPreferencesKey = "settings.settings_feedback_key_"
+        private const val SharedPreferencesKey = "settings.settings_feedback_key"
     }
 
     private val preferences: SharedPreferences?
@@ -15,12 +20,6 @@ class PreferencesImplementation(private val context: Context) : PreferencesInter
             Context.MODE_PRIVATE
         )
 
-    override var currentFeedbackMode: String by StringPreferenceDelegate(preferences)
-//    override var currentAlertToneSaveKey: String by StringPreferenceDelegate(preferences)
-    override var currentAlertToneSaveKey = "beep"
-//    override var noHeadphoneModeActive: Boolean by BooleanPreferenceDelegate(preferences)
-    override var noHeadphoneModeActive = false
-
-    override var pitchAdjustModeActive: Boolean by BooleanPreferenceDelegate(preferences, true)
+    override var vibrationEnabled: Boolean by BooleanPreferenceDelegate(preferences, true)
     override var completedOnboarding: Boolean by BooleanPreferenceDelegate(preferences)
 }

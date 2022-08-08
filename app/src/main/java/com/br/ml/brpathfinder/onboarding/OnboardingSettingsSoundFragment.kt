@@ -6,20 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.br.ml.brpathfinder.R
-import com.br.ml.brpathfinder.settings.SettingsFragment
+//import com.br.ml.brpathfinder.settings.SettingsFragment
 import com.br.ml.brpathfinder.utils.preferences.PreferencesImplementation
 import com.google.android.material.switchmaterial.SwitchMaterial
+import org.koin.android.ext.android.inject
 import smartdevelop.ir.eram.showcaseviewlib.GuideView
 import smartdevelop.ir.eram.showcaseviewlib.config.DismissType
 
 class OnboardingSettingsSoundFragment : Fragment() {
-
-    private lateinit var preferences: PreferencesImplementation
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        preferences = PreferencesImplementation(requireContext())
-    }
+    // DI
+    private val preferences: PreferencesImplementation by inject()
 
     override fun onCreateView(
             inflater: LayoutInflater,
@@ -32,30 +28,30 @@ class OnboardingSettingsSoundFragment : Fragment() {
                 .onboarding_settings_feedback_sound_switch)
         soundFocus = buildGuideView(soundSwitch, "Try it!")
 
-        soundSwitch.setOnCheckedChangeListener { _, isChecked ->
-            // TODO: need some more testing
-            if (isChecked) {
-                if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.VIBRATE
-                                .saveKey) {
-                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.BOTH.saveKey
-                } else {
-                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.SOUND.saveKey
-                }
-            } else {
-                if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.BOTH
-                                .saveKey) {
-                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.VIBRATE.saveKey
-                } else {
-                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.NONE.saveKey
-                }
-            }
-        }
+//        soundSwitch.setOnCheckedChangeListener { _, isChecked ->
+//            // TODO: need some more testing
+//            if (isChecked) {
+//                if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.VIBRATE
+//                                .saveKey) {
+//                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.BOTH.saveKey
+//                } else {
+//                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.SOUND.saveKey
+//                }
+//            } else {
+//                if (preferences.currentFeedbackMode == SettingsFragment.FeedbackOption.BOTH
+//                                .saveKey) {
+//                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.VIBRATE.saveKey
+//                } else {
+//                    preferences.currentFeedbackMode = SettingsFragment.FeedbackOption.NONE.saveKey
+//                }
+//            }
+//        }
 
         return view
     }
 
     fun buildGuideView(view: View, keyText: String): GuideView {
-        return GuideView.Builder(context!!)
+        return GuideView.Builder(requireContext())
                 .setTitle(keyText)
                 .setContentText("Toggle here to enable SOUND notification")
                 .setTargetView(view)

@@ -1,4 +1,4 @@
-package com.br.ml.brpathfinder.navigation
+package com.br.ml.brpathfinder.ui.splash
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -10,7 +10,7 @@ import com.br.ml.pathfinder.compose.ui.splash.SplashScreen
 fun ComposeActivity.splashComposable(navGraphBuilder: NavGraphBuilder, navController: NavController) {
     navGraphBuilder.composable(Routes.Splash) {
         SplashScreen {
-//                TODO - navigate to next screen
+            navController.navigate(Routes.Settings)
         }
     }
 }

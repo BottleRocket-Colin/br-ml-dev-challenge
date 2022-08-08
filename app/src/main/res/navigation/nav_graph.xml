@@ -18,15 +18,6 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
-    <navigation
-        android:id="@+id/settings"
-        app:startDestination="@id/settingsFragment" >
-        <fragment
-            android:id="@+id/settingsFragment"
-            android:name="com.br.ml.brpathfinder.settings.SettingsFragment"
-            android:label="fragment_settings"
-            tools:layout="@layout/fragment_settings" />
-    </navigation>
     <fragment
         android:id="@+id/about"
         android:name="com.br.ml.brpathfinder.AboutFragment"
