@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.bottlerocketstudios.launchpad.compose.widgets.slidingappbar.SlidingAppBar
 import com.br.ml.pathfinder.compose.utils.toggle
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
+rootProject.name='PathFinder'
 include ':app'
-rootProject.name='BrPathFinder'
 include ':domain'
 include ':compose'
