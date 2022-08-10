@@ -20,7 +20,7 @@ buildscript {
 allprojects {
     repositories {
         // Used for library development
-        mavenLocal()
+//        mavenLocal()
         google()
         mavenCentral()
         maven { url "https://jitpack.io" }
