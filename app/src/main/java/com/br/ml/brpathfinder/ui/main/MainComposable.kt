@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.br.ml.brpathfinder.R
 import com.br.ml.brpathfinder.ui.ComposeActivity
 import com.br.ml.pathfinder.compose.navigation.Routes
+import com.br.ml.pathfinder.compose.ui.camera.CameraScreen
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 fun ComposeActivity.mainComposable(navGraphBuilder: NavGraphBuilder, navController: NavController) {
@@ -14,6 +15,7 @@ fun ComposeActivity.mainComposable(navGraphBuilder: NavGraphBuilder, navControll
         val vm: MainViewModel = getViewModel()
 
         vm.ConnectBaseViewModel {
+            CameraScreen()
 //            SettingScreen(state = )
         }
 

@@ -58,7 +58,6 @@ class ComposeActivity : ComponentActivity() {
         navIntercept = null
 
         // TODO - Handle global event from BaseViewModel here.
-
         block.invoke(this)
     }
 
