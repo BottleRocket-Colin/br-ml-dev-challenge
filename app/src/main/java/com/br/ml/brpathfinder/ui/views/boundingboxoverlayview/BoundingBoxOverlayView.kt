@@ -3,10 +3,9 @@ package com.br.ml.brpathfinder.ui.views.boundingboxoverlayview
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import androidx.databinding.BindingAdapter
-import android.util.Log
 import com.br.ml.brpathfinder.models.DetectedObject
 import com.br.ml.brpathfinder.models.Frame
 import com.br.ml.brpathfinder.models.Risk
@@ -210,14 +209,14 @@ class BoundingBoxOverlayView : SurfaceView {
     }
 }
 
-@BindingAdapter("history")
+//@BindingAdapter("history")
 fun BoundingBoxOverlayView.setBoxes(history: List<Frame>) {
     this.history = history
     invalidate()
 }
 
 // FIXME - USe another mehtod than this unsued list to trigger UI updates....
-@BindingAdapter("risks")
+//@BindingAdapter("risks")
 fun BoundingBoxOverlayView.setRiskList(riskList: List<Risk>) {
     invalidate()
 }
