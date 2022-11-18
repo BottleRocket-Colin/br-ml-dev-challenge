@@ -103,9 +103,16 @@ private fun processImage(
         barcodeScanner.process(inputImage)
             .addOnSuccessListener { barcodeList ->
                 val barcode = barcodeList.getOrNull(0)
-                barcode?.rawValue?.let { value ->
-                    Log.d("PATH", "Barcode: $value")
+                barcode?.driverLicense?.let {
+                    Log.d("PATH", "First : ${it.firstName}")
+                    Log.d("PATH", "Last : ${it.lastName}")
+                    Log.d("PATH", "Number : ${it.licenseNumber}")
+                    Log.d("PATH", "Type: ${it.documentType}")
+                } ?: run {
+                    barcode?.rawValue?.let { value ->
+                        Log.d("PATH", "Barcode: $value")
 //                   TODO - do somthing with this!!!!
+                    }
                 }
             }
             .addOnFailureListener {
