@@ -33,6 +33,11 @@ import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+// https://developers.google.com/ml-kit/vision/object-detection
+// https://developers.google.com/ar/develop/java/enable-arcore
+// https://developers.google.com/ar/develop/java/depth/developer-guide#kotlin
+// https://developers.google.com/ar/develop/java/session-config#kotlin_1
+
 @ExperimentalGetImage
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
