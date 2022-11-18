@@ -108,6 +108,7 @@ private fun processImage(
                     Log.d("PATH", "Last : ${it.lastName}")
                     Log.d("PATH", "Number : ${it.licenseNumber}")
                     Log.d("PATH", "Type: ${it.documentType}")
+                    Log.d("PATH", "Type: ${it.expiryDate}")
                 } ?: run {
                     barcode?.rawValue?.let { value ->
                         Log.d("PATH", "Barcode: $value")
