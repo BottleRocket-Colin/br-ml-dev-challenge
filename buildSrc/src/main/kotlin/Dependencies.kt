@@ -116,6 +116,8 @@ private object Libraries {
         "com.google.accompanist:accompanist-webview:$ACCOMPANIST_VERSION"
     const val ACCOMPANIST_NAVIGATION_ANIMATION =
         "com.google.accompanist:accompanist-navigation-animation:$ACCOMPANIST_VERSION"
+    const val ACCOMPANIST_PERMISSIONS =
+        "com.google.accompanist:accompanist-permissions:$ACCOMPANIST_VERSION"
 
 
 //    // Coil
@@ -220,6 +222,7 @@ fun DependencyHandler.composeDependencies() {
 fun DependencyHandler.accompanistDependencies() {
     implementation(Libraries.ACCOMPANIST_WEBVIEW)
     implementation(Libraries.ACCOMPANIST_NAVIGATION_ANIMATION)
+    implementation(Libraries.ACCOMPANIST_PERMISSIONS)
 }
 
 fun DependencyHandler.launchPadDependencies() {

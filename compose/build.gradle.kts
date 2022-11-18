@@ -49,7 +49,7 @@ dependencies {
     // AndroidX
     composeDependencies()
 
-    // LaunchPad - Starting Assets
+    // LaunchPad - Starting AssetsqQW
     launchPadDependencies()
 
     // Exo Player Library
@@ -57,9 +57,13 @@ dependencies {
 
 //    todo - move to dependencies
     // Camera
-    implementation("androidx.camera:camera-camera2:1.2.0-rc01")
-    implementation("androidx.camera:camera-view:1.2.0-rc01")
+    implementation("androidx.camera:camera-camera2:1.3.0-alpha01")
+    implementation("androidx.camera:camera-view:1.3.0-alpha01")
     implementation("androidx.camera:camera-lifecycle:1.1.0")
+
+    // Barcode scanning
+    implementation ("com.google.mlkit:barcode-scanning:17.0.2")
+
 
     // Test
     junitDependencies()

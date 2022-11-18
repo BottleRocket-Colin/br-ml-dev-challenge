@@ -16,7 +16,6 @@ fun ComposeActivity.mainComposable(navGraphBuilder: NavGraphBuilder, navControll
 
         vm.ConnectBaseViewModel {
             CameraScreen()
-//            SettingScreen(state = )
         }
 
         controls.title = stringResource(id = R.string.home_title)
