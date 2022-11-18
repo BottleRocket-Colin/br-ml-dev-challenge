@@ -37,11 +37,56 @@ import kotlin.coroutines.suspendCoroutine
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CameraScreen() {
+    // Permission state
+    val cameraPermissionState = rememberPermissionState(
+        android.Manifest.permission.CAMERA
+    )
+
+    // If permissions not granted, display one of two messages and then request.
+    if (cameraPermissionState.status.isGranted) {
+        CameraPreviewView()
+    } else {
+        Column {
+            Text(
+                if (cameraPermissionState.status.shouldShowRationale) {
+                    // Continued prompting
+                    "This feature can not be used without camera permissions"
+                } else {
+                    // Initial prompt
+                    "Please grant permission for the camera to continue"
+                }
+            )
+            // Pop system dialog on button press
+            Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+                Text("Request Permission")
+            }
+        }
+    }
+}
+
+@ExperimentalGetImage
+@Composable
+fun CameraPreviewView(
+    lensFacing: Int = CameraSelector.LENS_FACING_BACK,
+) {
     val context = LocalContext.current
-//    val lensFacing by remember { mutableStateOf(CameraSelector.LENS_FACING_BACK) }
-    // Setup Image Capture use cse for preview
-    val imageCapture: ImageCapture = remember {
-        ImageCapture.Builder().build()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    // Select back camera
+    val cameraSelector = CameraSelector.Builder()
+        .requireLensFacing(lensFacing)
+        .build()
+
+    // Preview View
+    val previewView = remember {
+        PreviewView(context)
+    }
+
+    // Preview Use case
+    val preview = remember {
+        Preview.Builder().build().apply {
+            setSurfaceProvider(previewView.surfaceProvider)
+        }
     }
 
     //  Set barcode scanner options and build
@@ -53,7 +98,7 @@ fun CameraScreen() {
         )
     }
 
-    // Setup ML Kit image analyuzer use case
+    // Setup ML Kit image analyzer use case
     val imageAnalysis: ImageAnalysis = remember {
         ImageAnalysis.Builder().build().apply {
             setAnalyzer(Executors.newSingleThreadExecutor()) { imageProxy ->
@@ -62,30 +107,30 @@ fun CameraScreen() {
         }
     }
 
-    val cameraPermissionState = rememberPermissionState(
-        android.Manifest.permission.CAMERA
-    )
 
-    if (cameraPermissionState.status.isGranted) {
-        CameraPreviewView(
-            imageCapture = imageCapture,
-            imageAnalysis = imageAnalysis,
-            lensFacing = CameraSelector.LENS_FACING_BACK)
-    } else {
-        Column {
-            Text(
-                if (cameraPermissionState.status.shouldShowRationale) {
-                    "This feature can not be used without camera permissions"
-                } else {
-                    "Please grant permission for the camera to continue"
-                }
-            )
-            Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
-                Text("Request Permission")
-            }
+    LaunchedEffect(key1 = lensFacing) {
+        val cameraProvider = context.getCameraProvider()
+        cameraProvider.unbindAll()
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            preview,
+            imageAnalysis
+        )
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize()) {}
+
+        Column(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            verticalArrangement = Arrangement.Bottom
+        ) {
+//            TODO - CameraControls()
         }
     }
 }
+
 
 @ExperimentalGetImage
 private fun processImage(
@@ -94,11 +139,8 @@ private fun processImage(
 ) {
 
     imageProxy.image?.let { image ->
-        val inputImage =
-            InputImage.fromMediaImage(
-                image,
-                imageProxy.imageInfo.rotationDegrees
-            )
+        val inputImage: InputImage =
+            InputImage.fromMediaImage(image, imageProxy.imageInfo.rotationDegrees)
 
         barcodeScanner.process(inputImage)
             .addOnSuccessListener { barcodeList ->
@@ -112,7 +154,6 @@ private fun processImage(
                 } ?: run {
                     barcode?.rawValue?.let { value ->
                         Log.d("PATH", "Barcode: $value")
-//                   TODO - do somthing with this!!!!
                     }
                 }
             }
@@ -134,50 +175,6 @@ suspend fun Context.getCameraProvider(): ProcessCameraProvider = suspendCoroutin
     }
 }
 
-@Composable
-fun CameraPreviewView(
-    imageCapture: ImageCapture,
-    imageAnalysis: ImageAnalysis,
-    lensFacing: Int = CameraSelector.LENS_FACING_BACK,
-) {
-    val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    val preview = Preview.Builder().build()
-    val cameraSelector = CameraSelector.Builder()
-        .requireLensFacing(lensFacing)
-        .build()
-
-    val previewView = remember {
-        PreviewView(context)
-    }
-
-    LaunchedEffect(key1 = lensFacing) {
-        val cameraProvider = context.getCameraProvider()
-        cameraProvider.unbindAll()
-        cameraProvider.bindToLifecycle(
-            lifecycleOwner,
-            cameraSelector,
-            preview,
-            imageCapture,
-            imageAnalysis
-//         TODO - create use case for image analysis and bind here.
-        )
-        preview.setSurfaceProvider(previewView.surfaceProvider)
-    }
-
-    Box(Modifier.fillMaxSize()) {
-        AndroidView(factory = { previewView }, modifier = Modifier.fillMaxSize()) {}
-
-        Column(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            verticalArrangement = Arrangement.Bottom
-        ) {
-//            TODO - CameraControls()
-        }
-
-    }
-}
 
 @ExperimentalGetImage
 @androidx.compose.ui.tooling.preview.Preview
